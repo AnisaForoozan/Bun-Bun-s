@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.openjfx:javafx-controls:23.0.1'
+    implementation 'org.openjfx:javafx-fxml:23.0.1'
+}
+
+application {
+    mainClass = 'main.java.com.cs2212.bunbun.system.MainMenu' // Your main class
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) // Use the correct JDK version
+    }
+}
+
+tasks.named('run') {
+    doFirst {
+        jvmArgs = [
+            '--module-path', "/Users/janrevesalubre/Downloads/JavaFX/javafx-sdk-23.0.1/lib", // Update this path to your JavaFX SDK's `lib` folder
+            '--add-modules', 'javafx.controls,javafx.fxml'
+        ]
+    }
+}
