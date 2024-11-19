@@ -1,18 +1,21 @@
 package com.cs2212.bunbun.system;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Settings extends JFrame {
+public class Settings extends JFrame implements ActionListener {
     // Instance Variables
     private float masterVolume;
     private float musicVolume;
     private float sfxVolume;
     //private static AudioSettings instance;
 
+    JButton saveGame;
     // Constructor
     public Settings() {
         // Initialize the JFrame properties inside the constructor
-        JButton saveGame = new JButton();
-        saveGame.setBounds(200, 100, 250, 50);
+        saveGame = new JButton();
+        saveGame.setBounds(295, 100, 200, 50);
 
         this.setTitle("Settings"); // Set the title of the frame
         this.setResizable(false);  // Prevent resizing of the frame
@@ -24,6 +27,13 @@ public class Settings extends JFrame {
     public static void main(String[] args) {
         // Create and display the Settings frame
         new Settings();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource()==saveGame) {
+
+        }
     }
 }
 
