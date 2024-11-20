@@ -5,97 +5,115 @@ import java.awt.*;
 import java.net.URL;
 
 public class MainMenu extends JFrame {
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
 
     public MainMenu() {
         // Set up the frame
         setTitle("Bun bun");
-        setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(true); // Allow resizing
-
-        // Set up the background color
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         getContentPane().setBackground(new Color(0xE8CAE8));
 
-        // Initialize the UI
-        initializeUI();
+        // Initialize CardLayout and Main Panel
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
+
+        // Add the Main Menu, Tutorial, and Settings panels
+        mainPanel.add(createMainMenuPanel(), "MainMenu");
+        mainPanel.add(new Tutorial(cardLayout, mainPanel), "Tutorial");
+        mainPanel.add(new Settings(cardLayout, mainPanel), "Settings");
+
+        // Add the main panel to the frame
+        add(mainPanel);
+
+        // Show the Main Menu initially
+        cardLayout.show(mainPanel, "MainMenu");
     }
 
-    private void initializeUI() {
-        // Set layout to GridBagLayout for dynamic positioning
-        setLayout(new GridBagLayout());
+    private JPanel createMainMenuPanel() {
+        JPanel menuPanel = new JPanel(new GridBagLayout());
+        menuPanel.setBackground(new Color(0xE8CAE8));
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Add title image
-        URL imageUrl = getClass().getClassLoader().getResource("images/bunbunlogo.png"); // Update with your file path
+        URL imageUrl = getClass().getClassLoader().getResource("images/bunbunlogo.png");
         if (imageUrl != null) {
             ImageIcon originalIcon = new ImageIcon(imageUrl);
-            Image scaledImage = originalIcon.getImage().getScaledInstance(400, 200, Image.SCALE_SMOOTH); // Adjust size
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            JLabel titleLabel = new JLabel(scaledIcon);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(400, 200, Image.SCALE_SMOOTH);
+            JLabel titleLabel = new JLabel(new ImageIcon(scaledImage));
 
-            // Configure GridBagConstraints for the title
-            gbc.gridx = 0; // Centered horizontally
-            gbc.gridy = 0; // First row (at the top)
-            gbc.insets = new Insets(0, 0, 40, 0); // Add padding
-            gbc.anchor = GridBagConstraints.PAGE_START; // Align towards the top
-            gbc.weightx = 1.0; // Distribute horizontal space evenly
-            gbc.weighty = 0.0; // No extra vertical space for the title
-            add(titleLabel, gbc);
-        } else {
-            System.out.println("Image not found: bunbun_logo.png");
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(0, 0, 40, 0);
+            gbc.anchor = GridBagConstraints.PAGE_START;
+            menuPanel.add(titleLabel, gbc);
         }
 
-        // Configure GridBagConstraints for buttons
-        gbc.gridy = 1; // Start button section
-        gbc.insets = new Insets(30, 0, 10, 0); // Spacing between buttons
-        gbc.anchor = GridBagConstraints.CENTER; // Center-align buttons
-        gbc.weighty = 0.0; // No extra vertical space
-
-        // Create a panel to group the buttons
-        JPanel buttonPanel = new JPanel();
+        // Create the custom button panel with semi-transparent gray background
+        JPanel buttonPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(new Color(135, 135, 135, 50)); // Semi-transparent gray
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25); // Rounded rectangle
+                g2d.dispose();
+            }
+        };
         buttonPanel.setLayout(new GridLayout(0, 1, 0, 40)); // Stack buttons vertically with 40px spacing
-        buttonPanel.setOpaque(false); // Transparent background to match the frame
+        buttonPanel.setOpaque(false); // Transparent background to allow custom painting
+
+        // Add padding inside the panel and a border around it
+        buttonPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(117, 101, 81), 5), // White border with 5px thickness
+                BorderFactory.createEmptyBorder(20, 20, 20, 20) // Add 20px padding inside the border (top, left, bottom, right)
+        ));
 
         // Create buttons
-        JButton newGameButton = createMenuButton("New Game");
-        JButton loadGameButton = createMenuButton("Load Game");
-        JButton settingsButton = createMenuButton("Settings");
-        JButton parentalControlsButton = createMenuButton("Parental Controls");
-        JButton exitButton = createMenuButton("Exit");
+        JButton newGameButton = createMenuButton("NEW GAME");
+        JButton loadGameButton = createMenuButton("LOAD GAME");
+        JButton tutorialButton = createMenuButton("TUTORIAL");
+        JButton parentalControlsButton = createMenuButton("PARENTAL CONTROLS");
+        JButton settingsButton = createMenuButton("SETTINGS");
+        JButton exitButton = createMenuButton("EXIT");
 
         // Add button actions
         newGameButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "New Game button clicked!"));
         loadGameButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Load Game button clicked!"));
-        settingsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Settings button clicked!"));
         parentalControlsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Parental Controls button clicked!"));
+        tutorialButton.addActionListener(e -> cardLayout.show(mainPanel, "Tutorial")); // Switch to Tutorial panel
+        settingsButton.addActionListener(e -> cardLayout.show(mainPanel, "Settings")); // Switch to Settings panel
         exitButton.addActionListener(e -> System.exit(0)); // Exit application
 
-        // Add buttons to the panel
+        // Add buttons to the button panel
         buttonPanel.add(newGameButton);
         buttonPanel.add(loadGameButton);
-        buttonPanel.add(settingsButton);
+        buttonPanel.add(tutorialButton);
         buttonPanel.add(parentalControlsButton);
+        buttonPanel.add(settingsButton);
         buttonPanel.add(exitButton);
 
-        // Add the button panel to the layout
-        add(buttonPanel, gbc);
+        // Add button panel to the menuPanel
+        gbc.gridy = 1;
+        gbc.insets = new Insets(30, 0, 10, 0);
+        gbc.anchor = GridBagConstraints.CENTER;
+        menuPanel.add(buttonPanel, gbc);
+
+        return menuPanel;
     }
 
     private JButton createMenuButton(String text) {
         JButton button = new JButton(text);
-        button.setFocusPainted(false); // Remove focus outline
-        button.setFont(new Font("Arial", Font.PLAIN, 32)); // Increased font size for buttons
+        button.setFocusPainted(false);
+        button.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
         button.setForeground(Color.WHITE);
         button.setBackground(new Color(0xE8CAE8));
-        button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2)); // Transparent color
+        button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
         return button;
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainMenu menu = new MainMenu();
-            menu.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
     }
 }
