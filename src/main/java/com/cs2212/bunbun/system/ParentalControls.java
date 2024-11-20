@@ -326,7 +326,7 @@ public class ParentalControls extends JPanel {
         return button;
     }
 
-private JPanel createIconButtonPanel(List<String> labels, List<String> iconPaths) {
+    private JPanel createIconButtonPanel(List<String> labels, List<String> iconPaths) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
 

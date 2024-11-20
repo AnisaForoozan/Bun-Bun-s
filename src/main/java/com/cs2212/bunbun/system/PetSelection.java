@@ -265,7 +265,7 @@ public class PetSelection extends JPanel {
         return bunnyButton;
     }
 
-private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String selectedPet) {
+    private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String selectedPet) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
             @Override
