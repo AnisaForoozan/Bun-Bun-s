@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 
-public class Tutorial extends JPanel {
-    public Tutorial(CardLayout cardLayout, JPanel mainPanel) {
+public class PetSelection extends JPanel {
+    public PetSelection(CardLayout cardLayout, JPanel mainPanel) {
         setBackground(new Color(0xE8CAE8));
         setLayout(new BorderLayout());
 
@@ -37,7 +37,7 @@ public class Tutorial extends JPanel {
         gbc.anchor = GridBagConstraints.CENTER; // Center the label
 
         // Add title label
-        JLabel titleLabel = new JLabel("Tutorial", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Choose your pet", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
         titleLabel.setForeground(new Color(255, 255, 255));
         titlePanel.add(titleLabel, gbc);
