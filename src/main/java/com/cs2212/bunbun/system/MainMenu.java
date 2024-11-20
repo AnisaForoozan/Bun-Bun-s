@@ -21,7 +21,10 @@ public class MainMenu extends JFrame {
 
         // Add the Main Menu, Tutorial, and Settings panels
         mainPanel.add(createMainMenuPanel(), "MainMenu");
+        mainPanel.add(new PetSelection(cardLayout, mainPanel), "PetSelection");
+        mainPanel.add(new Gameplay(cardLayout, mainPanel), "Gameplay");
         mainPanel.add(new Tutorial(cardLayout, mainPanel), "Tutorial");
+        mainPanel.add(new ParentalControls(cardLayout, mainPanel), "ParentalControls");
         mainPanel.add(new Settings(cardLayout, mainPanel), "Settings");
 
         // Add the main panel to the frame
@@ -79,9 +82,9 @@ public class MainMenu extends JFrame {
         JButton exitButton = createMenuButton("EXIT");
 
         // Add button actions
-        newGameButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "New Game button clicked!"));
-        loadGameButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Load Game button clicked!"));
-        parentalControlsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Parental Controls button clicked!"));
+        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "PetSelection"));
+        loadGameButton.addActionListener(e -> cardLayout.show(mainPanel, "Gameplay"));
+        parentalControlsButton.addActionListener(e -> cardLayout.show(mainPanel, "ParentalControls"));
         tutorialButton.addActionListener(e -> cardLayout.show(mainPanel, "Tutorial")); // Switch to Tutorial panel
         settingsButton.addActionListener(e -> cardLayout.show(mainPanel, "Settings")); // Switch to Settings panel
         exitButton.addActionListener(e -> System.exit(0)); // Exit application

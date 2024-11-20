@@ -2,13 +2,10 @@ package com.cs2212.bunbun.system;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 public class Gameplay extends JPanel {
-    private AudioPlayer audioPlayer;
-
-    public Gameplay(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
-        this.audioPlayer = audioPlayer; // Store the AudioPlayer instance
-
+    public Gameplay(CardLayout cardLayout, JPanel mainPanel) {
         setBackground(new Color(0xE8CAE8));
         setLayout(new BorderLayout());
 
@@ -16,10 +13,18 @@ public class Gameplay extends JPanel {
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topLeftPanel.setOpaque(false);
 
-        JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "MainMenu"));
+        JButton backButton = new JButton("⬅");
+        backButton.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
+        backButton.setOpaque(false); // Make the button non-opaque
+        backButton.setContentAreaFilled(false); // Disable the default background fill
+        backButton.setBorderPainted(false); // Remove the default border
+        backButton.setForeground(new Color(117, 101, 81)); // Set text color
+        backButton.addActionListener(e -> cardLayout.show(mainPanel, "MainMenu"));
 
         topLeftPanel.add(backButton);
         add(topLeftPanel, BorderLayout.NORTH); // Add back button panel to the top
+
+
 
         // Create a panel for the title with GridBagLayout
         JPanel titlePanel = new JPanel(new GridBagLayout());
@@ -39,39 +44,5 @@ public class Gameplay extends JPanel {
 
         // Add the title panel to the center of the screen
         add(titlePanel, BorderLayout.CENTER);
-    }
-
-    private JButton createButton(String text, java.awt.event.ActionListener onClick) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setForeground(new Color(117, 101, 81));
-
-        // Add click sound
-        button.addActionListener(e -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav");
-            onClick.actionPerformed(e);
-        });
-
-        // Add hover sound and color change
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            private final Color defaultColor = button.getForeground();
-            private final Color hoverColor = new Color(0x756551);
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setForeground(hoverColor);
-                audioPlayer.playSFX("audio/sfx/hover_sound.wav");
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setForeground(defaultColor);
-            }
-        });
-
-        return button;
     }
 }
