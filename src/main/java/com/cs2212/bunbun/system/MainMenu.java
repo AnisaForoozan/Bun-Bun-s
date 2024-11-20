@@ -7,8 +7,13 @@ import java.net.URL;
 public class MainMenu extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private AudioPlayer audioPlayer;
 
     public MainMenu() {
+
+        audioPlayer = new AudioPlayer();
+        audioPlayer.playAudio("audio/music/menu_music.wav", true);
+
         // Set up the frame
         setTitle("Bun bun");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,7 +30,7 @@ public class MainMenu extends JFrame {
         mainPanel.add(new Gameplay(cardLayout, mainPanel), "Gameplay");
         mainPanel.add(new Tutorial(cardLayout, mainPanel), "Tutorial");
         mainPanel.add(new ParentalControls(cardLayout, mainPanel), "ParentalControls");
-        mainPanel.add(new Settings(cardLayout, mainPanel), "Settings");
+        mainPanel.add(new Settings(cardLayout, mainPanel, audioPlayer), "Settings");
 
         // Add the main panel to the frame
         add(mainPanel);
@@ -113,8 +118,26 @@ public class MainMenu extends JFrame {
         button.setForeground(Color.WHITE);
         button.setBackground(new Color(0xE8CAE8));
         button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            private final Color defaultColor = button.getForeground(); // Default background color
+            private final Color hoverColor = new Color(0x756551); // Hover color
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setForeground(hoverColor); // Change background on hover
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setForeground(defaultColor); // Revert to default background
+            }
+        });
+
         return button;
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
