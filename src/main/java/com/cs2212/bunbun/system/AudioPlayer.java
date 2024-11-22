@@ -12,7 +12,7 @@ public class AudioPlayer {
     private FloatControl sfxVolumeControl;
 
     private float masterVolume = 0.0f; // Master volume in dB
-    private float musicVolume = -20.0f;  // Music volume in dB
+    private float musicVolume = -10.0f;  // Music volume in dB
     private float sfxVolume = 0.0f;    // SFX volume in dB
 
     public void playMusic(String resourcePath, boolean loop) {

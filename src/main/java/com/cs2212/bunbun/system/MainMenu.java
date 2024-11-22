@@ -96,20 +96,12 @@ public class MainMenu extends JFrame {
         ));
 
         // Create buttons
-        JButton newGameButton = createMenuButton("NEW GAME");
-        JButton loadGameButton = createMenuButton("LOAD GAME");
-        JButton tutorialButton = createMenuButton("TUTORIAL");
-        JButton parentalControlsButton = createMenuButton("PARENTAL CONTROLS");
-        JButton settingsButton = createMenuButton("SETTINGS");
-        JButton exitButton = createMenuButton("EXIT");
-
-        // Add button actions
-        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "PetSelection"));
-        loadGameButton.addActionListener(e -> cardLayout.show(mainPanel, "Gameplay"));
-        parentalControlsButton.addActionListener(e -> cardLayout.show(mainPanel, "ParentalControls"));
-        tutorialButton.addActionListener(e -> cardLayout.show(mainPanel, "Tutorial"));
-        settingsButton.addActionListener(e -> cardLayout.show(mainPanel, "Settings"));
-        exitButton.addActionListener(e -> System.exit(0));
+        JButton newGameButton = createMenuButton("NEW GAME", "PetSelection");
+        JButton loadGameButton = createMenuButton("LOAD GAME", "Gameplay");
+        JButton tutorialButton = createMenuButton("TUTORIAL", "Tutorial");
+        JButton parentalControlsButton = createMenuButton("PARENTAL CONTROLS", "ParentalControls");
+        JButton settingsButton = createMenuButton("SETTINGS", "Settings");
+        JButton exitButton = createMenuButton("EXIT", null);
 
         // Add buttons to the button panel
         buttonPanel.add(newGameButton);
@@ -128,7 +120,7 @@ public class MainMenu extends JFrame {
         return menuPanel;
     }
 
-    private JButton createMenuButton(String text) {
+    private JButton createMenuButton(String text, String targetPanel) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
@@ -137,7 +129,15 @@ public class MainMenu extends JFrame {
         button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
 
         // Add sound effects
-        button.addActionListener(e -> audioPlayer.playSFX("audio/sfx/click_sound.wav"));
+        button.addActionListener(e -> {
+            audioPlayer.playSFX("audio/sfx/click_sound.wav");
+            if ("EXIT".equals(text)) {
+                System.exit(0); // Exit the application
+            } else if (targetPanel != null) {
+                showLoadingScreenAndSwitchPanel(targetPanel);
+            }
+        });
+
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             private final Color defaultColor = button.getForeground(); // Default foreground color
             private final Color hoverColor = new Color(0x756551);      // Hover color
@@ -156,6 +156,52 @@ public class MainMenu extends JFrame {
 
         return button;
     }
+
+    private void showLoadingScreenAndSwitchPanel(String targetPanel) {
+        // Create a loading screen panel
+        JPanel loadingScreen = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(Color.BLACK); // Background color
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+
+        // Add a loading label to the panel
+        JLabel loadingLabel = new JLabel("Loading", SwingConstants.CENTER);
+        loadingLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
+        loadingLabel.setForeground(Color.WHITE);
+        loadingScreen.add(loadingLabel, BorderLayout.CENTER);
+
+        // Add the loading screen to mainPanel and show it
+        mainPanel.add(loadingScreen, "Loading");
+        cardLayout.show(mainPanel, "Loading");
+
+        // Timer for animating the dots
+        Timer dotTimer = new Timer(500, null);
+        final String baseText = "Loading";
+        dotTimer.addActionListener(e -> {
+            String currentText = loadingLabel.getText();
+            if (currentText.endsWith("...")) {
+                loadingLabel.setText(baseText); // Reset to "Loading"
+            } else {
+                loadingLabel.setText(currentText + "."); // Add a dot
+            }
+        });
+        dotTimer.start();
+
+        // Timer to simulate loading and then switch to the target panel
+        Timer loadingTimer = new Timer(2000, e -> {
+            dotTimer.stop(); // Stop the dot animation
+            cardLayout.show(mainPanel, targetPanel); // Switch to the target panel
+            mainPanel.remove(loadingScreen); // Remove the loading screen
+        });
+
+        loadingTimer.setRepeats(false); // Ensure the timer runs only once
+        loadingTimer.start();
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
