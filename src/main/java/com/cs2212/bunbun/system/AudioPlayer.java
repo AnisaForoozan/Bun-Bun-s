@@ -5,71 +5,102 @@ import java.io.IOException;
 import java.net.URL;
 
 public class AudioPlayer {
-    private Clip audioClip;
-    private FloatControl volumeControl;
+    private Clip musicClip;
+    private Clip sfxClip;
+    private FloatControl masterVolumeControl;
+    private FloatControl musicVolumeControl;
+    private FloatControl sfxVolumeControl;
 
-    /**
-     * Plays an audio file.
-     *
-     * @param resourcePath The relative path to the audio file (e.g., "audio/background_music.wav").
-     * @param loop         Whether the audio should loop continuously.
-     */
-    public void playAudio(String resourcePath, boolean loop) {
+    private float masterVolume = 0.0f; // Master volume in dB
+    private float musicVolume = -20.0f;  // Music volume in dB
+    private float sfxVolume = 0.0f;    // SFX volume in dB
+
+    public void playMusic(String resourcePath, boolean loop) {
         try {
-            // Load the audio file from resources
-            URL audioUrl = getClass().getClassLoader().getResource(resourcePath);
-            if (audioUrl == null) {
-                throw new IOException("Audio file not found: " + resourcePath);
-            }
-
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioUrl);
-            audioClip = AudioSystem.getClip();
-            audioClip.open(audioStream);
-
-            // Get the volume control
-            if (audioClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                volumeControl = (FloatControl) audioClip.getControl(FloatControl.Type.MASTER_GAIN);
-            }
-
-            // Start playing the audio
+            musicClip = loadAudio(resourcePath);
+            applyVolume(musicClip, musicVolume + masterVolume); // Apply combined volume
             if (loop) {
-                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+                musicClip.loop(Clip.LOOP_CONTINUOUSLY);
             } else {
-                audioClip.start();
+                musicClip.start();
             }
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Stops the audio if it's currently playing.
-     */
-    public void stopAudio() {
-        if (audioClip != null && audioClip.isRunning()) {
-            audioClip.stop();
+    public void playSFX(String resourcePath) {
+        try {
+            sfxClip = loadAudio(resourcePath);
+            applyVolume(sfxClip, sfxVolume + masterVolume); // Apply combined volume
+            sfxClip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Adjusts the audio volume.
-     *
-     * @param volume The desired volume level. Should be in the range supported by the audio system.
-     */
-    public void setVolume(float volume) {
-        if (volumeControl != null) {
-            // Clamp volume to the valid range
-            volume = Math.max(volumeControl.getMinimum(), Math.min(volumeControl.getMaximum(), volume));
+    private Clip loadAudio(String resourcePath) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        URL audioUrl = getClass().getClassLoader().getResource(resourcePath);
+        if (audioUrl == null) {
+            throw new IOException("Audio file not found: " + resourcePath);
+        }
+
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioUrl);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioStream);
+
+        return clip;
+    }
+
+    private void applyVolume(Clip clip, float volume) {
+        if (clip != null && clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             volumeControl.setValue(volume);
         }
     }
 
-    /**
-     * Closes the audio resources when done.
-     */
+    public void setMasterVolume(float volume) {
+        masterVolume = volume;
+        if (musicClip != null) {
+            applyVolume(musicClip, musicVolume + masterVolume);
+        }
+        if (sfxClip != null) {
+            applyVolume(sfxClip, sfxVolume + masterVolume);
+        }
+    }
+
+    public void setMusicVolume(float volume) {
+        musicVolume = volume;
+        if (musicClip != null) {
+            applyVolume(musicClip, musicVolume + masterVolume);
+        }
+    }
+
+    public void setSFXVolume(float volume) {
+        sfxVolume = volume;
+        if (sfxClip != null) {
+            applyVolume(sfxClip, sfxVolume + masterVolume);
+        }
+    }
+
+    public void stopMusic() {
+        if (musicClip != null && musicClip.isRunning()) {
+            musicClip.stop();
+        }
+    }
+
+    public void stopSFX() {
+        if (sfxClip != null && sfxClip.isRunning()) {
+            sfxClip.stop();
+        }
+    }
+
     public void close() {
-        if (audioClip != null) {
-            audioClip.close();
+        if (musicClip != null) {
+            musicClip.close();
+        }
+        if (sfxClip != null) {
+            sfxClip.close();
         }
     }
 }
