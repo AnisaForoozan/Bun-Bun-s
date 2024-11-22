@@ -2,144 +2,77 @@ package com.cs2212.bunbun.system;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 
 public class MainMenu extends JFrame {
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
-    private AudioPlayer audioPlayer;
 
     public MainMenu() {
-
-        audioPlayer = new AudioPlayer();
-        audioPlayer.playAudio("audio/music/menu_music.wav", true);
-
         // Set up the frame
         setTitle("Bun bun");
+        setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+        setResizable(true); // Allow resizing
+
+        // Set up the background color
         getContentPane().setBackground(new Color(0xE8CAE8));
 
-        // Initialize CardLayout and Main Panel
-        cardLayout = new CardLayout();
-        mainPanel = new JPanel(cardLayout);
-
-        // Add the Main Menu, Tutorial, and Settings panels
-        mainPanel.add(createMainMenuPanel(), "MainMenu");
-        mainPanel.add(new PetSelection(cardLayout, mainPanel), "PetSelection");
-        mainPanel.add(new Gameplay(cardLayout, mainPanel), "Gameplay");
-        mainPanel.add(new Tutorial(cardLayout, mainPanel), "Tutorial");
-        mainPanel.add(new ParentalControls(cardLayout, mainPanel), "ParentalControls");
-        mainPanel.add(new Settings(cardLayout, mainPanel, audioPlayer), "Settings");
-
-        // Add the main panel to the frame
-        add(mainPanel);
-
-        // Show the Main Menu initially
-        cardLayout.show(mainPanel, "MainMenu");
+        // Initialize the UI
+        initializeUI();
     }
 
-    private JPanel createMainMenuPanel() {
-        JPanel menuPanel = new JPanel(new GridBagLayout());
-        menuPanel.setBackground(new Color(0xE8CAE8));
+    private void initializeUI() {
+        // Set layout to GridBagLayout for dynamic centering
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        // Add title image
-        URL imageUrl = getClass().getClassLoader().getResource("images/bunbunlogo.png");
-        if (imageUrl != null) {
-            ImageIcon originalIcon = new ImageIcon(imageUrl);
-            Image scaledImage = originalIcon.getImage().getScaledInstance(400, 200, Image.SCALE_SMOOTH);
-            JLabel titleLabel = new JLabel(new ImageIcon(scaledImage));
+        // Configure GridBagConstraints
+        gbc.gridx = 0; // Single column layout
+        gbc.gridy = GridBagConstraints.RELATIVE; // Components stacked vertically
+        gbc.insets = new Insets(10, 0, 10, 0); // Spacing between components
+        gbc.anchor = GridBagConstraints.CENTER;
 
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.insets = new Insets(0, 0, 40, 0);
-            gbc.anchor = GridBagConstraints.PAGE_START;
-            menuPanel.add(titleLabel, gbc);
-        }
+        // Add title label
+        JLabel titleLabel = new JLabel("Bun bun's");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        add(titleLabel, gbc); // Add title to the layout
 
-        // Create the custom button panel with semi-transparent gray background
-        JPanel buttonPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setColor(new Color(135, 135, 135, 50)); // Semi-transparent gray
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25); // Rounded rectangle
-                g2d.dispose();
-            }
-        };
-        buttonPanel.setLayout(new GridLayout(0, 1, 0, 40)); // Stack buttons vertically with 40px spacing
-        buttonPanel.setOpaque(false); // Transparent background to allow custom painting
-
-        // Add padding inside the panel and a border around it
-        buttonPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(117, 101, 81), 5), // White border with 5px thickness
-                BorderFactory.createEmptyBorder(20, 20, 20, 20) // Add 20px padding inside the border (top, left, bottom, right)
-        ));
-
-        // Create buttons
-        JButton newGameButton = createMenuButton("NEW GAME");
-        JButton loadGameButton = createMenuButton("LOAD GAME");
-        JButton tutorialButton = createMenuButton("TUTORIAL");
-        JButton parentalControlsButton = createMenuButton("PARENTAL CONTROLS");
-        JButton settingsButton = createMenuButton("SETTINGS");
-        JButton exitButton = createMenuButton("EXIT");
+        // Add buttons
+        JButton newGameButton = createMenuButton("New Game");
+        JButton loadGameButton = createMenuButton("Load Game");
+        JButton settingsButton = createMenuButton("Settings");
+        JButton parentalControlsButton = createMenuButton("Parental Controls");
+        JButton exitButton = createMenuButton("Exit");
 
         // Add button actions
-        newGameButton.addActionListener(e -> cardLayout.show(mainPanel, "PetSelection"));
-        loadGameButton.addActionListener(e -> cardLayout.show(mainPanel, "Gameplay"));
-        parentalControlsButton.addActionListener(e -> cardLayout.show(mainPanel, "ParentalControls"));
-        tutorialButton.addActionListener(e -> cardLayout.show(mainPanel, "Tutorial")); // Switch to Tutorial panel
-        settingsButton.addActionListener(e -> cardLayout.show(mainPanel, "Settings")); // Switch to Settings panel
+        newGameButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "New Game button clicked!"));
+        loadGameButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Load Game button clicked!"));
+        settingsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Settings button clicked!"));
+        parentalControlsButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Parental Controls button clicked!"));
         exitButton.addActionListener(e -> System.exit(0)); // Exit application
 
-        // Add buttons to the button panel
-        buttonPanel.add(newGameButton);
-        buttonPanel.add(loadGameButton);
-        buttonPanel.add(tutorialButton);
-        buttonPanel.add(parentalControlsButton);
-        buttonPanel.add(settingsButton);
-        buttonPanel.add(exitButton);
-
-        // Add button panel to the menuPanel
-        gbc.gridy = 1;
-        gbc.insets = new Insets(30, 0, 10, 0);
-        gbc.anchor = GridBagConstraints.CENTER;
-        menuPanel.add(buttonPanel, gbc);
-
-        return menuPanel;
+        // Add buttons to the layout
+        add(newGameButton, gbc);
+        add(loadGameButton, gbc);
+        add(settingsButton, gbc);
+        add(parentalControlsButton, gbc);
+        add(exitButton, gbc);
     }
 
     private JButton createMenuButton(String text) {
         JButton button = new JButton(text);
-        button.setFocusPainted(false);
-        button.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
+        button.setFocusPainted(false); // Remove focus outline
+        button.setFont(new Font("Arial", Font.PLAIN, 20));
         button.setForeground(Color.WHITE);
         button.setBackground(new Color(0xE8CAE8));
-        button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
-
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            private final Color defaultColor = button.getForeground(); // Default background color
-            private final Color hoverColor = new Color(0x756551); // Hover color
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setForeground(hoverColor); // Change background on hover
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setForeground(defaultColor); // Revert to default background
-            }
-        });
-
+        button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         return button;
     }
 
-
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            MainMenu menu = new MainMenu();
+            menu.setVisible(true);
+        });
     }
 }
