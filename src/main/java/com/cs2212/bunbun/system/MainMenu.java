@@ -48,7 +48,7 @@ public class MainMenu extends JFrame {
         }
 
         // Create the main menu panel with a custom background
-        JPanel menuPanel = new JPanel(new GridBagLayout()) {
+        JPanel menuPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -59,6 +59,9 @@ public class MainMenu extends JFrame {
         };
         menuPanel.setOpaque(false); // Ensure transparency
 
+        // Create the central panel for the buttons and title
+        JPanel centralPanel = new JPanel(new GridBagLayout());
+        centralPanel.setOpaque(false); // Transparent background
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Add title image
@@ -70,9 +73,9 @@ public class MainMenu extends JFrame {
 
             gbc.gridx = 0;
             gbc.gridy = 0;
-            gbc.insets = new Insets(0, 0, 40, 0);
+            gbc.insets = new Insets(20, 0, 40, 0); // Adjust top spacing
             gbc.anchor = GridBagConstraints.PAGE_START;
-            menuPanel.add(titleLabel, gbc);
+            centralPanel.add(titleLabel, gbc);
         }
 
         // Create the custom button panel with semi-transparent gray background
@@ -111,11 +114,79 @@ public class MainMenu extends JFrame {
         buttonPanel.add(settingsButton);
         buttonPanel.add(exitButton);
 
-        // Add button panel to the menuPanel
+        // Add button panel to the centralPanel
         gbc.gridy = 1;
-        gbc.insets = new Insets(30, 0, 10, 0);
+        gbc.insets = new Insets(30, 0, 10, 0); // Adjust top and bottom spacing
         gbc.anchor = GridBagConstraints.CENTER;
-        menuPanel.add(buttonPanel, gbc);
+        centralPanel.add(buttonPanel, gbc);
+
+        // Add central panel to the center of the menuPanel
+        menuPanel.add(centralPanel, BorderLayout.CENTER);
+
+        // Create and add the info button to the bottom-right
+        JButton infoButton = new JButton("?");
+        infoButton.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
+        infoButton.setForeground(Color.WHITE); // Default color to white
+        infoButton.setBackground(new Color(117, 101, 81));
+        infoButton.setFocusPainted(false);
+        infoButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Add hover and click sounds
+        infoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            private final Color defaultColor = Color.WHITE; // Default foreground color
+            private final Color hoverColor = new Color(0x756551); // Hover color
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                infoButton.setForeground(hoverColor); // Change foreground on hover
+                audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                infoButton.setForeground(defaultColor); // Revert to default foreground
+            }
+        });
+
+        infoButton.addActionListener(e -> {
+            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
+
+            // Create a custom panel for the message
+            JPanel messagePanel = new JPanel(new GridLayout(0, 1)); // Vertical layout
+            messagePanel.setBackground(new Color(0x756551)); // Match the theme
+            messagePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding around the content
+
+            // Create the message label
+            JLabel creditsLabel = new JLabel("<html><div style='text-align: center;'>"
+                    + "Created by Group 28:<br>"
+                    + "Anisa Lua Foroozan, Anya Ziyan Liu<br>"
+                    + "Janreve Salubre, Jared Rone Costales<br>"
+                    + "and Joseph Taining Huang<br><br>"
+                    + "CS2212 Fall 2024 at Western University"
+                    + "</div></html>");
+            creditsLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+            creditsLabel.setForeground(new Color(255, 255, 255)); // Match the theme
+            creditsLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align
+
+            messagePanel.add(creditsLabel); // Add the label to the panel
+
+            // Show the custom panel in a dialog
+            JDialog dialog = new JDialog(this, "Credits", true); // Modal dialog
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setSize(400, 300); // Set dialog size
+            dialog.setLocationRelativeTo(this); // Center on the parent frame
+            dialog.add(messagePanel); // Add the custom panel to the dialog
+
+            dialog.setVisible(true); // Show the dialog
+        });
+
+
+        JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomRightPanel.setOpaque(false); // Transparent background
+        bottomRightPanel.add(infoButton);
+
+        // Add the bottom-right panel to the menuPanel
+        menuPanel.add(bottomRightPanel, BorderLayout.SOUTH);
 
         return menuPanel;
     }
@@ -201,7 +272,6 @@ public class MainMenu extends JFrame {
         loadingTimer.setRepeats(false); // Ensure the timer runs only once
         loadingTimer.start();
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
