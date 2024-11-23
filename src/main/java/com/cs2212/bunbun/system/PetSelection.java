@@ -13,7 +13,7 @@ public class PetSelection extends JPanel {
         setLayout(new BorderLayout());
 
         // Back Button
-        JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "MainMenu"));
+        JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "Gameplay"));
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topLeftPanel.setOpaque(false);
         topLeftPanel.add(backButton);
@@ -43,7 +43,7 @@ public class PetSelection extends JPanel {
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
-        button.setForeground(new Color(117, 101, 81));
+        button.setForeground(Color.WHITE);
 
         // Add click sound
         button.addActionListener(e -> {
