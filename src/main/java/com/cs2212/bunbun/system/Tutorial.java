@@ -43,7 +43,7 @@ public class Tutorial extends JPanel {
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
-        button.setForeground(new Color(117, 101, 81));
+        button.setForeground(Color.WHITE);
 
         // Add click sound
         button.addActionListener(e -> {

@@ -9,6 +9,7 @@ public class MainMenu extends JFrame {
     private JPanel mainPanel;
     private AudioPlayer audioPlayer;
     private ImageIcon backgroundImage; // Class-level field for background image
+    private JDialog infoDialog; // For the custom dialog
 
     public MainMenu() {
         audioPlayer = new AudioPlayer();
@@ -99,16 +100,14 @@ public class MainMenu extends JFrame {
         ));
 
         // Create buttons
-        JButton newGameButton = createMenuButton("NEW GAME", "PetSelection");
-        JButton loadGameButton = createMenuButton("LOAD GAME", "Gameplay");
-        JButton tutorialButton = createMenuButton("TUTORIAL", "Tutorial");
-        JButton parentalControlsButton = createMenuButton("PARENTAL CONTROLS", "ParentalControls");
+        JButton playGameButton = createMenuButton("PLAY", "Gameplay");
+        JButton tutorialButton = createMenuButton("HOW TO PLAY", "Tutorial");
         JButton settingsButton = createMenuButton("SETTINGS", "Settings");
+        JButton parentalControlsButton = createMenuButton("PARENTAL CONTROLS", "ParentalControls");
         JButton exitButton = createMenuButton("EXIT", null);
 
         // Add buttons to the button panel
-        buttonPanel.add(newGameButton);
-        buttonPanel.add(loadGameButton);
+        buttonPanel.add(playGameButton);
         buttonPanel.add(tutorialButton);
         buttonPanel.add(parentalControlsButton);
         buttonPanel.add(settingsButton);
@@ -151,12 +150,67 @@ public class MainMenu extends JFrame {
         infoButton.addActionListener(e -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
 
-            // Create a custom panel for the message
-            JPanel messagePanel = new JPanel(new GridLayout(0, 1)); // Vertical layout
-            messagePanel.setBackground(new Color(0x756551)); // Match the theme
-            messagePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding around the content
+            // Create a custom undecorated dialog
+            JDialog infoDialog = new JDialog((Window) SwingUtilities.getWindowAncestor(this), Dialog.ModalityType.APPLICATION_MODAL);
+            infoDialog.setUndecorated(true); // Remove title bar and buttons
+            infoDialog.setSize(400, 300); // Set dialog size
+            infoDialog.setLocationRelativeTo(this); // Center on the parent frame
+            infoDialog.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
 
-            // Create the message label
+            // Custom panel with rounded corners
+            JPanel messagePanel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(117, 101, 81)); // Background color
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Rounded rectangle
+                    g2d.dispose();
+                }
+            };
+            messagePanel.setLayout(new BorderLayout());
+            messagePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding
+            messagePanel.setOpaque(false); // Make the panel transparent
+
+            // Create the "X" close button
+            JButton closeButton = new JButton("X");
+            closeButton.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+            closeButton.setForeground(Color.WHITE);
+            closeButton.setFocusPainted(false);
+            closeButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            closeButton.setContentAreaFilled(false);
+            closeButton.setOpaque(false);
+
+            closeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+                private final Color hoverColor = new Color(232, 202, 232); // Hover color for the button
+
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    closeButton.setForeground(hoverColor);
+                    audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
+                }
+
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    closeButton.setForeground(Color.WHITE);
+                }
+            });
+
+// Add action listener with click sound
+            closeButton.addActionListener(closeEvent -> {
+                audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
+                infoDialog.dispose(); // Close dialog on click
+            });
+
+            closeButton.addActionListener(closeEvent -> infoDialog.dispose()); // Close dialog on click
+
+            // Top panel for the close button
+            JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            topPanel.setOpaque(false);
+            topPanel.add(closeButton);
+
+            // Create the message content
             JLabel creditsLabel = new JLabel("<html><div style='text-align: center;'>"
                     + "Created by Group 28:<br>"
                     + "Anisa Lua Foroozan, Anya Ziyan Liu<br>"
@@ -165,21 +219,16 @@ public class MainMenu extends JFrame {
                     + "CS2212 Fall 2024 at Western University"
                     + "</div></html>");
             creditsLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-            creditsLabel.setForeground(new Color(255, 255, 255)); // Match the theme
-            creditsLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align
+            creditsLabel.setForeground(Color.WHITE);
+            creditsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-            messagePanel.add(creditsLabel); // Add the label to the panel
+            // Add components to the message panel
+            messagePanel.add(topPanel, BorderLayout.NORTH); // Close button at the top
+            messagePanel.add(creditsLabel, BorderLayout.CENTER); // Message content in the center
 
-            // Show the custom panel in a dialog
-            JDialog dialog = new JDialog(this, "Credits", true); // Modal dialog
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.setSize(400, 300); // Set dialog size
-            dialog.setLocationRelativeTo(this); // Center on the parent frame
-            dialog.add(messagePanel); // Add the custom panel to the dialog
-
-            dialog.setVisible(true); // Show the dialog
+            infoDialog.add(messagePanel); // Add the message panel to the dialog
+            infoDialog.setVisible(true); // Show the dialog
         });
-
 
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomRightPanel.setOpaque(false); // Transparent background
@@ -196,7 +245,6 @@ public class MainMenu extends JFrame {
         button.setFocusPainted(false);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
         button.setForeground(Color.WHITE);
-        button.setBackground(new Color(0xE8CAE8));
         button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
 
         // Add sound effects

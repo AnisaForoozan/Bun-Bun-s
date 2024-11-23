@@ -82,25 +82,4 @@ public class AudioPlayer {
             applyVolume(sfxClip, sfxVolume + masterVolume);
         }
     }
-
-    public void stopMusic() {
-        if (musicClip != null && musicClip.isRunning()) {
-            musicClip.stop();
-        }
-    }
-
-    public void stopSFX() {
-        if (sfxClip != null && sfxClip.isRunning()) {
-            sfxClip.stop();
-        }
-    }
-
-    public void close() {
-        if (musicClip != null) {
-            musicClip.close();
-        }
-        if (sfxClip != null) {
-            sfxClip.close();
-        }
-    }
 }
