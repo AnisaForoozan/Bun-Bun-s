@@ -1,10 +1,12 @@
 package com.cs2212.bunbun.system;
 
+import com.cs2212.bunbun.gameplay.Bunny;
 import javax.swing.*;
 import java.awt.*;
 
 public class PetSelection extends JPanel {
     private AudioPlayer audioPlayer;
+    private String selectedPet;
 
     public PetSelection(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
@@ -34,80 +36,64 @@ public class PetSelection extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel, gbc);
 
+        // Pet Selection Panel
+        JPanel petPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        petPanel.setOpaque(false);
+
+        String[] bunnyNames = {"Bunny1", "Bunny2", "Bunny3"};
+        for (String bunnyName : bunnyNames) {
+            JButton bunnyButton = createBunnyButton(bunnyName);
+            petPanel.add(bunnyButton);
+        }
+
+        gbc.gridy = 1;
+        gbc.insets = new Insets(20, 0, 40, 0);
+        titlePanel.add(petPanel, gbc);
+
         add(titlePanel, BorderLayout.CENTER);
-    }
 
-    private void showBackDialog(CardLayout cardLayout, JPanel mainPanel) {
-        // Get the parent JFrame
-        JFrame parentFrame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
+        // Name Panel
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        namePanel.setOpaque(false);
 
-        // Create a custom modal dialog
-        JDialog dialog = new JDialog(parentFrame, true);
-        dialog.setUndecorated(true); // Remove title bar and close/maximize/minimize buttons
-        dialog.setSize(450, 200); // Set dialog size
-        dialog.setLocationRelativeTo(this); // Center on the PetSelection panel
+        JLabel nameLabel = new JLabel("Name your pet:");
+        nameLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 24));
+        nameLabel.setForeground(Color.WHITE);
 
-        // Custom panel for the dialog content
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(new Color(117, 101, 81)); // Dialog background color
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50); // Rounded edges
-                g2d.dispose();
+        JTextField nameField = new JTextField(15);
+        nameField.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+
+        JButton confirmButton = createButton("Confirm", e -> {
+            String petName = nameField.getText().trim();
+            if (selectedPet == null) {
+                JOptionPane.showMessageDialog(this, "Please select a pet first!", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (petName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a name for your pet!", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "You have chosen " + selectedPet + " and named it " + petName + "!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                // Navigate to Bunny panel with loading screen
+                showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Bunny", petName, selectedPet);
             }
-        };
-
-        contentPanel.setOpaque(false); // Ensure transparency around the rounded corners
-        contentPanel.setLayout(new BorderLayout());
-
-        // Label for the dialog message
-        JLabel messageLabel = new JLabel("Where do you want to go?", SwingConstants.CENTER);
-        messageLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
-        messageLabel.setForeground(Color.WHITE); // White text
-        contentPanel.add(messageLabel, BorderLayout.CENTER);
-
-        // Panel for the buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setOpaque(false);
-
-        // Main Menu Button
-        JButton mainMenuButton = new JButton("Menu");
-        styleDialogButton(mainMenuButton, new Color(232, 202, 232), () -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
-            dialog.dispose(); // Close the dialog
-            showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "MainMenu"); // Show loading screen and switch to Main Menu
         });
 
-        // Slots Button
-        JButton slotsButton = new JButton("Slots");
-        styleDialogButton(slotsButton, new Color(232, 202, 232), () -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
-            dialog.dispose(); // Close the dialog
-            showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Gameplay"); // Show loading screen and switch to Gameplay
-        });
+        namePanel.add(nameLabel);
+        namePanel.add(nameField);
+        namePanel.add(confirmButton);
 
-        // Add buttons to the button panel
-        buttonPanel.add(mainMenuButton);
-        buttonPanel.add(slotsButton);
-
-        // Add the button panel to the content panel
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        // Add the content panel to the dialog
-        dialog.setContentPane(contentPanel);
-
-        // Add transparency to the dialog itself
-        dialog.setBackground(new Color(0, 0, 0, 0)); // Transparent background
-        dialog.getRootPane().setOpaque(false); // Ensure the root pane does not paint a background
-
-        // Make the dialog visible
-        dialog.setVisible(true);
+        add(namePanel, BorderLayout.SOUTH);
     }
 
-    private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel) {
+    private JButton createBunnyButton(String bunnyName) {
+        JButton bunnyButton = new JButton(bunnyName);
+        bunnyButton.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
+        bunnyButton.setPreferredSize(new Dimension(120, 120));
+        bunnyButton.setBackground(new Color(255, 228, 225));
+        bunnyButton.addActionListener(e -> selectedPet = bunnyName);
+        return bunnyButton;
+    }
+
+    private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String petType) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
             @Override
@@ -144,12 +130,77 @@ public class PetSelection extends JPanel {
         // Timer to simulate loading and then switch to the target panel
         Timer loadingTimer = new Timer(2000, e -> {
             dotTimer.stop(); // Stop the dot animation
-            cardLayout.show(mainPanel, targetPanel); // Switch to the target panel
+
+            if ("Bunny".equals(targetPanel)) {
+                Bunny bunnyPanel = new Bunny(cardLayout, mainPanel, audioPlayer, petName, petType);
+                mainPanel.add(bunnyPanel, "Bunny");
+                cardLayout.show(mainPanel, "Bunny");
+            } else {
+                cardLayout.show(mainPanel, targetPanel);
+            }
+
             mainPanel.remove(loadingScreen); // Remove the loading screen
         });
 
         loadingTimer.setRepeats(false); // Ensure the timer runs only once
         loadingTimer.start();
+    }
+
+    private void showBackDialog(CardLayout cardLayout, JPanel mainPanel) {
+        JFrame parentFrame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
+
+        JDialog dialog = new JDialog(parentFrame, true);
+        dialog.setUndecorated(true);
+        dialog.setSize(450, 200);
+        dialog.setLocationRelativeTo(this);
+
+        JPanel contentPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(117, 101, 81));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
+                g2d.dispose();
+            }
+        };
+
+        contentPanel.setOpaque(false);
+        contentPanel.setLayout(new BorderLayout());
+
+        JLabel messageLabel = new JLabel("Where do you want to go?", SwingConstants.CENTER);
+        messageLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+        messageLabel.setForeground(Color.WHITE);
+        contentPanel.add(messageLabel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        buttonPanel.setOpaque(false);
+
+        JButton mainMenuButton = new JButton("Menu");
+        styleDialogButton(mainMenuButton, new Color(232, 202, 232), () -> {
+            audioPlayer.playSFX("audio/sfx/click_sound.wav");
+            dialog.dispose();
+            showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "MainMenu", null, null);
+        });
+
+        JButton slotsButton = new JButton("Slots");
+        styleDialogButton(slotsButton, new Color(232, 202, 232), () -> {
+            audioPlayer.playSFX("audio/sfx/click_sound.wav");
+            dialog.dispose();
+            showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Gameplay", null, null);
+        });
+
+        buttonPanel.add(mainMenuButton);
+        buttonPanel.add(slotsButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setContentPane(contentPanel);
+
+        dialog.setBackground(new Color(0, 0, 0, 0));
+        dialog.getRootPane().setOpaque(false);
+
+        dialog.setVisible(true);
     }
 
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
@@ -160,13 +211,11 @@ public class PetSelection extends JPanel {
         button.setBorderPainted(false);
         button.setForeground(Color.WHITE);
 
-        // Add click sound
         button.addActionListener(e -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav");
             onClick.actionPerformed(e);
         });
 
-        // Add hover sound and color change
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             private final Color defaultColor = button.getForeground();
             private final Color hoverColor = new Color(0x756551);
@@ -188,24 +237,23 @@ public class PetSelection extends JPanel {
 
     private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-        button.setForeground(Color.WHITE); // Default foreground color
+        button.setForeground(Color.WHITE);
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
 
-        // Add hover and click effects
-        button.addActionListener(e -> onClick.run()); // Run the provided click action
+        button.addActionListener(e -> onClick.run());
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setForeground(hoverColor); // Change foreground to hover color
-                audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
+                button.setForeground(hoverColor);
+                audioPlayer.playSFX("audio/sfx/hover_sound.wav");
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setForeground(Color.WHITE); // Reset to default color on exit
+                button.setForeground(Color.WHITE);
             }
         });
     }
