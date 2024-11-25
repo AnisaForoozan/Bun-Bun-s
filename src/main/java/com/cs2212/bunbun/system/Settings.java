@@ -5,11 +5,14 @@ import java.awt.*;
 
 public class Settings extends JPanel {
     private AudioPlayer audioPlayer;
+    private Image backgroundImage;
 
     public Settings(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
 
-        setBackground(new Color(0xE8CAE8));
+        // Load the background image
+        backgroundImage = new ImageIcon(getClass().getResource("/images/dimbackground.png")).getImage();
+
         setLayout(new BorderLayout());
 
         // Back Button
@@ -58,6 +61,17 @@ public class Settings extends JPanel {
 
         centerPanel.add(slidersPanel, gbc);
         add(centerPanel, BorderLayout.CENTER);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g.create();
+
+        // Draw the background image, scaled to fit the panel
+        g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+
+        g2d.dispose();
     }
 
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {

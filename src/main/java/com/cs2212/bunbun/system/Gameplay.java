@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 
 public class Gameplay extends JPanel {
     private AudioPlayer audioPlayer;
+    private Image backgroundImage;
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
@@ -14,7 +15,9 @@ public class Gameplay extends JPanel {
         this.mainPanel = mainPanel; // Store the mainPanel instance
         this.audioPlayer = audioPlayer; // Store the AudioPlayer instance
 
-        setBackground(new Color(0xE8CAE8)); // Background color
+        // Load the background image
+        backgroundImage = new ImageIcon(getClass().getResource("/images/dimbackground.png")).getImage();
+
         setLayout(new BorderLayout());
 
         // Create a panel for the back button and add it to the top-left
@@ -38,12 +41,23 @@ public class Gameplay extends JPanel {
 
         // Add 4 slots to the panel
         for (int i = 0; i < 4; i++) {
-            SlotButton slotButton = createSlotButton("Create New Slot", i);
+            SlotButton slotButton = createSlotButton("Create New Slot!", i);
             slotsPanel.add(slotButton, gbc);
             gbc.gridy++; // Move to the next row
         }
 
         add(slotsPanel, BorderLayout.CENTER); // Add the slots panel to the center
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g.create();
+
+        // Draw the background image, scaled to fit the panel
+        g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+
+        g2d.dispose();
     }
 
     private SlotButton createSlotButton(String text, int slotIndex) {
@@ -113,7 +127,7 @@ public class Gameplay extends JPanel {
         styleDialogButton(yesButton, new Color(232, 202, 232), () -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
             dialog.dispose(); // Close the dialog
-            cardLayout.show(mainPanel, "PetSelection"); // Switch to PetSelection panel
+            showLoadingScreenAndSwitchPanel("PetSelection"); // Show loading screen before switching
         });
 
         // No button
@@ -139,6 +153,51 @@ public class Gameplay extends JPanel {
 
         // Make the dialog visible
         dialog.setVisible(true);
+    }
+
+    private void showLoadingScreenAndSwitchPanel(String targetPanel) {
+        // Create a loading screen panel
+        JPanel loadingScreen = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(Color.BLACK); // Background color
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+
+        // Add a loading label to the panel
+        JLabel loadingLabel = new JLabel("Loading", SwingConstants.CENTER);
+        loadingLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
+        loadingLabel.setForeground(Color.WHITE);
+        loadingScreen.add(loadingLabel, BorderLayout.CENTER);
+
+        // Add the loading screen to mainPanel and show it
+        mainPanel.add(loadingScreen, "Loading");
+        cardLayout.show(mainPanel, "Loading");
+
+        // Timer for animating the dots
+        Timer dotTimer = new Timer(500, null);
+        final String baseText = "Loading";
+        dotTimer.addActionListener(e -> {
+            String currentText = loadingLabel.getText();
+            if (currentText.endsWith("...")) {
+                loadingLabel.setText(baseText); // Reset to "Loading"
+            } else {
+                loadingLabel.setText(currentText + "."); // Add a dot
+            }
+        });
+        dotTimer.start();
+
+        // Timer to simulate loading and then switch to the target panel
+        Timer loadingTimer = new Timer(2000, e -> {
+            dotTimer.stop(); // Stop the dot animation
+            cardLayout.show(mainPanel, targetPanel); // Switch to the target panel
+            mainPanel.remove(loadingScreen); // Remove the loading screen
+        });
+
+        loadingTimer.setRepeats(false); // Ensure the timer runs only once
+        loadingTimer.start();
     }
 
     private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
@@ -206,11 +265,10 @@ public class Gameplay extends JPanel {
             super(text);
             setFont(new Font("Comic Sans MS", Font.BOLD, 20));
             setForeground(Color.WHITE); // Keep text color white
-            setBackground(new Color(135, 135, 135, 50));  // Base background color
             setFocusPainted(false);
-            setBorder(BorderFactory.createLineBorder(new Color(117, 101, 81), 5)); // White border
             setPreferredSize(new Dimension(400, 100)); // Set button size
             setContentAreaFilled(false); // Disable default background fill
+            setBorder(BorderFactory.createEmptyBorder()); // Remove default border
         }
 
         public void setHovered(boolean hovered) {
@@ -220,19 +278,25 @@ public class Gameplay extends JPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
-            // Draw background color
-            if (isHovered) {
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setColor(new Color(135, 135, 135, 100)); // Semi-transparent gray
-                g2d.fillRect(0, 0, getWidth(), getHeight()); // Draw hover background
-                g2d.dispose();
-            } else {
-                g.setColor(getBackground()); // Base background
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
+            Graphics2D g2d = (Graphics2D) g.create();
+
+            // Enable anti-aliasing for smooth edges
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Draw semi-transparent background
+            g2d.setColor(new Color(135, 135, 135, isHovered ? 150 : 75)); // Brighter gray on hover
+            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25); // Rounded rectangle
+
+            // Draw brown border
+            g2d.setColor(new Color(117, 101, 81)); // Brown color
+            g2d.setStroke(new BasicStroke(2)); // Border thickness
+            g2d.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 25, 25); // Rounded border
+
+            g2d.dispose();
 
             // Draw button text
-            super.paintComponent(g); // Call JButton's paintComponent to handle the text rendering
+            super.paintComponent(g);
         }
     }
+
 }
