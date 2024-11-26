@@ -8,43 +8,51 @@ import java.awt.event.ActionListener;
 public class Inventory extends JFrame implements ActionListener {
     // Instance variables
 
+    JButton exit_button;
     // Constructor
     public Inventory() {
 
         //create "Inventory" label
-        JLabel inventory = new JLabel("Inventory");
-        inventory.setHorizontalAlignment(JLabel.CENTER);
-        inventory.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); //border for the label
-        inventory.setBounds(320, 0, 150, 30);
+        JLabel inventory_label= new JLabel("Inventory");
+        inventory_label.setHorizontalAlignment(JLabel.CENTER);
+        inventory_label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); //border for the label
+        inventory_label.setBounds(320, 0, 150, 30);
 
         //create "Food" label
-        JLabel food = new JLabel("Food");
-        food.setHorizontalAlignment(JLabel.LEFT);
-        food.setBounds(20, 30, 100, 100);
+        JLabel food_label = new JLabel("Food");
+        food_label.setHorizontalAlignment(JLabel.LEFT);
+        food_label.setBounds(20, 30, 100, 100);
 
         //create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setBounds(0, 90, 800, 10);
 
         //create "Gifts" label
-        JLabel gifts = new JLabel("Gifts");
-        gifts.setHorizontalAlignment(JLabel.LEFT);
-        gifts.setBounds(20, 205, 100, 100);
+        JLabel gifts_label = new JLabel("Gifts");
+        gifts_label.setHorizontalAlignment(JLabel.LEFT);
+        gifts_label.setBounds(20, 205, 100, 100);
 
         //create new separator
         JSeparator separator1 = new JSeparator(SwingConstants.HORIZONTAL);
         separator1.setBounds(0, 266, 800, 10);
+
+        exit_button = new JButton();
+        exit_button.setBounds(340, 390, 105, 40);
+//        exit_button.addActionListener(this);
+        exit_button.setText("Exit");
+
 
         //Create new label
         this.setSize(800, 500); //set dimensions
         this.setLayout(null);
         this.setResizable(false);  // Prevent resizing of the frame
         this.setVisible(true); //make the frame visible
-        this.add(inventory); //add label
-        this.add(food);
+        this.add(inventory_label); //add label
+        this.add(food_label);
         this.add(separator);
-        this.add(gifts);
+        this.add(gifts_label);
         this.add(separator1);
+        this.add(exit_button);
         this.setVisible(true); //make frame visible
     }
 
@@ -77,7 +85,7 @@ public class Inventory extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-//        if (e.getSource()==saveGame) {
+//        if (e.getSource()==exit) {
 //
 //        }
     }
