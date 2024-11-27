@@ -1,7 +1,7 @@
 {
   "parental_password" : "bob",
-  "total_play_time" : "105",
-  "session_count" : "182",
+  "total_play_time" : "101",
+  "session_count" : "177",
   "music_volume" : "-20.0",
   "master_volume" : "-15.391022",
   "sfx_volume" : "-6.0206",
@@ -9,10 +9,10 @@
   "time_restriction_enabled" : "false",
   "gameplay_locked" : "false",
   "Slot 1" : "Snow:White Bunny",
-  "Slot 3" : "Kalo:Brown Bunny",
-  "Slot 3_health" : "0",
+  "Slot 3" : "bobby:Brown Bunny",
+  "Slot 3_health" : "20",
   "Slot 2_health" : "0",
-  "Slot 2" : "Bobby:Black Bunny",
+  "Slot 2" : "nig:Black Bunny",
   "Slot 4" : "bobby:Brown Bunny",
-  "Slot 4_health" : "11"
+  "Slot 4_health" : "20"
 }
