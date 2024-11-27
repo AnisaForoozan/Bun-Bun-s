@@ -31,7 +31,7 @@ public class PetSelection extends JPanel {
         gbc.insets = new Insets(0, 0, 40, 0);
         gbc.anchor = GridBagConstraints.CENTER;
 
-        JLabel titleLabel = new JLabel("Choose your pet");
+        JLabel titleLabel = new JLabel("Choose your pet!");
         titleLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
         titleLabel.setForeground(Color.WHITE);
         titlePanel.add(titleLabel, gbc);
@@ -40,15 +40,24 @@ public class PetSelection extends JPanel {
         JPanel petPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         petPanel.setOpaque(false);
 
-        String[] bunnyNames = {"Bunny1", "Bunny2", "Bunny3"};
-        for (String bunnyName : bunnyNames) {
-            JButton bunnyButton = createBunnyButton(bunnyName);
+        // Define bunny names and image paths
+        String[][] bunnies = {
+                {"Black Bunny", "/images/black-bunny-normal.png"},
+                {"Brown Bunny", "/images/brown-bunny-normal.png"},
+                {"White Bunny", "/images/white-bunny-normal.png"}
+        };
+
+        for (String[] bunny : bunnies) {
+            String bunnyName = bunny[0];
+            String imagePath = bunny[1];
+            JButton bunnyButton = createBunnyButton(bunnyName, imagePath);
             petPanel.add(bunnyButton);
         }
 
         gbc.gridy = 1;
         gbc.insets = new Insets(20, 0, 40, 0);
         titlePanel.add(petPanel, gbc);
+
 
         add(titlePanel, BorderLayout.CENTER);
 
@@ -84,14 +93,84 @@ public class PetSelection extends JPanel {
         add(namePanel, BorderLayout.SOUTH);
     }
 
-    private JButton createBunnyButton(String bunnyName) {
-        JButton bunnyButton = new JButton(bunnyName);
-        bunnyButton.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
-        bunnyButton.setPreferredSize(new Dimension(120, 120));
+    private JButton createBunnyButton(String bunnyName, String imagePath) {
+        JButton bunnyButton = new JButton();
+        bunnyButton.setPreferredSize(new Dimension(170, 170)); // Set initial size
         bunnyButton.setBackground(new Color(255, 228, 225));
-        bunnyButton.addActionListener(e -> selectedPet = bunnyName);
+        bunnyButton.setBorderPainted(false);
+        bunnyButton.setFocusPainted(false);
+        bunnyButton.setContentAreaFilled(false);
+
+        // Load and set the initial icon
+        ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
+        Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        ImageIcon normalIcon = new ImageIcon(scaledImage);
+
+        // Store the hover and click icons
+        Image scaledImageHover = icon.getImage().getScaledInstance(165, 165, Image.SCALE_SMOOTH);
+        ImageIcon hoverIcon = new ImageIcon(scaledImageHover);
+
+        Image scaledImageClick = icon.getImage().getScaledInstance(165, 165, Image.SCALE_SMOOTH);
+        ImageIcon clickedIcon = new ImageIcon(scaledImageClick);
+
+        // Set the initial icon
+        bunnyButton.setIcon(normalIcon);
+
+        // Track the clicked state for this button
+        bunnyButton.putClientProperty("isClicked", false);
+
+        // Add hover, click effects, and toggling logic
+        bunnyButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                if (!(boolean) bunnyButton.getClientProperty("isClicked")) { // Only apply hover effect if not clicked
+                    bunnyButton.setIcon(hoverIcon);
+                    audioPlayer.playSFX("audio/sfx/hover_sound.wav");
+                }
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                if (!(boolean) bunnyButton.getClientProperty("isClicked")) { // Only revert to normal if not clicked
+                    bunnyButton.setIcon(normalIcon);
+                }
+            }
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                boolean isCurrentlyClicked = (boolean) bunnyButton.getClientProperty("isClicked");
+
+                // Reset all buttons
+                for (Component comp : bunnyButton.getParent().getComponents()) {
+                    if (comp instanceof JButton) {
+                        JButton otherButton = (JButton) comp;
+                        otherButton.setIcon(new ImageIcon(new ImageIcon(
+                                getClass().getResource((String) otherButton.getClientProperty("imagePath"))
+                        ).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH))); // Reset to normal size
+                        otherButton.putClientProperty("isClicked", false); // Reset click state
+                    }
+                }
+
+                if (!isCurrentlyClicked) {
+                    bunnyButton.setIcon(clickedIcon); // Enlarge the clicked button
+                    bunnyButton.putClientProperty("isClicked", true);
+                    selectedPet = bunnyName; // Set the selected pet
+                    audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
+                } else {
+                    // If already clicked, revert to normal size
+                    bunnyButton.setIcon(normalIcon);
+                    bunnyButton.putClientProperty("isClicked", false);
+                    selectedPet = null; // Deselect the pet
+                }
+            }
+        });
+
+        // Store the image path as a client property for each button
+        bunnyButton.putClientProperty("imagePath", imagePath);
+
         return bunnyButton;
     }
+
 
     private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String petType) {
         // Create a loading screen panel
