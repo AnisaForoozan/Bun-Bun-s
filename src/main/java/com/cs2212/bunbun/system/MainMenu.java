@@ -27,7 +27,7 @@ public class MainMenu extends JFrame {
         // Add the Main Menu, Gameplay, and other panels
         mainPanel.add(createMainMenuPanel(), "MainMenu");
         mainPanel.add(new PetSelection(cardLayout, mainPanel, audioPlayer), "PetSelection");
-        mainPanel.add(new Gameplay(cardLayout, mainPanel, audioPlayer), "Gameplay");
+        mainPanel.add(new LoadGame(cardLayout, mainPanel, audioPlayer), "LoadGame");
         mainPanel.add(new Tutorial(cardLayout, mainPanel, audioPlayer), "Tutorial");
         mainPanel.add(new ParentalControls(cardLayout, mainPanel, audioPlayer), "ParentalControls");
         mainPanel.add(new Settings(cardLayout, mainPanel, audioPlayer), "Settings");
@@ -114,7 +114,7 @@ public class MainMenu extends JFrame {
 
 
         // Create buttons
-        JButton newGameButton = createMenuButton("NEW GAME", "Gameplay");
+        JButton newGameButton = createMenuButton("NEW GAME", "LoadGame");
         JButton loadGameButton = createDisabledButton("LOAD GAME");
         JButton tutorialButton = createMenuButton("TUTORIAL", "Tutorial");
         JButton settingsButton = createMenuButton("SETTINGS", "Settings");

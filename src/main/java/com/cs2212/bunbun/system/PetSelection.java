@@ -1,6 +1,5 @@
 package com.cs2212.bunbun.system;
 
-import com.cs2212.bunbun.gameplay.Bunny;
 import javax.swing.*;
 import java.awt.*;
 
@@ -211,7 +210,7 @@ public class PetSelection extends JPanel {
             dotTimer.stop(); // Stop the dot animation
 
             if ("Bunny".equals(targetPanel)) {
-                Bunny bunnyPanel = new Bunny(cardLayout, mainPanel, audioPlayer, petName, petType);
+                Gameplay bunnyPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, petName, petType);
                 mainPanel.add(bunnyPanel, "Bunny");
                 cardLayout.show(mainPanel, "Bunny");
             } else {
@@ -267,7 +266,7 @@ public class PetSelection extends JPanel {
         styleDialogButton(slotsButton, new Color(232, 202, 232), () -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav");
             dialog.dispose();
-            showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Gameplay", null, null);
+            showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "LoadGame", null, null);
         });
 
         buttonPanel.add(mainMenuButton);
