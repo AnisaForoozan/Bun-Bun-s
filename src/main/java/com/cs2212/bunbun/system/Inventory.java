@@ -1,4 +1,4 @@
-package com.cs2212.bunbun.gameplay;
+package com.cs2212.bunbun.system;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,11 +12,17 @@ public class Inventory extends JFrame implements ActionListener {
     // Constructor
     public Inventory() {
 
-        //create "Inventory" label
-        JLabel inventory_label= new JLabel("Inventory");
-        inventory_label.setHorizontalAlignment(JLabel.CENTER);
-        inventory_label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); //border for the label
-        inventory_label.setBounds(320, 0, 150, 30);
+        //create "Inventory" button
+        JButton inventory_button = new JButton("Inventory");
+        inventory_button.setHorizontalAlignment(JLabel.CENTER);
+        inventory_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); //border for the label
+        inventory_button.setBounds(290, 0, 100, 30);
+
+        //create "Shop" button
+        JButton shop_button = new JButton("Shop");
+        shop_button.setHorizontalAlignment(JLabel.CENTER);
+        shop_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); //border for the label
+        shop_button.setBounds(430, 0, 100, 30);
 
         //create "Food" label
         JLabel food_label = new JLabel("Food");
@@ -47,7 +53,8 @@ public class Inventory extends JFrame implements ActionListener {
         this.setLayout(null);
         this.setResizable(false);  // Prevent resizing of the frame
         this.setVisible(true); //make the frame visible
-        this.add(inventory_label); //add label
+        this.add(inventory_button); //add inventory button
+        this.add(shop_button);
         this.add(food_label);
         this.add(separator);
         this.add(gifts_label);
@@ -56,31 +63,9 @@ public class Inventory extends JFrame implements ActionListener {
         this.setVisible(true); //make frame visible
     }
 
-        // Initialize the JFrame properties inside the constructor
-//        JLabel inventory = new JLabel("Inventory"); //create a label
-//        inventory.setPreferredSize(new Dimension(20, 40));
-//        inventory.setHorizontalAlignment(JLabel.CENTER);
-//        inventory.setVerticalAlignment(JLabel.CENTER);
-//        inventory.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); //add some padding
-//        inventory.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//
-//
-//        // Create new JPanel to wrap the label
-//        JPanel panel = new JPanel();
-//        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
-//
-//        // Create new frame
-//        this.setTitle("Bun Bun's"); // Set the title of the frame
-//        this.setResizable(false);  // Prevent resizing of the frame
-//        this.setSize(800, 500); // Set the size of the frame
-//        this.setLayout(new BorderLayout()); //new borderlayout
-//        this.add(inventory, BorderLayout.NORTH); //set inventory label
-//        this.setVisible(true); // Make the frame visible
-//        this.setLayout(new FlowLayout());
-
     public static void main(String[] args) {
         // Create and display the Settings frame
-        new com.cs2212.bunbun.gameplay.Inventory();
+        new Inventory();
     }
 
     @Override
