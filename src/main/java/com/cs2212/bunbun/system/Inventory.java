@@ -12,7 +12,7 @@ public class Inventory extends JPanel implements ActionListener {
     private DefaultListModel<Item> giftListModel; // Model for gift items
     private JList<Item> foodList; // JList for food items
     private JList<Item> giftList; // JList for gift items
-    private JLabel capacityLabel; // Label to show inventory capacity
+    private JLabel capacityLabel; // Label to show inventory capacityg
 
     private int totalItems; // Track total items in inventory
     private static final int MAX_CAPACITY = 50; // Maximum inventory capacity
@@ -51,6 +51,10 @@ public class Inventory extends JPanel implements ActionListener {
         foodListModel = new DefaultListModel<>();
         foodList = new JList<>(foodListModel);
         foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Set the layout to FlowLayout to display items horizontally
+        foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        foodList.setVisibleRowCount(1); // Only show one row at a time horizontally
         foodList.setBounds(20, 100, 750, 50);
 
         // Create new separator
@@ -70,6 +74,10 @@ public class Inventory extends JPanel implements ActionListener {
         giftListModel = new DefaultListModel<>();
         giftList = new JList<>(giftListModel);
         giftList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Set the layout to FlowLayout to display items horizontally
+        giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        giftList.setVisibleRowCount(1); // Only show one row at a time horizontally
         giftList.setBounds(20, 300, 750, 50);
 
         // Create confirm button

@@ -27,7 +27,7 @@ public class FoodItem {
         return image;
     }
 
-    // Setters (if needed)
+    // Setters
     public void setName(String name) {
         this.name = name;
     }
