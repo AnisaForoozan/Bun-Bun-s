@@ -1,14 +1,17 @@
 package com.cs2212.bunbun.system;
 
+import com.cs2212.bunbun.gameplay.GameSaveManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Map;
 
 public class LoadGame extends JPanel {
     private AudioPlayer audioPlayer;
     private Image backgroundImage;
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private SlotButton[] slotButtons;
 
     public LoadGame(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.cardLayout = cardLayout; // Store the CardLayout instance
@@ -39,12 +42,16 @@ public class LoadGame extends JPanel {
         gbc.insets = new Insets(20, 0, 20, 0); // Spacing between slots
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Add 4 slots to the panel
+        // Initialize slot buttons
+        slotButtons = new SlotButton[4];
         for (int i = 0; i < 4; i++) {
-            SlotButton slotButton = createSlotButton("Create New Slot!", i);
-            slotsPanel.add(slotButton, gbc);
+            slotButtons[i] = createSlotButton("Choose your slot", i);
+            slotsPanel.add(slotButtons[i], gbc);
             gbc.gridy++; // Move to the next row
         }
+
+        // Update slot text based on saved data
+        updateSlots();
 
         add(slotsPanel, BorderLayout.CENTER); // Add the slots panel to the center
     }
@@ -80,23 +87,24 @@ public class LoadGame extends JPanel {
         // Add click sound and action
         slotButton.addActionListener(e -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav");
-            handleSlotClick(slotIndex, e);
+            handleSlotClick(slotIndex);
         });
 
         return slotButton;
     }
 
-    private void handleSlotClick(int slotIndex, ActionEvent e) {
-        // Get the parent JFrame
+    private void handleSlotClick(int slotIndex) {
+        String slotKey = "Slot " + (slotIndex + 1); // Determine the slot key based on index
+        Map<String, String> saveData = GameSaveManager.loadSaveData();
+
         JFrame parentFrame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
 
         // Create a custom modal dialog
         JDialog dialog = new JDialog(parentFrame, true);
-        dialog.setUndecorated(true); // Remove title bar and close/maximize/minimize buttons
-        dialog.setSize(450, 200); // Set dialog size
-        dialog.setLocationRelativeTo(this); // Center on the Gameplay panel
+        dialog.setUndecorated(true);
+        dialog.setSize(450, 200);
+        dialog.setLocationRelativeTo(this);
 
-        // Custom panel for the dialog content
         JPanel contentPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -109,51 +117,90 @@ public class LoadGame extends JPanel {
             }
         };
 
-        contentPanel.setOpaque(false); // Ensure transparency around the rounded corners
+        contentPanel.setOpaque(false);
         contentPanel.setLayout(new BorderLayout());
 
-        // Label for the confirmation message
-        JLabel messageLabel = new JLabel("Are you sure?", SwingConstants.CENTER);
+        JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
         messageLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
-        messageLabel.setForeground(Color.WHITE); // White text
+        messageLabel.setForeground(Color.WHITE);
         contentPanel.add(messageLabel, BorderLayout.CENTER);
 
-        // Panel for the buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setOpaque(false);
 
-        // Yes button
-        JButton yesButton = new JButton("Yes");
-        styleDialogButton(yesButton, new Color(232, 202, 232), () -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
-            dialog.dispose(); // Close the dialog
-            showLoadingScreenAndSwitchPanel("PetSelection"); // Show loading screen before switching
-        });
+        // Check if the slot is already taken
+        if (saveData.containsKey(slotKey)) {
+            messageLabel.setText("This slot is already taken.");
 
-        // No button
-        JButton noButton = new JButton("No");
-        styleDialogButton(noButton, new Color(232, 202, 232), () -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
-            dialog.dispose(); // Close the dialog
-        });
+            // Add OK button for taken slots
+            JButton okButton = new JButton("OK");
+            styleDialogButton(okButton, new Color(232, 202, 232), dialog::dispose);
+            buttonPanel.add(okButton);
 
-        // Add buttons to the button panel
-        buttonPanel.add(yesButton);
-        buttonPanel.add(noButton);
+        } else {
+            messageLabel.setText("Are you sure?");
 
-        // Add the button panel to the content panel
+            // Add Yes and No buttons for free slots
+            JButton yesButton = new JButton("YES");
+            styleDialogButton(yesButton, new Color(232, 202, 232), () -> {
+                dialog.dispose();
+
+                // Pass the selected slot to PetSelection
+                for (Component comp : mainPanel.getComponents()) {
+                    if (comp instanceof PetSelection) {
+                        ((PetSelection) comp).setSelectedSlot(slotKey); // Pass slotKey to PetSelection
+                        break;
+                    }
+                }
+
+                showLoadingScreenAndSwitchPanel("PetSelection"); // Navigate to PetSelection
+            });
+
+            JButton noButton = new JButton("NO");
+            styleDialogButton(noButton, new Color(232, 202, 232), dialog::dispose);
+
+            buttonPanel.add(yesButton);
+            buttonPanel.add(noButton);
+        }
+
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add the content panel to the dialog
         dialog.setContentPane(contentPanel);
+        dialog.setBackground(new Color(0, 0, 0, 0));
+        dialog.getRootPane().setOpaque(false);
 
-        // Add transparency to the dialog itself
-        dialog.setBackground(new Color(0, 0, 0, 0)); // Transparent background
-        dialog.getRootPane().setOpaque(false); // Ensure the root pane does not paint a background
-
-        // Make the dialog visible
         dialog.setVisible(true);
     }
+
+
+    private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
+        button.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+        button.setForeground(Color.WHITE);
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+
+        // Add click effect
+        button.addActionListener(e -> {
+            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
+            onClick.run();
+        });
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setForeground(hoverColor);
+                audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setForeground(Color.WHITE);
+            }
+        });
+    }
+
 
     private void showLoadingScreenAndSwitchPanel(String targetPanel) {
         // Create a loading screen panel
@@ -200,28 +247,20 @@ public class LoadGame extends JPanel {
         loadingTimer.start();
     }
 
-    private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
-        button.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-        button.setForeground(Color.WHITE); // Default foreground color
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
+    public void updateSlots() {
+        Map<String, String> saveData = GameSaveManager.loadSaveData();
 
-        // Add hover and click effects
-        button.addActionListener(e -> onClick.run()); // Run the provided click action
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setForeground(hoverColor); // Change foreground to hover color
-                audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
+        for (int i = 0; i < slotButtons.length; i++) {
+            String slotKey = "Slot " + (i + 1);
+            if (saveData.containsKey(slotKey)) {
+                slotButtons[i].setText(slotKey + ": " + saveData.get(slotKey));
+            } else {
+                slotButtons[i].setText("Choose your slot");
             }
+        }
 
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setForeground(Color.WHITE); // Reset to default color on exit
-            }
-        });
+        revalidate(); // Refresh the UI
+        repaint();
     }
 
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
@@ -276,6 +315,8 @@ public class LoadGame extends JPanel {
             repaint(); // Trigger repaint to update hover effect
         }
 
+
+
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g.create();
@@ -298,5 +339,4 @@ public class LoadGame extends JPanel {
             super.paintComponent(g);
         }
     }
-
 }
