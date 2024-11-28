@@ -1,8 +1,10 @@
 package com.cs2212.bunbun.system;
+import com.cs2212.bunbun.gameplay.GameSaveManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.util.Map;
 
 public class MainMenu extends JFrame {
     private CardLayout cardLayout;
@@ -37,6 +39,19 @@ public class MainMenu extends JFrame {
 
         // Show the Main Menu initially
         cardLayout.show(mainPanel, "MainMenu");
+    }
+
+
+    private void loadAndDisplaySaveData() {
+        // Load save data
+        Map<String, String> saveData = GameSaveManager.loadSaveData();
+        System.out.println("Loaded Save Data:");
+
+        // Print and use save data
+        for (Map.Entry<String, String> entry : saveData.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+            // Add your code here to update the UI with save data, if needed
+        }
     }
 
     private JPanel createMainMenuPanel() {

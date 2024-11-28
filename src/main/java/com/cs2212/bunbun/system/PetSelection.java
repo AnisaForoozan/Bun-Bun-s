@@ -1,11 +1,16 @@
 package com.cs2212.bunbun.system;
+import com.cs2212.bunbun.gameplay.GameSaveManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
+
 
 public class PetSelection extends JPanel {
     private AudioPlayer audioPlayer;
     private String selectedPet;
+    private JLabel hoverTextLabel; // Class-level variable for hover text
+    private String selectedSlot;
 
     public PetSelection(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
@@ -39,24 +44,48 @@ public class PetSelection extends JPanel {
         JPanel petPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         petPanel.setOpaque(false);
 
-        // Define bunny names and image paths
+        // Define bunny names, image paths, and descriptions
         String[][] bunnies = {
-                {"Black Bunny", "/images/black-bunny-normal.png"},
-                {"Brown Bunny", "/images/brown-bunny-normal.png"},
-                {"White Bunny", "/images/white-bunny-normal.png"}
+                {"Black Bunny", "/images/black-bunny-normal.png",
+                        "<html><div style='text-align:center;'>- This is the Holland Lop black bunny,<br>" +
+                                "this big back is always ready to eat and luckily<br>has a strong immune system!" +
+                                "<br>- Gets hungry 25% faster<br>- Health points decrease is 25% slower</div></html>"},
+                {"Brown Bunny", "/images/brown-bunny-normal.png",
+                        "<html><div style='text-align:center;'>- This is the English Lop brown bunny,<br>" +
+                                "he’s the ultimate nap champion. This skinny legend<br>stays full faster and longer!" +
+                                "<br>- Gets tired 25% faster<br>- Fullness value boost by 15%" +
+                                "<br>- Hunger points decrease is 15% slower</div></html>"},
+                {"White Bunny", "/images/white-bunny-normal.png",
+                        "<html><div style='text-align:center;'>- This is the Blanc De Hotot white bunny,<br>" +
+                                "whose happier and is the life of the bunny party<br>even though he gets sick faster." +
+                                "<br>- Health decreases 25% faster<br>- Happiness value boost by 15%</div></html>"}
         };
+
 
         for (String[] bunny : bunnies) {
             String bunnyName = bunny[0];
             String imagePath = bunny[1];
-            JButton bunnyButton = createBunnyButton(bunnyName, imagePath);
+            String bunnyDescription = bunny[2];
+            JButton bunnyButton = createBunnyButton(bunnyName, imagePath, bunnyDescription);
             petPanel.add(bunnyButton);
         }
 
         gbc.gridy = 1;
-        gbc.insets = new Insets(20, 0, 40, 0);
+        gbc.insets = new Insets(20, 0, 20, 0);
         titlePanel.add(petPanel, gbc);
 
+        // Hover text area (initialized as a class-level variable)
+        // Hover text area with a fixed height
+        hoverTextLabel = new JLabel("Hover over a pet to see more details.");
+        hoverTextLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+        hoverTextLabel.setForeground(Color.WHITE);
+        hoverTextLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        hoverTextLabel.setVerticalAlignment(SwingConstants.TOP); // Align text at the top
+        hoverTextLabel.setPreferredSize(new Dimension(400, 200)); // Fixed width and height
+
+
+        gbc.gridy = 2; // Position below the pet buttons
+        titlePanel.add(hoverTextLabel, gbc);
 
         add(titlePanel, BorderLayout.CENTER);
 
@@ -77,13 +106,29 @@ public class PetSelection extends JPanel {
                 JOptionPane.showMessageDialog(this, "Please select a pet first!", "Error", JOptionPane.ERROR_MESSAGE);
             } else if (petName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter a name for your pet!", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (selectedSlot == null) {
+                JOptionPane.showMessageDialog(this, "No slot selected! Please go back and select a slot.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
+                // Save the data to the selected slot
+                GameSaveManager.saveData(selectedSlot, petName);
+
+                // Update slots in the LoadGame screen
+                for (Component comp : mainPanel.getComponents()) {
+                    if (comp instanceof LoadGame) {
+                        ((LoadGame) comp).updateSlots();
+                        break;
+                    }
+                }
+
                 JOptionPane.showMessageDialog(this, "You have chosen " + selectedPet + " and named it " + petName + "!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
                 // Navigate to Bunny panel with loading screen
                 showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Bunny", petName, selectedPet);
             }
         });
+
+
+
 
         namePanel.add(nameLabel);
         namePanel.add(nameField);
@@ -92,9 +137,14 @@ public class PetSelection extends JPanel {
         add(namePanel, BorderLayout.SOUTH);
     }
 
-    private JButton createBunnyButton(String bunnyName, String imagePath) {
+    public void setSelectedSlot(String selectedSlot) {
+        this.selectedSlot = selectedSlot;
+    }
+
+
+    private JButton createBunnyButton(String bunnyName, String imagePath, String bunnyDescription) {
         JButton bunnyButton = new JButton();
-        bunnyButton.setPreferredSize(new Dimension(170, 170)); // Set initial size
+        bunnyButton.setPreferredSize(new Dimension(180, 180)); // Set initial size
         bunnyButton.setBackground(new Color(255, 228, 225));
         bunnyButton.setBorderPainted(false);
         bunnyButton.setFocusPainted(false);
@@ -109,23 +159,28 @@ public class PetSelection extends JPanel {
         Image scaledImageHover = icon.getImage().getScaledInstance(165, 165, Image.SCALE_SMOOTH);
         ImageIcon hoverIcon = new ImageIcon(scaledImageHover);
 
-        Image scaledImageClick = icon.getImage().getScaledInstance(165, 165, Image.SCALE_SMOOTH);
+        Image scaledImageClick = icon.getImage().getScaledInstance(175, 175, Image.SCALE_SMOOTH);
         ImageIcon clickedIcon = new ImageIcon(scaledImageClick);
 
         // Set the initial icon
         bunnyButton.setIcon(normalIcon);
 
-        // Track the clicked state for this button
+        // Track the clicked and hovered state for this button
         bunnyButton.putClientProperty("isClicked", false);
+        bunnyButton.putClientProperty("isHovered", false);
 
         // Add hover, click effects, and toggling logic
         bunnyButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                if (!(boolean) bunnyButton.getClientProperty("isClicked")) { // Only apply hover effect if not clicked
+                boolean isHovered = (boolean) bunnyButton.getClientProperty("isHovered");
+                if (!(boolean) bunnyButton.getClientProperty("isClicked") && !isHovered) { // Only apply hover effect if not clicked
                     bunnyButton.setIcon(hoverIcon);
+                    bunnyButton.putClientProperty("isHovered", true);
                     audioPlayer.playSFX("audio/sfx/hover_sound.wav");
                 }
+                // Update hover text
+                hoverTextLabel.setText(bunnyDescription);
             }
 
             @Override
@@ -133,6 +188,9 @@ public class PetSelection extends JPanel {
                 if (!(boolean) bunnyButton.getClientProperty("isClicked")) { // Only revert to normal if not clicked
                     bunnyButton.setIcon(normalIcon);
                 }
+                bunnyButton.putClientProperty("isHovered", false);
+                // Reset hover text
+                hoverTextLabel.setText("Hover over a pet to see more details.");
             }
 
             @Override
@@ -170,8 +228,7 @@ public class PetSelection extends JPanel {
         return bunnyButton;
     }
 
-
-    private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String petType) {
+private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String petType) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
             @Override
