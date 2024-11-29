@@ -118,7 +118,7 @@ public class MainMenu extends JFrame {
                 super.paintComponent(g);
             }
         };
-        buttonPanel.setLayout(new GridLayout(0, 1, 0, 40)); // Stack buttons vertically with 40px spacing
+        buttonPanel.setLayout(new GridLayout(0, 1, 0, 60)); // Stack buttons vertically with 40px spacing
         buttonPanel.setOpaque(false); // Transparent background to allow custom painting
 
         // Add padding inside the panel and a border around it
@@ -129,7 +129,7 @@ public class MainMenu extends JFrame {
 
 
         // Create buttons
-        JButton newGameButton = createMenuButton("NEW GAME", "LoadGame");
+        JButton newGameButton = createMenuButton("PLAY", "LoadGame");
         JButton loadGameButton = createDisabledButton("LOAD GAME");
         JButton tutorialButton = createMenuButton("TUTORIAL", "Tutorial");
         JButton settingsButton = createMenuButton("SETTINGS", "Settings");
@@ -138,7 +138,7 @@ public class MainMenu extends JFrame {
 
         // Add buttons to the button panel
         buttonPanel.add(newGameButton);
-        buttonPanel.add(loadGameButton);
+        //buttonPanel.add(loadGameButton);
         buttonPanel.add(tutorialButton);
         buttonPanel.add(parentalControlsButton);
         buttonPanel.add(settingsButton);
@@ -351,7 +351,6 @@ public class MainMenu extends JFrame {
 
         return button;
     }
-
 
     private void showLoadingScreenAndSwitchPanel(String targetPanel) {
         // Create a loading screen panel
