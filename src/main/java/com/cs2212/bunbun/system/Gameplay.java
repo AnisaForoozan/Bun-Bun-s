@@ -2,13 +2,20 @@ package com.cs2212.bunbun.system;
 
 import com.cs2212.bunbun.system.AudioPlayer;
 
+import com.cs2212.bunbun.gameplay.GameSaveManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.DayOfWeek;
+import java.util.Map;
+
 
 public class Gameplay extends JPanel {
     private AudioPlayer audioPlayer;
     private PixelArtProgressBar sleepBar, happinessBar, hungerBar, healthBar, pointsBar;
+    private Timer gameTimer;
+    private int elapsedTime = 0;
 
     public Gameplay(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer, String petName, String petType) {
         this.audioPlayer = audioPlayer;
@@ -17,8 +24,11 @@ public class Gameplay extends JPanel {
         setLayout(null);
 
         // Back button
-        JButton backButton = createButton("<<", 20, 20, e -> cardLayout.show(mainPanel, "MainMenu"));
-        add(backButton);
+        JButton backButton = createButton("<<", 20, 20, e -> {
+            gameTimer.stop();
+            cardLayout.show(mainPanel, "MainMenu");
+        });
+
 
         // Progress Bars
         sleepBar = createProgressBar(20, 80, "Sleep", 0);
@@ -60,7 +70,33 @@ public class Gameplay extends JPanel {
         new Thread(() -> autoAnimateStat(sleepBar)).start();
         new Thread(() -> autoAnimateStat(happinessBar)).start();
         new Thread(() -> autoAnimateStat(hungerBar)).start();
+
+        // Start the game timer
+        gameTimer = new Timer(60000, e -> { // Fires every 60 seconds
+            elapsedTime++;
+            enforceTimeLimit(cardLayout, mainPanel);
+        });
+        gameTimer.start();
     }
+
+    private void enforceTimeLimit(CardLayout cardLayout, JPanel mainPanel) {
+        Map<String, Integer> timeLimits = GameSaveManager.getTimeLimits();
+        DayOfWeek today = LocalDate.now().getDayOfWeek();
+        String todayKey = today.toString().substring(0, 1).toUpperCase() + today.toString().substring(1).toLowerCase();
+        int todayLimit = timeLimits.getOrDefault(todayKey, 0); // Get today's limit in minutes
+
+        if (elapsedTime >= todayLimit) {
+            JOptionPane.showMessageDialog(this, "Your time limit is reached.", "Time Limit", JOptionPane.WARNING_MESSAGE);
+            gameTimer.stop();
+
+            // Lock gameplay and save
+            GameSaveManager.setGameplayLocked(true);
+
+            // Go back to Main Menu
+            cardLayout.show(mainPanel, "MainMenu");
+        }
+    }
+
 
     private String getImagePathForPet(String petType) {
         switch (petType) {

@@ -11,9 +11,10 @@ import java.util.Map;
 public class ParentalControls extends JPanel {
     private AudioPlayer audioPlayer;
     private Image backgroundImage;
-
     private CardLayout layout;
     private JPanel contentPanel;
+    private JComboBox<String>[] units;
+    private JSpinner[] spinners;
 
     public ParentalControls(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
@@ -45,6 +46,7 @@ public class ParentalControls extends JPanel {
         contentPanel.add(createEnterPasswordPanel(), "Layout1");
         contentPanel.add(createPasswordSetupPanel(), "Layout2");
         contentPanel.add(createProtectedContentPanel(), "Layout3");
+        contentPanel.add(createTimeLimitsPanel(), "Layout4");
 
         // Start with Layout 1
         layout.show(contentPanel, "Layout1");
@@ -157,13 +159,124 @@ public class ParentalControls extends JPanel {
     }
 
     private JPanel createProtectedContentPanel() {
-        return createIconButtonPanel(
+        JPanel panel = createIconButtonPanel(
                 List.of("Time Limits", "Statistics", "Revive Pet"),
                 List.of("/images/hourglass.png", "/images/chart.png", "/images/bunny.png")
         );
 
+        // Add Back button to return to Layout1
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.insets = new Insets(10, 0, 10, 0);
 
+        JButton backButton = createCustomButton("Back", e -> layout.show(contentPanel, "Layout1"));
+        panel.add(backButton, gbc);
+
+        // Add Time Limits button functionality
+        JButton timeLimitsButton = (JButton) ((JPanel) panel.getComponent(0)).getComponent(1); // Assumes "Time Limits" is the first button
+        timeLimitsButton.addActionListener(e -> layout.show(contentPanel, "Layout4")); // Switch to Layout4
+
+        return panel;
     }
+
+    private JPanel createTimeLimitsPanel() {
+        String[] days = {"Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
+        units = new JComboBox[days.length];
+        spinners = new JSpinner[days.length];
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.insets = new Insets(10, 0, 10, 0);
+
+        // Title or instruction
+        JLabel titleLabel = new JLabel("Set Time Limits");
+        titleLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+        titleLabel.setForeground(Color.WHITE);
+        panel.add(titleLabel, gbc);
+
+        for (int i = 0; i < days.length; i++) {
+            int index = i;
+
+            // Create a custom panel with rounded edges
+            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT)) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2d = (Graphics2D) g;
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    g2d.setColor(new Color(135, 135, 135, 50)); // Semi-transparent gray
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20); // Rounded rectangle
+
+                    g2d.setColor(new Color(117, 101, 81)); // Border color
+                    g2d.setStroke(new BasicStroke(2));
+                    g2d.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20); // Border
+                }
+            };
+            row.setOpaque(false);
+
+            // Add day label
+            JLabel dayLabel = new JLabel(days[i]);
+            dayLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            dayLabel.setForeground(Color.WHITE);
+            row.add(dayLabel);
+
+            // Add spinner
+            spinners[i] = new JSpinner(new SpinnerNumberModel(3, 1, 24, 1));
+            spinners[i].setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            spinners[i].setOpaque(false); // Make transparent
+            ((JSpinner.DefaultEditor) spinners[i].getEditor()).getTextField().setOpaque(false); // Spinner editor
+            row.add(spinners[i]);
+
+            // Add combo box (Hrs/Min)
+            units[i] = new JComboBox<>(new String[]{"Hrs", "Min"});
+            units[i].setFont(new Font("Comic Sans MS", Font.PLAIN, 18));
+            units[i].setOpaque(false); // Transparent background
+            units[i].addActionListener(e -> {
+                boolean isHours = "Hrs".equals(units[index].getSelectedItem());
+                spinners[index].setModel(new SpinnerNumberModel(1, 1, isHours ? 24 : 60, 1));
+            });
+            row.add(units[i]);
+
+            panel.add(row, gbc);
+        }
+
+
+        // Add toggle switch for enabling/disabling restrictions
+        JPanel toggleRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        toggleRow.setOpaque(false);
+
+        JLabel toggleLabel = new JLabel("Enable Time Restrictions");
+        toggleLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        toggleLabel.setForeground(Color.WHITE);
+        toggleRow.add(toggleLabel);
+
+        JToggleButton toggleButton = new JToggleButton("OFF");
+        toggleButton.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+
+        // Add the ActionListener for enabling/disabling restrictions
+        toggleButton.addActionListener(e -> {
+            boolean isEnabled = toggleButton.isSelected();
+            toggleButton.setText(isEnabled ? "ON" : "OFF");
+            GameSaveManager.setGameplayLocked(isEnabled); // Update the gameplay_locked state
+        });
+
+        toggleRow.add(toggleButton);
+        panel.add(toggleRow, gbc);
+
+        // Add Back button
+        JButton backButton = createCustomButton("Back", e -> layout.show(contentPanel, "Layout3"));
+        panel.add(backButton, gbc);
+
+        return panel;
+    }
+
+
 
     private JButton createCustomButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text) {

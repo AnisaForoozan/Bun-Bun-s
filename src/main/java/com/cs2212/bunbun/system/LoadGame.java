@@ -121,6 +121,12 @@ public class LoadGame extends JPanel {
         };
         contentPanel.setOpaque(false);
 
+        if (GameSaveManager.isGameplayLocked()) {
+            JOptionPane.showMessageDialog(this, "Gameplay is currently locked due to time restrictions.",
+                    "Access Denied", JOptionPane.WARNING_MESSAGE);
+            return; // Prevent further actions
+        }
+
         if (saveData.containsKey(slotKey)) {
             dialog.setSize(450, 200); // Set the dialog size
 

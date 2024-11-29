@@ -109,6 +109,12 @@ public class PetSelection extends JPanel {
         nameField.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
 
         JButton confirmButton = createButton("Confirm", e -> {
+            if (GameSaveManager.isGameplayLocked()) {
+                JOptionPane.showMessageDialog(this, "Gameplay is currently locked due to time restrictions.",
+                        "Access Denied", JOptionPane.WARNING_MESSAGE);
+                return; // Prevent further actions
+            }
+
             String petName = nameField.getText().trim();
             if (selectedPet == null) {
                 JOptionPane.showMessageDialog(this, "Please select a pet first!", "Error", JOptionPane.ERROR_MESSAGE);

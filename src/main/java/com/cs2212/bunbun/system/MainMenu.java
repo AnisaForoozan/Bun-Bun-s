@@ -407,6 +407,11 @@ public class MainMenu extends JFrame {
         loadingTimer.start();
     }
 
+    public void showTimeLimitReached() {
+        JOptionPane.showMessageDialog(this, "Your time limit is reached.", "Time Limit", JOptionPane.WARNING_MESSAGE);
+        // Disable Gameplay button or functionality
+    }
+
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
