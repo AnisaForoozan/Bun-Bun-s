@@ -61,13 +61,15 @@ public class LoadGame extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g.create();
 
-        // Draw the background image, scaled to fit the panel
-        g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-
-        g2d.dispose();
+        if (backgroundImage != null) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            g2d.dispose();
+        }
     }
+
 
     private SlotButton createSlotButton(String text, int slotIndex) {
         SlotButton slotButton = new SlotButton(text);
@@ -141,6 +143,7 @@ public class LoadGame extends JPanel {
             styleDialogButton(playButton, new Color(232, 202, 232), () -> {
                 dialog.dispose();
                 navigateToGameplay(slotKey);
+                showLoadingScreenAndSwitchPanel("Gameplay");
             });
 
             JButton renameButton = new JButton("Rename");
