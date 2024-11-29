@@ -109,8 +109,11 @@ public class PetSelection extends JPanel {
             } else if (selectedSlot == null) {
                 JOptionPane.showMessageDialog(this, "No slot selected! Please go back and select a slot.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                // Save the data to the selected slot
-                GameSaveManager.saveData(selectedSlot, petName);
+                // Save the data to the selected slot with both pet name and pet type
+                System.out.println("Before saving: " + GameSaveManager.loadSaveData());
+                GameSaveManager.saveData(selectedSlot, petName, selectedPet);
+                System.out.println("After saving: " + GameSaveManager.loadSaveData());
+
 
                 // Update slots in the LoadGame screen
                 for (Component comp : mainPanel.getComponents()) {
@@ -124,11 +127,9 @@ public class PetSelection extends JPanel {
 
                 // Navigate to Bunny panel with loading screen
                 showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Bunny", petName, selectedPet);
+
             }
         });
-
-
-
 
         namePanel.add(nameLabel);
         namePanel.add(nameField);
@@ -228,7 +229,7 @@ public class PetSelection extends JPanel {
         return bunnyButton;
     }
 
-private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String petType) {
+private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String selectedPet) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
             @Override
@@ -267,7 +268,7 @@ private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainP
             dotTimer.stop(); // Stop the dot animation
 
             if ("Bunny".equals(targetPanel)) {
-                Gameplay bunnyPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, petName, petType);
+                Gameplay bunnyPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, petName, selectedPet);
                 mainPanel.add(bunnyPanel, "Bunny");
                 cardLayout.show(mainPanel, "Bunny");
             } else {

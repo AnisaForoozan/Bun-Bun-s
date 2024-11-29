@@ -132,27 +132,30 @@ public class LoadGame extends JPanel {
         if (saveData.containsKey(slotKey)) {
             messageLabel.setText("This slot is already taken.");
 
-            // Add OK button for taken slots
-            JButton okButton = new JButton("OK");
-            styleDialogButton(okButton, new Color(232, 202, 232), dialog::dispose);
-            buttonPanel.add(okButton);
+            JButton playButton = new JButton("Play");
+            styleDialogButton(playButton, new Color(232, 202, 232), () -> {
+                dialog.dispose();
+                navigateToGameplay(slotKey);
+            });
+
+            JButton backButton = new JButton("Back");
+            styleDialogButton(backButton, new Color(232, 202, 232), dialog::dispose);
+
+            buttonPanel.add(playButton);
+            buttonPanel.add(backButton);
 
         } else {
             messageLabel.setText("Are you sure?");
 
-            // Add Yes and No buttons for free slots
             JButton yesButton = new JButton("YES");
             styleDialogButton(yesButton, new Color(232, 202, 232), () -> {
                 dialog.dispose();
-
-                // Pass the selected slot to PetSelection
                 for (Component comp : mainPanel.getComponents()) {
                     if (comp instanceof PetSelection) {
                         ((PetSelection) comp).setSelectedSlot(slotKey); // Pass slotKey to PetSelection
                         break;
                     }
                 }
-
                 showLoadingScreenAndSwitchPanel("PetSelection"); // Navigate to PetSelection
             });
 
@@ -171,6 +174,22 @@ public class LoadGame extends JPanel {
 
         dialog.setVisible(true);
     }
+
+    private void navigateToGameplay(String slotKey) {
+        String bunnyName = GameSaveManager.getPetName(slotKey);
+        String petType = GameSaveManager.getPetType(slotKey);
+
+        if (bunnyName == null || petType == null) {
+            System.out.println("Invalid data for slot: " + slotKey);
+            return;
+        }
+
+        // Initialize Gameplay with the saved data
+        Gameplay gameplayPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, bunnyName, petType);
+        mainPanel.add(gameplayPanel, "Gameplay");
+        cardLayout.show(mainPanel, "Gameplay");
+    }
+
 
 
     private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
@@ -253,7 +272,9 @@ public class LoadGame extends JPanel {
         for (int i = 0; i < slotButtons.length; i++) {
             String slotKey = "Slot " + (i + 1);
             if (saveData.containsKey(slotKey)) {
-                slotButtons[i].setText(slotKey + ": " + saveData.get(slotKey));
+                String petData = saveData.get(slotKey); // Get the raw data (name:type)
+                String petName = petData.split(":")[0]; // Extract only the name (before the ":")
+                slotButtons[i].setText(slotKey + ": " + petName); // Set the slot button text
             } else {
                 slotButtons[i].setText("Choose your slot");
             }
@@ -262,6 +283,7 @@ public class LoadGame extends JPanel {
         revalidate(); // Refresh the UI
         repaint();
     }
+
 
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text);

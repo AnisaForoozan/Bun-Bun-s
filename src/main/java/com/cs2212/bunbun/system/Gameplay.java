@@ -10,7 +10,7 @@ public class Gameplay extends JPanel {
     private AudioPlayer audioPlayer;
     private PixelArtProgressBar sleepBar, happinessBar, hungerBar, healthBar, pointsBar;
 
-    public Gameplay(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer, String petType, String petName) {
+    public Gameplay(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer, String petName, String petType) {
         this.audioPlayer = audioPlayer;
 
         setBackground(new Color(0xE8CAE8));
@@ -40,17 +40,20 @@ public class Gameplay extends JPanel {
         add(createButton("Inventory", 1700, 200, e -> showMessage("Inventory clicked")));
         add(createButton("Shop", 1700, 300, e -> showMessage("Shop clicked")));
 
-        // Pet Placeholder
-        ImageIcon bunny = new ImageIcon("src/main/resources/images/normal.png");
-        JLabel petPlaceholder = new JLabel("Bunny Name", SwingConstants.CENTER);
-        petPlaceholder.setIcon(bunny);
+        // Pet Image and Name
+        String imagePath = getImagePathForPet(petType);
+        ImageIcon petIcon = new ImageIcon(getClass().getResource(imagePath));
+        Image scaledImage = petIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        JLabel petPlaceholder = new JLabel(petName, SwingConstants.CENTER);
+        petPlaceholder.setIcon(scaledIcon);
         petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
         petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
         petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM); // Text below icon
         petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
         petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
-        petPlaceholder.setBounds(893, 449, 300, 400);
-        petPlaceholder.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        petPlaceholder.setBounds(893, 300, 300, 400); // Adjusted position and size
         add(petPlaceholder);
 
         // Start automatic animations for the bars
@@ -58,6 +61,21 @@ public class Gameplay extends JPanel {
         new Thread(() -> autoAnimateStat(happinessBar)).start();
         new Thread(() -> autoAnimateStat(hungerBar)).start();
     }
+
+    private String getImagePathForPet(String petType) {
+        switch (petType) {
+            case "Black Bunny":
+                return "/images/black-bunny-normal.png";
+            case "Brown Bunny":
+                return "/images/brown-bunny-normal.png";
+            case "White Bunny":
+                return "/images/white-bunny-normal.png";
+            default:
+                return "/images/default-pet.png"; // Fallback image if pet type is unknown
+        }
+    }
+
+
 
     private PixelArtProgressBar createProgressBar(int x, int y, String label, int initialValue) {
         PixelArtProgressBar bar = new PixelArtProgressBar(0, 100);
@@ -71,6 +89,7 @@ public class Gameplay extends JPanel {
 
         return bar;
     }
+
 
     private JButton createButton(String text, int x, int y, ActionListener action) {
         JButton button = new JButton(text);
