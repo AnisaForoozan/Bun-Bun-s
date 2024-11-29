@@ -33,6 +33,11 @@ public class GameSaveManager {
         Map<String, String> saveData = loadSaveData();
         saveData.put(slot, bunnyName + ":" + selectedPet); // Save in the "name:type" format
 
+        saveUpdatedData(saveData); // Delegate saving logic to saveUpdatedData
+    }
+
+    // Save the updated save data map to the JSON file
+    public static void saveUpdatedData(Map<String, String> saveData) {
         File saveFile = new File(SAVE_FILE);
         saveFile.getParentFile().mkdirs(); // Ensure directories exist
 
