@@ -1,7 +1,7 @@
 package com.cs2212.bunbun.gameplay;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,4 +67,41 @@ public class GameSaveManager {
         }
         return null; // Return null if not found or invalid format
     }
+
+    // Add the time limit saving and loading methods here
+    public static void saveTimeLimits(Map<String, Integer> timeLimits) {
+        try {
+            Map<String, String> saveData = loadSaveData();
+            saveData.put("time_limits", objectMapper.writeValueAsString(timeLimits)); // Save as a JSON string
+            saveUpdatedData(saveData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Map<String, Integer> getTimeLimits() {
+        Map<String, String> saveData = loadSaveData();
+        String data = saveData.get("time_limits");
+        if (data != null) {
+            try {
+                return new ObjectMapper().readValue(data, new TypeReference<Map<String, Integer>>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new HashMap<>(); // Return empty map if no time limits are set
+    }
+
+    public static void setGameplayLocked(boolean locked) {
+        Map<String, String> saveData = loadSaveData();
+        saveData.put("gameplay_locked", locked ? "true" : "false");
+        saveUpdatedData(saveData);
+    }
+
+    public static boolean isGameplayLocked() {
+        Map<String, String> saveData = loadSaveData();
+        return Boolean.parseBoolean(saveData.getOrDefault("gameplay_locked", "false"));
+    }
+
+
 }
