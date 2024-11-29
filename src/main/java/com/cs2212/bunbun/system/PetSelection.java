@@ -3,6 +3,7 @@ import com.cs2212.bunbun.gameplay.GameSaveManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.Map;
 
 
@@ -11,11 +12,18 @@ public class PetSelection extends JPanel {
     private String selectedPet;
     private JLabel hoverTextLabel; // Class-level variable for hover text
     private String selectedSlot;
+    private Image backgroundImage;
 
     public PetSelection(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
 
-        setBackground(new Color(0xE8CAE8));
+        URL resource = getClass().getResource("/images/dimbackground.png"); // Replace with your image path
+        if (resource != null) {
+            backgroundImage = new ImageIcon(resource).getImage();
+        } else {
+            System.err.println("Background image not found!");
+        }
+
         setLayout(new BorderLayout());
 
         // Back Button
@@ -138,6 +146,20 @@ public class PetSelection extends JPanel {
         add(namePanel, BorderLayout.SOUTH);
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (backgroundImage != null) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            g2d.dispose();
+        }
+    }
+
+
+
     public void setSelectedSlot(String selectedSlot) {
         this.selectedSlot = selectedSlot;
     }
@@ -175,24 +197,32 @@ public class PetSelection extends JPanel {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
                 boolean isHovered = (boolean) bunnyButton.getClientProperty("isHovered");
-                if (!(boolean) bunnyButton.getClientProperty("isClicked") && !isHovered) { // Only apply hover effect if not clicked
+                if (!(boolean) bunnyButton.getClientProperty("isClicked") && !isHovered) {
                     bunnyButton.setIcon(hoverIcon);
                     bunnyButton.putClientProperty("isHovered", true);
                     audioPlayer.playSFX("audio/sfx/hover_sound.wav");
                 }
-                // Update hover text
+
+                // Update hover text without triggering a full panel repaint
                 hoverTextLabel.setText(bunnyDescription);
+                hoverTextLabel.repaint(); // Repaint only the hover text label
+                bunnyButton.repaint(); // Repaint only the bunny button
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                if (!(boolean) bunnyButton.getClientProperty("isClicked")) { // Only revert to normal if not clicked
+                if (!(boolean) bunnyButton.getClientProperty("isClicked")) {
                     bunnyButton.setIcon(normalIcon);
                 }
                 bunnyButton.putClientProperty("isHovered", false);
-                // Reset hover text
+
+                // Reset hover text without triggering a full panel repaint
                 hoverTextLabel.setText("Hover over a pet to see more details.");
+                hoverTextLabel.repaint(); // Repaint only the hover text label
+                bunnyButton.repaint(); // Repaint only the bunny button
             }
+
+
 
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {

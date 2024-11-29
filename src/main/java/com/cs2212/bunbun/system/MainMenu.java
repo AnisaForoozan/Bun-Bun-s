@@ -12,6 +12,7 @@ public class MainMenu extends JFrame {
     private AudioPlayer audioPlayer;
     private ImageIcon backgroundImage; // Class-level field for background image
     private JDialog infoDialog; // For the custom dialog
+    private ParentalControls parentalControlsPanel;
 
     public MainMenu() {
         audioPlayer = new AudioPlayer();
@@ -31,7 +32,8 @@ public class MainMenu extends JFrame {
         mainPanel.add(new PetSelection(cardLayout, mainPanel, audioPlayer), "PetSelection");
         mainPanel.add(new LoadGame(cardLayout, mainPanel, audioPlayer), "LoadGame");
         mainPanel.add(new Tutorial(cardLayout, mainPanel, audioPlayer), "Tutorial");
-        mainPanel.add(new ParentalControls(cardLayout, mainPanel, audioPlayer), "ParentalControls");
+        parentalControlsPanel = new ParentalControls(cardLayout, mainPanel, audioPlayer);
+        mainPanel.add(parentalControlsPanel, "ParentalControls");
         mainPanel.add(new Settings(cardLayout, mainPanel, audioPlayer), "Settings");
 
         // Add the main panel to the frame
@@ -69,9 +71,13 @@ public class MainMenu extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (backgroundImage != null) {
-                    g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+                    g2d.dispose();
                 }
             }
+
         };
         menuPanel.setOpaque(false); // Ensure transparency
 
@@ -304,9 +310,13 @@ public class MainMenu extends JFrame {
             audioPlayer.playSFX("audio/sfx/click_sound.wav");
             if ("EXIT".equals(text)) {
                 System.exit(0); // Exit the application
+            } else if ("ParentalControls".equals(targetPanel)) {
+                parentalControlsPanel.resetToLayout1(); // Reset to Layout1 before showing loading screen
+                showLoadingScreenAndSwitchPanel(targetPanel); // Use loading screen for ParentalControls
             } else if (targetPanel != null) {
                 showLoadingScreenAndSwitchPanel(targetPanel);
             }
+
         });
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
