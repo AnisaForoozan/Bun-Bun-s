@@ -6,30 +6,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Shop extends JPanel implements ActionListener {
-    // Instance variables
+
+    private Inventory inventoryPanel; // The inventory panel
+    private Shop shopPanel; // The shop panel
+    private JPanel cardPanel; // The CardLayout panel
     private JList<String> foodList; // List for food items
     private JList<String> giftList; // List for gift items
     private JButton purchaseButton; // Button to purchase item
 
     //Button declarations
     JButton exit_button;
-    JButton inventory_button;
-    JButton shop_button;
 
     // Constructor
     public Shop() {
-
-        // Create "Inventory" button
-        inventory_button = new JButton("Inventory");
-        inventory_button.setHorizontalAlignment(JLabel.CENTER);
-        inventory_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
-        inventory_button.setBounds(290, 0, 100, 30);
-
-        // Create "Shop" button
-        shop_button = new JButton("Shop");
-        shop_button.setHorizontalAlignment(JLabel.CENTER);
-        shop_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
-        shop_button.setBounds(430, 0, 100, 30);
 
         // Create "Food" label
         JLabel food_label = new JLabel("Food");
@@ -70,19 +59,17 @@ public class Shop extends JPanel implements ActionListener {
         separator1.setBounds(0, 266, 800, 10);
 
         purchaseButton = new JButton("Purchase");
-        purchaseButton.setBounds(420, 390, 105, 40);
+        purchaseButton.setBounds(420, 370, 105, 40);
         purchaseButton.addActionListener(this); // Add action listener for the button
 
         // Create "Exit" button
         exit_button = new JButton("Exit");
-        exit_button.setBounds(300, 390, 105, 40);
+        exit_button.setBounds(300, 370, 105, 40);
         exit_button.addActionListener(this); // add action listener for the button
 
         // Add components to the panel
         this.setLayout(null);
         this.setPreferredSize(new Dimension(700, 400)); //FIXME: make the panel a bit smaller?
-        this.add(inventory_button); // Add inventory button
-        this.add(shop_button); // Add shop button
         this.add(food_label); // Add food label
         this.add(foodScrollPane); // Add food scroll pane
         this.add(separator); // Add separator

@@ -20,24 +20,24 @@ public class Inventory extends JPanel implements ActionListener {
     //Button declarations
     private JButton confirmButton;
     JButton exit_button;
-    JButton inventory_button;
-    JButton shop_button;
+    //JButton inventory_button;
+    //JButton shop_button;
 
     // Constructor
     public Inventory() {
         totalItems = 0; // Initialize total items
 
-        // Create "Inventory" button
-        inventory_button = new JButton("Inventory");
-        inventory_button.setHorizontalAlignment(JLabel.CENTER);
-        inventory_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
-        inventory_button.setBounds(290, 0, 100, 30);
-
-        // Create "Shop" button
-        shop_button = new JButton("Shop");
-        shop_button.setHorizontalAlignment(JLabel.CENTER);
-        shop_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
-        shop_button.setBounds(430, 0, 100, 30);
+//        // Create "Inventory" button
+//        inventory_button = new JButton("Inventory");
+//        inventory_button.setHorizontalAlignment(JLabel.CENTER);
+//        inventory_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
+//        inventory_button.setBounds(290, 0, 100, 30);
+//
+//        // Create "Shop" button
+//        shop_button = new JButton("Shop");
+//        shop_button.setHorizontalAlignment(JLabel.CENTER);
+//        shop_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
+//        shop_button.setBounds(430, 0, 100, 30);
 
         capacityLabel = new JLabel("Inventory Capacity: 0/" + MAX_CAPACITY);
         capacityLabel.setBounds(10, 10, 100, 30);
@@ -82,19 +82,19 @@ public class Inventory extends JPanel implements ActionListener {
 
         // Create confirm button
         confirmButton = new JButton("Confirm");
-        confirmButton.setBounds(420, 390, 105, 40);
+        confirmButton.setBounds(420, 370, 105, 40);
         confirmButton.addActionListener(this); // Add action listener for the button
 
         // Create exit button
         exit_button = new JButton("Exit");
-        exit_button.setBounds(300, 390, 105, 40);
+        exit_button.setBounds(300, 370, 105, 40);
         exit_button.addActionListener(this); // add action listener for the button
 
         // Add components to the panel
         this.setLayout(null);
         this.setPreferredSize(new Dimension(700, 400)); //FIXME: make the panel a bit smaller?
-        this.add(inventory_button); // Add inventory button
-        this.add(shop_button); // Add shop button
+        //this.add(inventory_button); // Add inventory button
+        //this.add(shop_button); // Add shop button
         this.add(capacityLabel);
         this.add(food_label); // Add food label
         this.add(foodList);
