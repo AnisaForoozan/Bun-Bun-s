@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Map;
+import java.io.File;
+import java.io.IOException;
 
 public class LoadGame extends JPanel {
     private AudioPlayer audioPlayer;
@@ -102,10 +104,9 @@ public class LoadGame extends JPanel {
         // Create a custom modal dialog
         JDialog dialog = new JDialog(parentFrame, true);
         dialog.setUndecorated(true);
-        dialog.setSize(450, 200);
-        dialog.setLocationRelativeTo(this);
 
-        JPanel contentPanel = new JPanel() {
+        // Content panel with rounded rectangle design
+        JPanel contentPanel = new JPanel(null) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -116,38 +117,81 @@ public class LoadGame extends JPanel {
                 g2d.dispose();
             }
         };
-
         contentPanel.setOpaque(false);
-        contentPanel.setLayout(new BorderLayout());
 
-        JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
-        messageLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
-        messageLabel.setForeground(Color.WHITE);
-        contentPanel.add(messageLabel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setOpaque(false);
-
-        // Check if the slot is already taken
         if (saveData.containsKey(slotKey)) {
-            messageLabel.setText("This slot is already taken.");
+            dialog.setSize(450, 200); // Set the dialog size
 
+            // Back button (as an "X")
+            // Back button (as an "X")
+            JButton backButton = new JButton("X");
+            styleDialogButton(backButton, new Color(232, 202, 232), dialog::dispose);
+            backButton.setFont(new Font("Comic Sans MS", Font.BOLD, 18)); // Ensure proper font
+            backButton.setForeground(Color.WHITE);
+            backButton.setFocusPainted(false);
+            backButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            backButton.setContentAreaFilled(false); // Make it transparent
+            backButton.setOpaque(false);
+            backButton.setBounds(10, 10, 50, 30); // Adjust bounds to give enough space
+            contentPanel.add(backButton);
+
+
+            // Slot is taken - add "Play," "Rename," and "Delete" buttons centered
             JButton playButton = new JButton("Play");
             styleDialogButton(playButton, new Color(232, 202, 232), () -> {
                 dialog.dispose();
                 navigateToGameplay(slotKey);
             });
 
-            JButton backButton = new JButton("Back");
-            styleDialogButton(backButton, new Color(232, 202, 232), dialog::dispose);
+            JButton renameButton = new JButton("Rename");
+            styleDialogButton(renameButton, new Color(232, 202, 232), () -> {
+                String newName = JOptionPane.showInputDialog(this, "Enter new name:", "Rename Pet", JOptionPane.PLAIN_MESSAGE);
+                if (newName != null && !newName.trim().isEmpty()) {
+                    renameSlot(slotKey, newName.trim());
+                }
+                dialog.dispose();
+            });
 
-            buttonPanel.add(playButton);
-            buttonPanel.add(backButton);
+            JButton deleteButton = new JButton("Delete");
+            styleDialogButton(deleteButton, new Color(232, 202, 232), () -> {
+                int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this slot?", "Delete Slot", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    deleteSlot(slotKey);
+                }
+                dialog.dispose();
+            });
+
+            // Use GridBagLayout for centering the buttons
+            JPanel buttonPanel = new JPanel(new GridBagLayout());
+            buttonPanel.setOpaque(false);
+            buttonPanel.setBounds(0, 60, 450, 100); // Positioning within the content panel
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(0, 10, 0, 10); // Add spacing between buttons
+
+            buttonPanel.add(playButton, gbc);
+
+            gbc.gridx++;
+            buttonPanel.add(renameButton, gbc);
+
+            gbc.gridx++;
+            buttonPanel.add(deleteButton, gbc);
+
+            contentPanel.add(buttonPanel);
 
         } else {
-            messageLabel.setText("Are you sure?");
+            dialog.setSize(450, 200); // Smaller size for empty slot confirmation
 
-            JButton yesButton = new JButton("YES");
+            // Slot is free - "Are you sure?" text at the center
+            JLabel messageLabel = new JLabel("Are you sure?", SwingConstants.CENTER);
+            messageLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+            messageLabel.setForeground(Color.WHITE);
+            messageLabel.setBounds(0, 50, 450, 30); // Center the label vertically and horizontally
+            contentPanel.add(messageLabel);
+
+            JButton yesButton = new JButton("Yes");
             styleDialogButton(yesButton, new Color(232, 202, 232), () -> {
                 dialog.dispose();
                 for (Component comp : mainPanel.getComponents()) {
@@ -159,21 +203,59 @@ public class LoadGame extends JPanel {
                 showLoadingScreenAndSwitchPanel("PetSelection"); // Navigate to PetSelection
             });
 
-            JButton noButton = new JButton("NO");
+            JButton noButton = new JButton("No");
             styleDialogButton(noButton, new Color(232, 202, 232), dialog::dispose);
 
-            buttonPanel.add(yesButton);
-            buttonPanel.add(noButton);
-        }
+            // Position "YES" and "NO" buttons at the bottom
+            JPanel yesNoPanel = new JPanel(new GridBagLayout());
+            yesNoPanel.setOpaque(false);
+            yesNoPanel.setBounds(0, 130, 450, 50); // Positioned at the bottom of the dialog
 
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.insets = new Insets(0, 10, 0, 10); // Spacing between buttons
+
+            yesNoPanel.add(yesButton, gbc);
+
+            gbc.gridx++;
+            yesNoPanel.add(noButton, gbc);
+
+            contentPanel.add(yesNoPanel);
+        }
 
         dialog.setContentPane(contentPanel);
         dialog.setBackground(new Color(0, 0, 0, 0));
         dialog.getRootPane().setOpaque(false);
+        dialog.setLocationRelativeTo(this); // Center the dialog on the parent panel
 
         dialog.setVisible(true);
     }
+
+
+
+    private void renameSlot(String slotKey, String newName) {
+        Map<String, String> saveData = GameSaveManager.loadSaveData();
+        String petData = saveData.get(slotKey); // Get the existing "name:type" format
+
+        if (petData != null && petData.contains(":")) {
+            String petType = petData.split(":")[1]; // Extract the type (after the ":")
+            GameSaveManager.saveData(slotKey, newName, petType); // Save the new name with the same type
+        }
+        updateSlots(); // Refresh the UI
+    }
+
+
+    private void deleteSlot(String slotKey) {
+        Map<String, String> saveData = GameSaveManager.loadSaveData();
+        if (saveData.containsKey(slotKey)) {
+            saveData.remove(slotKey); // Remove the slot from the map
+            GameSaveManager.saveUpdatedData(saveData); // Save the updated map
+        }
+        updateSlots(); // Refresh the UI
+    }
+
+
+
 
     private void navigateToGameplay(String slotKey) {
         String bunnyName = GameSaveManager.getPetName(slotKey);
@@ -270,19 +352,22 @@ public class LoadGame extends JPanel {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
 
         for (int i = 0; i < slotButtons.length; i++) {
-            String slotKey = "Slot " + (i + 1);
+            String slotKey = "Slot " + (i + 1); // Generate the slot key (e.g., "Slot 1")
             if (saveData.containsKey(slotKey)) {
                 String petData = saveData.get(slotKey); // Get the raw data (name:type)
                 String petName = petData.split(":")[0]; // Extract only the name (before the ":")
-                slotButtons[i].setText(slotKey + ": " + petName); // Set the slot button text
+                slotButtons[i].setText("Slot " + (i + 1) + ": " + petName); // Show "Slot X: Pet Name"
             } else {
-                slotButtons[i].setText("Choose your slot");
+                slotButtons[i].setText("Choose your slot"); // Show "Choose your slot" for empty slots
             }
         }
 
         revalidate(); // Refresh the UI
         repaint();
     }
+
+
+
 
 
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
