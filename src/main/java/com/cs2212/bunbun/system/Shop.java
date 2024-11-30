@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static com.cs2212.bunbun.system.Inventory.MAX_CAPACITY;
+import static com.cs2212.bunbun.system.Inventory.totalItems;
+
 public class Shop extends JPanel implements ActionListener {
 
     private Inventory inventoryPanel; // The inventory panel
@@ -88,27 +91,33 @@ public class Shop extends JPanel implements ActionListener {
             String selectedFood = foodList.getSelectedValue();
             String selectedGift = giftList.getSelectedValue();
 
-            if (selectedFood != null) {
-                // Add food item to inventory
-                Item foodItem = new Item(selectedFood, 25, null);  // Replace `25` with the appropriate points value
-                if (!inventoryPanel.addFoodItem(foodItem)) {
-                    // If the item already exists, it will increase the quantity automatically
-                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+            if (!(totalItems >= MAX_CAPACITY)) {
+                if (selectedFood != null) {
+                    // Add food item to inventory
+                    Item foodItem = new Item(selectedFood, 25, null);  // Replace `25` with the appropriate points value
+                    if (!inventoryPanel.addFoodItem(foodItem)) {
+                        // If the item already exists, it will increase the quantity automatically
+                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else if (selectedGift != null) {
+                    // Add gift item to inventory
+                    Item giftItem = new Item(selectedGift, 10, null);  // Replace `10` with the appropriate points value
+                    if (!inventoryPanel.addGiftItem(giftItem)) {
+                        // If the item already exists, it will increase the quantity automatically
+                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
-            } else if (selectedGift != null) {
-                // Add gift item to inventory
-                Item giftItem = new Item(selectedGift, 10, null);  // Replace `10` with the appropriate points value
-                if (!inventoryPanel.addGiftItem(giftItem)) {
-                    // If the item already exists, it will increase the quantity automatically
-                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                else {
+                    // No item selected
+                    JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            } else {
-                // No item selected
-                JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Inventory is full!");
             }
         }
         else if (e.getSource() == exit_button) {

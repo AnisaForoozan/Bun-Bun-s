@@ -14,8 +14,8 @@ public class Inventory extends JPanel implements ActionListener {
     private JList<Item> giftList; // JList for gift items
     private JLabel capacityLabel; // Label to show inventory capacity
 
-    private int totalItems; // Track total items in inventory
-    private static final int MAX_CAPACITY = 50; // Maximum inventory capacity
+    public static int totalItems; // Track total items in inventory
+    public static final int MAX_CAPACITY = 5; // Maximum inventory capacity
 
     //Button declarations
     private JButton confirmButton;
@@ -27,7 +27,7 @@ public class Inventory extends JPanel implements ActionListener {
     public Inventory() {
         totalItems = 0; // Initialize total items
 
-        capacityLabel = new JLabel("Inventory Capacity: 0/" + MAX_CAPACITY);
+        capacityLabel = new JLabel("<html>Number of items: <b>" + totalItems + "</b>/" + MAX_CAPACITY + "</html>");
         capacityLabel.setBounds(10, 10, 100, 30);
 
         // Create "Food" label
@@ -66,7 +66,7 @@ public class Inventory extends JPanel implements ActionListener {
         // Set the layout to FlowLayout to display items horizontally
         giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         giftList.setVisibleRowCount(1); // Only show one row at a time horizontally
-        giftList.setBounds(20, 300, 750, 50);
+        giftList.setBounds(20, 280, 750, 50);
 
         // Create confirm button
         confirmButton = new JButton("Confirm");
@@ -98,7 +98,7 @@ public class Inventory extends JPanel implements ActionListener {
     // Method to add a food item
     public boolean addFoodItem(Item item) {
         if (totalItems >= MAX_CAPACITY) {
-            JOptionPane.showMessageDialog(this, "Inventory is full!");
+//            JOptionPane.showMessageDialog(this, "Inventory is full!");
             return false;
         }
 
@@ -124,7 +124,7 @@ public class Inventory extends JPanel implements ActionListener {
     // Method to add a gift item
     public boolean addGiftItem(Item item) {
         if (totalItems >= MAX_CAPACITY) {
-            JOptionPane.showMessageDialog(this, "Inventory is full!");
+//            JOptionPane.showMessageDialog(this, "Inventory is full!");
             return false;
         }
 
@@ -148,28 +148,28 @@ public class Inventory extends JPanel implements ActionListener {
     }
 
 
-    // Helper method to add an item to a list
-    private void addItem(DefaultListModel<Item> listModel, String name, int points, ImageIcon image) {
-        // Check if the item already exists
-        for (int i = 0; i < listModel.size(); i++) {
-            Item item = listModel.getElementAt(i);
-            if (item.getName().equals(name)) {
-                item.incrementQuantity();
-                listModel.set(i, item); // Refresh the item in the list
-                updateCapacity();
-                return;
-            }
-        }
-
-        // Add new item if it doesn't exist
-        listModel.addElement(new Item(name, points, image));
-        totalItems++;
-        updateCapacity();
-    }
+//    // Helper method to add an item to a list
+//    private void addItem(DefaultListModel<Item> listModel, String name, int points, ImageIcon image) {
+//        // Check if the item already exists
+//        for (int i = 0; i < listModel.size(); i++) {
+//            Item item = listModel.getElementAt(i);
+//            if (item.getName().equals(name)) {
+//                item.incrementQuantity();
+//                listModel.set(i, item); // Refresh the item in the list
+//                updateCapacity();
+//                return;
+//            }
+//        }
+//
+//        // Add new item if it doesn't exist
+//        listModel.addElement(new Item(name, points, image));
+//        totalItems++;
+//        updateCapacity();
+//    }
 
     // Update inventory capacity label
     private void updateCapacity() {
-        capacityLabel.setText("Inventory Capacity: " + totalItems + "/" + MAX_CAPACITY);
+        capacityLabel.setText("<html>Number of items: <b>" + totalItems + "</b>/" + MAX_CAPACITY + "</html>");
     }
 
     //actions for buttons
@@ -202,6 +202,7 @@ public class Inventory extends JPanel implements ActionListener {
         if (item.getQuantity() > 1) {
             item.decrementQuantity();
             listModel.setElementAt(item, listModel.indexOf(item)); // Refresh the item in the list
+            totalItems--;
         } else {
             listModel.removeElement(item); // Remove item completely
             totalItems--;
