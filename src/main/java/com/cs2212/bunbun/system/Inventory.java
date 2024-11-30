@@ -12,7 +12,7 @@ public class Inventory extends JPanel implements ActionListener {
     private DefaultListModel<Item> giftListModel; // Model for gift items
     private JList<Item> foodList; // JList for food items
     private JList<Item> giftList; // JList for gift items
-    private JLabel capacityLabel; // Label to show inventory capacityg
+    private JLabel capacityLabel; // Label to show inventory capacity
 
     private int totalItems; // Track total items in inventory
     private static final int MAX_CAPACITY = 50; // Maximum inventory capacity
@@ -26,18 +26,6 @@ public class Inventory extends JPanel implements ActionListener {
     // Constructor
     public Inventory() {
         totalItems = 0; // Initialize total items
-
-//        // Create "Inventory" button
-//        inventory_button = new JButton("Inventory");
-//        inventory_button.setHorizontalAlignment(JLabel.CENTER);
-//        inventory_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
-//        inventory_button.setBounds(290, 0, 100, 30);
-//
-//        // Create "Shop" button
-//        shop_button = new JButton("Shop");
-//        shop_button.setHorizontalAlignment(JLabel.CENTER);
-//        shop_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
-//        shop_button.setBounds(430, 0, 100, 30);
 
         capacityLabel = new JLabel("Inventory Capacity: 0/" + MAX_CAPACITY);
         capacityLabel.setBounds(10, 10, 100, 30);
@@ -105,8 +93,6 @@ public class Inventory extends JPanel implements ActionListener {
         this.add(confirmButton); // Add confirm button
         this.add(exit_button); // Add exit button
 
-        // Sample food items for demonstration
-        //addFoodItem(new FoodItem("Apple", 25, new ImageIcon("apple.png")));
     }
 
     // Method to add a food item
