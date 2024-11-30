@@ -22,7 +22,7 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
         // Create the inventory and shop panels
         inventoryPanel = new Inventory();
-        shopPanel = new Shop(); // Assuming Shop class exists with your shop panel
+        shopPanel = new Shop(inventoryPanel); // Assuming Shop class exists with your shop panel
 
         // Create CardLayout container
         cardPanel = new JPanel(new CardLayout());
@@ -76,4 +76,3 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
         });
     }
 }
-

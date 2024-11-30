@@ -110,26 +110,57 @@ public class Inventory extends JPanel implements ActionListener {
     }
 
     // Method to add a food item
-    public boolean addFoodItem(String name, int points, ImageIcon image) {
+    public boolean addFoodItem(Item item) {
         if (totalItems >= MAX_CAPACITY) {
             JOptionPane.showMessageDialog(this, "Inventory is full!");
             return false;
         }
 
-        addItem(foodListModel, name, points, image);
+        // Check if the item already exists and increase quantity
+        for (int i = 0; i < foodListModel.size(); i++) {
+            Item existingItem = foodListModel.getElementAt(i);
+            if (existingItem.getName().equals(item.getName())) {
+                existingItem.incrementQuantity();
+                foodListModel.set(i, existingItem);  // Refresh the item in the list
+                totalItems++;
+                updateCapacity();
+                return false; // Item exists, no need to add new one
+            }
+        }
+
+        // Add new item if it doesn't exist
+        foodListModel.addElement(item);
+        totalItems++;
+        updateCapacity();
         return true;
     }
 
     // Method to add a gift item
-    public boolean addGiftItem(String name, int points, ImageIcon image) {
+    public boolean addGiftItem(Item item) {
         if (totalItems >= MAX_CAPACITY) {
             JOptionPane.showMessageDialog(this, "Inventory is full!");
             return false;
         }
 
-        addItem(giftListModel, name, points, image);
+        // Check if the item already exists and increase quantity
+        for (int i = 0; i < giftListModel.size(); i++) {
+            Item existingItem = giftListModel.getElementAt(i);
+            if (existingItem.getName().equals(item.getName())) {
+                existingItem.incrementQuantity();
+                giftListModel.set(i, existingItem);  // Refresh the item in the list
+                totalItems++;
+                updateCapacity();
+                return false; // Item exists, no need to add new one
+            }
+        }
+
+        // Add new item if it doesn't exist
+        giftListModel.addElement(item);
+        totalItems++;
+        updateCapacity();
         return true;
     }
+
 
     // Helper method to add an item to a list
     private void addItem(DefaultListModel<Item> listModel, String name, int points, ImageIcon image) {
@@ -202,9 +233,10 @@ public class Inventory extends JPanel implements ActionListener {
         Inventory inventoryPanel = new Inventory();
         frame.add(inventoryPanel);
 
+        Item apple = new Item("Apple", 25, null);
         // Add some test items
-        inventoryPanel.addFoodItem("Apple", 25, new ImageIcon("apple.png"));
-        inventoryPanel.addFoodItem("Apple", 25, new ImageIcon("apple.png")); // Add duplicate to test quantity
+        inventoryPanel.addFoodItem(apple);
+        inventoryPanel.addFoodItem(apple); // Add duplicate to test quantity
 
         frame.setVisible(true);
     }

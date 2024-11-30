@@ -18,7 +18,8 @@ public class Shop extends JPanel implements ActionListener {
     JButton exit_button;
 
     // Constructor
-    public Shop() {
+    public Shop(Inventory inventoryPanel) {
+        this.inventoryPanel = inventoryPanel;
 
         // Create "Food" label
         JLabel food_label = new JLabel("Food");
@@ -78,32 +79,70 @@ public class Shop extends JPanel implements ActionListener {
         this.add(separator1); // Add separator
         this.add(purchaseButton); // Add purchase button
         this.add(exit_button); // Add exit button
+
     }
 
-    // Action performed method
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == purchaseButton) {
-            // Check which item is selected
             String selectedFood = foodList.getSelectedValue();
             String selectedGift = giftList.getSelectedValue();
 
             if (selectedFood != null) {
-                // Show confirmation for food item
-                JOptionPane.showMessageDialog(this, "You selected: " + selectedFood, "Item Selected", JOptionPane.INFORMATION_MESSAGE);
+                // Add food item to inventory
+                Item foodItem = new Item(selectedFood, 25, null);  // Replace `25` with the appropriate points value
+                if (!inventoryPanel.addFoodItem(foodItem)) {
+                    // If the item already exists, it will increase the quantity automatically
+                    JOptionPane.showMessageDialog(this, selectedFood + " is already in your inventory!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                }
             } else if (selectedGift != null) {
-                // Show confirmation for gift item
-                JOptionPane.showMessageDialog(this, "You selected: " + selectedGift, "Item Selected", JOptionPane.INFORMATION_MESSAGE);
+                // Add gift item to inventory
+                Item giftItem = new Item(selectedGift, 10, null);  // Replace `10` with the appropriate points value
+                if (!inventoryPanel.addGiftItem(giftItem)) {
+                    // If the item already exists, it will increase the quantity automatically
+                    JOptionPane.showMessageDialog(this, selectedGift + " is already in your inventory!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                }
             } else {
                 // No item selected
                 JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else if (e.getSource() == exit_button) {
+        }
+        else if (e.getSource() == exit_button) {
             // Exit action
             JOptionPane.showMessageDialog(this, "Exiting Inventory...");
             System.exit(0); // Close the application
         }
     }
+
+    // Action performed method
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//        if (e.getSource() == purchaseButton) {
+//            // Check which item is selected
+//            String selectedFood = foodList.getSelectedValue();
+//            String selectedGift = giftList.getSelectedValue();
+//
+//            if (selectedFood != null) {
+//                // Show confirmation for food item
+//                JOptionPane.showMessageDialog(this, "You selected: " + selectedFood, "Item Selected", JOptionPane.INFORMATION_MESSAGE);
+//            } else if (selectedGift != null) {
+//                // Show confirmation for gift item
+//                JOptionPane.showMessageDialog(this, "You selected: " + selectedGift, "Item Selected", JOptionPane.INFORMATION_MESSAGE);
+//            } else {
+//                // No item selected
+//                JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//        else if (e.getSource() == exit_button) {
+//            // Exit action
+//            JOptionPane.showMessageDialog(this, "Exiting Inventory...");
+//            System.exit(0); // Close the application
+//        }
+//    }
 
     // Test the panel in a JFrame
     public static void main(String[] args) {
@@ -113,7 +152,7 @@ public class Shop extends JPanel implements ActionListener {
         frame.setSize(800, 500);
 
         // Create an instance of Shop and add it to the frame
-        Shop ShopPanel = new Shop();
+        Shop ShopPanel = new Shop(new Inventory());
         frame.add(ShopPanel); // Add Shop panel to the frame
 
         // Make the frame visible
