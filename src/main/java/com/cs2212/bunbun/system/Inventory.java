@@ -36,14 +36,20 @@ public class Inventory extends JPanel implements ActionListener {
         food_label.setBounds(20, 30, 100, 100);
 
         // Initialize the food list
+//        foodListModel = new DefaultListModel<>();
+//        foodList = new JList<>(foodListModel);
+//        foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//
+//        // Set the layout to FlowLayout to display items horizontally
+//        foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+//        foodList.setVisibleRowCount(1); // Only show one row at a time horizontally
+//        foodList.setBounds(20, 100, 750, 50);
         foodListModel = new DefaultListModel<>();
         foodList = new JList<>(foodListModel);
-        foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Set the layout to FlowLayout to display items horizontally
+        foodList.setCellRenderer(new InventoryItemRenderer()); // Set custom renderer
         foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        foodList.setVisibleRowCount(1); // Only show one row at a time horizontally
-        foodList.setBounds(20, 100, 750, 50);
+        foodList.setVisibleRowCount(1);
+        foodList.setBounds(20, 100, 750, 70);
 
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
@@ -94,6 +100,44 @@ public class Inventory extends JPanel implements ActionListener {
         this.add(exit_button); // Add exit button
 
     }
+
+    class InventoryItemRenderer extends JPanel implements ListCellRenderer<Item> {
+        private JLabel iconLabel;
+        private JLabel nameLabel;
+
+        public InventoryItemRenderer() {
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            iconLabel = new JLabel();
+            nameLabel = new JLabel();
+            nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            add(iconLabel);
+            add(nameLabel);
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends Item> list, Item item, int index, boolean isSelected, boolean cellHasFocus) {
+            if (item != null) {
+                ImageIcon image = item.getImage();
+                if (image != null) {
+                    // Resize image to fit within the cell bounds
+                    Image scaledImage = image.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                    iconLabel.setIcon(new ImageIcon(scaledImage));
+                }
+                nameLabel.setText(item.getName() + "[" + item.getQuantity() + "]");
+            }
+
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+            return this;
+        }
+    }
+
 
     // Method to add a food item
     public boolean addFoodItem(Item item) {

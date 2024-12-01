@@ -143,7 +143,11 @@ public class Shop extends JPanel implements ActionListener {
                 System.out.println("Selected Food: " + selectedFood);  // Debugging line
 
                 if (selectedFood != null) {
-                    Item foodItem = new Item(selectedFood, 25, null);  // Adjust points value as needed
+                    // Retrieve the image associated with the selected food
+                    int selectedIndex = customListDemo.petList.getSelectedIndex();
+                    ImageIcon selectedImage = customListDemo.images[selectedIndex];
+
+                    Item foodItem = new Item(selectedFood, 25, selectedImage);
                     if (!inventoryPanel.addFoodItem(foodItem)) {
                         JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
                     } else {
