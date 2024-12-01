@@ -36,6 +36,14 @@ public class MainMenu extends JFrame {
         mainPanel.add(parentalControlsPanel, "ParentalControls");
         mainPanel.add(new Settings(cardLayout, mainPanel, audioPlayer), "Settings");
 
+        Gameplay gameplayPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, "DefaultType", "DefaultName");
+        ItemsMainFrame itemsMainFrame = new ItemsMainFrame(cardLayout, mainPanel);
+
+        // Add panels to CardLayout
+        mainPanel.add(createMainMenuPanel(), "MainMenu");
+        mainPanel.add(gameplayPanel, "Gameplay");
+        mainPanel.add(itemsMainFrame, "ItemsMainFrame");
+
         // Add the main panel to the frame
         add(mainPanel);
 
