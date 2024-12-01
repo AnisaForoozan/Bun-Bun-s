@@ -35,11 +35,11 @@ import javax.swing.*;
 
 import static javax.swing.SwingConstants.CENTER;
 
-public class CustomListDemo extends JPanel {
+public class CustomGiftList extends JPanel {
     ImageIcon[] images;
     String[] petStrings = {"applepie", "burger", "cookies", "frenchfries", "garlicbread", "macncheese", "pancakes", "salmon", "steak", "strawberrycake"};
     JList petList;
-//    public static Object selectedValue;
+    //    public static Object selectedValue;
     /*
      * Despite its use of EmptyBorder, this panel makes a fine content
      * pane because the empty border just increases the panel's size
@@ -48,7 +48,7 @@ public class CustomListDemo extends JPanel {
      * opaque (which it is by default); adding a border doesn't change
      * that.
      */
-    public CustomListDemo() {
+    public CustomGiftList() {
         super(new BorderLayout());
 
         //Load the pet images and create an array of indexes.
@@ -101,7 +101,7 @@ public class CustomListDemo extends JPanel {
 
     /** Returns an ImageIcon, or null if the path was invalid. */
     protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = CustomListDemo.class.getResource(path);
+        java.net.URL imgURL = CustomGiftList.class.getResource(path);
 
         //System.out.println("Image URL: " + imgURL);
 
@@ -120,12 +120,12 @@ public class CustomListDemo extends JPanel {
      */
     private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("CustomListDemo");
+        JFrame frame = new JFrame("CustomGiftList");
         frame.setSize(800, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.
-        JComponent newContentPane = new CustomListDemo();
+        JComponent newContentPane = new CustomGiftList();
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
 

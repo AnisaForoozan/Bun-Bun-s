@@ -125,6 +125,7 @@ public class Inventory extends JPanel implements ActionListener {
                     iconLabel.setIcon(new ImageIcon(scaledImage));
                 }
                 nameLabel.setText(item.getName() + "[" + item.getQuantity() + "]");
+                nameLabel.setFont(new Font("Arial", Font.PLAIN, 10));
             }
 
             if (isSelected) {
