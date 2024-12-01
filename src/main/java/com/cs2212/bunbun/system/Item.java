@@ -44,15 +44,5 @@ public class Item {
     public String toString() {
         return name + "[" + quantity + "]";
     }
-//
-//    public JLabel createItemLabel() {
-//        JLabel label = new JLabel(name, JLabel.CENTER);
-//        label.setIcon(image); // Set the item's image as an icon
-//        label.setHorizontalTextPosition(JLabel.CENTER); // Text below the image
-//        label.setVerticalTextPosition(JLabel.BOTTOM);
-//        label.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Optional: Add a border
-//        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Change cursor to hand
-//        return label;
-//    }
 
 }

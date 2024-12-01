@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static com.cs2212.bunbun.system.Inventory.MAX_CAPACITY;
+import static com.cs2212.bunbun.system.Inventory.totalItems;
+
 public class Shop extends JPanel implements ActionListener {
     private CustomListDemo customListDemo;
     private Inventory inventoryPanel; // The inventory panel
@@ -39,7 +42,7 @@ public class Shop extends JPanel implements ActionListener {
 //        foodScrollPane.setBounds(20, 100, 750, 50); // Adjust bounds to fit the content
 
         CustomListDemo foodList = customListDemo; // Use the existing CustomListDemo instance
-        foodList.setBounds(20, 100, 750, 50);
+        foodList.setBounds(20, 100, 750, 100);
 
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
@@ -132,7 +135,10 @@ public class Shop extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == purchaseButton) {
-            if (customListDemo != null) {
+            if (totalItems == MAX_CAPACITY) {
+                JOptionPane.showMessageDialog(this, "Inventory is full! Use items to free up space", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else if (customListDemo != null) {
                 String selectedFood = customListDemo.isSelected();  // Call isSelected() directly on customListDemo
                 System.out.println("Selected Food: " + selectedFood);  // Debugging line
 
