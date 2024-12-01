@@ -5,11 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static com.cs2212.bunbun.system.Inventory.MAX_CAPACITY;
-import static com.cs2212.bunbun.system.Inventory.totalItems;
-
 public class Shop extends JPanel implements ActionListener {
-
+    private CustomListDemo customListDemo;
     private Inventory inventoryPanel; // The inventory panel
     private Shop shopPanel; // The shop panel
     private JPanel cardPanel; // The CardLayout panel
@@ -21,7 +18,9 @@ public class Shop extends JPanel implements ActionListener {
     JButton exit_button;
 
     // Constructor
-    public Shop(Inventory inventoryPanel) {
+    public Shop(CustomListDemo customListDemo, Inventory inventoryPanel) {
+        // Ensure this is initialized somewhere in your Shop class constructor or method
+        this.customListDemo = customListDemo;
         this.inventoryPanel = inventoryPanel;
 
         // Create "Food" label
@@ -30,14 +29,17 @@ public class Shop extends JPanel implements ActionListener {
         food_label.setBounds(20, 30, 100, 100);
 
         // Create list of food items
-        String[] foodItems = {"Apple", "Bread", "Cake", "Apple", "Bread", "Cake", "Apple", "Bread", "Cake"}; // Example food items
-        foodList = new JList<>(foodItems); //FIXME: update with actual items we'll use
-        foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP); // Set horizontal layout
-        foodList.setVisibleRowCount(1); // Show all items in a single row
+//        String[] foodItems = {"Apple", "Bread", "Cake", "Apple", "Bread", "Cake", "Apple", "Bread", "Cake"}; // Example food items
+//        foodList = new JList<>(foodItems); //FIXME: update with actual items we'll use
+//        foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//        foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP); // Set horizontal layout
+//        foodList.setVisibleRowCount(1); // Show all items in a single row
+//
+//        JScrollPane foodScrollPane = new JScrollPane(foodList); // Wrap in a JScrollPane for better layout
+//        foodScrollPane.setBounds(20, 100, 750, 50); // Adjust bounds to fit the content
 
-        JScrollPane foodScrollPane = new JScrollPane(foodList); // Wrap in a JScrollPane for better layout
-        foodScrollPane.setBounds(20, 100, 750, 50); // Adjust bounds to fit the content
+        CustomListDemo foodList = customListDemo; // Use the existing CustomListDemo instance
+        foodList.setBounds(20, 100, 750, 50);
 
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
@@ -75,7 +77,7 @@ public class Shop extends JPanel implements ActionListener {
         this.setLayout(null);
         this.setPreferredSize(new Dimension(700, 400)); //FIXME: make the panel a bit smaller?
         this.add(food_label); // Add food label
-        this.add(foodScrollPane); // Add food scroll pane
+        this.add(foodList); // Add food scroll pane
         this.add(separator); // Add separator
         this.add(gifts_label); // Add gifts label
         this.add(giftScrollPane); // Add gift list
@@ -85,39 +87,67 @@ public class Shop extends JPanel implements ActionListener {
 
     }
 
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//        if (e.getSource() == purchaseButton) {
+//            if (customListDemo != null) {
+//                String selectedFood = customListDemo.isSelected();  // Corrected method name
+//                System.out.println("Selected Food: " + selectedFood);  // Debugging line
+//
+//                if (selectedFood != null) {
+//                    Item foodItem = new Item(selectedFood, 25, null);  // Adjust points value as needed
+//                    if (!inventoryPanel.addFoodItem(foodItem)) {
+//                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
+//                    } else {
+//                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
+//                    }
+//                } else {
+//                    JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+//            } else {
+//                JOptionPane.showMessageDialog(this, "CustomListDemo is not initialized!", "Error", JOptionPane.ERROR_MESSAGE);
+//            }
+//
+////            } else if (selectedGift != null) {
+////                // Add gift item to inventory
+////                Item giftItem = new Item(selectedGift, 10, null);  // Replace `10` with the appropriate points value
+////                if (!inventoryPanel.addGiftItem(giftItem)) {
+////                    // If the item already exists, it will increase the quantity automatically
+////                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+////                } else {
+////                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+////                }
+////            } else {
+////                // No item selected
+////                JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
+////            }
+//        }
+//        else if (e.getSource() == exit_button) {
+//            // Exit action
+//            JOptionPane.showMessageDialog(this, "Exiting Inventory...");
+//            System.exit(0); // Close the application
+//        }
+//    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == purchaseButton) {
-            String selectedFood = foodList.getSelectedValue();
-            String selectedGift = giftList.getSelectedValue();
+            if (customListDemo != null) {
+                String selectedFood = customListDemo.isSelected();  // Call isSelected() directly on customListDemo
+                System.out.println("Selected Food: " + selectedFood);  // Debugging line
 
-            if (!(totalItems >= MAX_CAPACITY)) {
                 if (selectedFood != null) {
-                    // Add food item to inventory
-                    Item foodItem = new Item(selectedFood, 25, null);  // Replace `25` with the appropriate points value
+                    Item foodItem = new Item(selectedFood, 25, null);  // Adjust points value as needed
                     if (!inventoryPanel.addFoodItem(foodItem)) {
-                        // If the item already exists, it will increase the quantity automatically
-                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
                     } else {
-                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
                     }
-                } else if (selectedGift != null) {
-                    // Add gift item to inventory
-                    Item giftItem = new Item(selectedGift, 10, null);  // Replace `10` with the appropriate points value
-                    if (!inventoryPanel.addGiftItem(giftItem)) {
-                        // If the item already exists, it will increase the quantity automatically
-                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-                else {
-                    // No item selected
+                } else {
                     JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-            else {
-                JOptionPane.showMessageDialog(this, "Inventory is full!");
+            } else {
+                JOptionPane.showMessageDialog(this, "CustomListDemo is not initialized!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         else if (e.getSource() == exit_button) {
@@ -127,18 +157,18 @@ public class Shop extends JPanel implements ActionListener {
         }
     }
 
-    // Test the panel in a JFrame
-    public static void main(String[] args) {
-        // Create and display the JFrame
-        JFrame frame = new JFrame("Shop Panel");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 500);
-
-        // Create an instance of Shop and add it to the frame
-        Shop ShopPanel = new Shop(new Inventory());
-        frame.add(ShopPanel); // Add Shop panel to the frame
-
-        // Make the frame visible
-        frame.setVisible(true); // Make the frame visible
-    }
+//    // Test the panel in a JFrame
+//    public static void main(String[] args) {
+//        // Create and display the JFrame
+//        JFrame frame = new JFrame("Shop Panel");
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setSize(800, 500);
+//
+//        // Create an instance of Shop and add it to the frame
+//        Shop ShopPanel = new Shop(new Inventory());
+//        frame.add(ShopPanel); // Add Shop panel to the frame
+//
+//        // Make the frame visible
+//        frame.setVisible(true); // Make the frame visible
+//    }
 }

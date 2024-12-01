@@ -38,6 +38,8 @@ import static javax.swing.SwingConstants.CENTER;
 public class CustomListDemo extends JPanel {
     ImageIcon[] images;
     String[] petStrings = {"applepie", "burger", "cookies", "frenchfries", "garlicbread", "macncheese", "pancakes", "salmon", "steak", "strawberrycake"};
+    JList petList;
+//    public static Object selectedValue;
     /*
      * Despite its use of EmptyBorder, this panel makes a fine content
      * pane because the empty border just increases the panel's size
@@ -61,7 +63,7 @@ public class CustomListDemo extends JPanel {
         }
 
         //Create the combo box.
-        JList petList = new JList(intArray);
+        petList = new JList(intArray);
 
         ComboBoxRenderer renderer= new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension(30, 30));
@@ -83,7 +85,20 @@ public class CustomListDemo extends JPanel {
         add(petList, BorderLayout.PAGE_START);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         setBounds(20, 100, 750, 70);
+
     }
+
+    public String isSelected() {
+        Object selectedValue = petList.getSelectedValue();
+        if (selectedValue != null) {
+            int index = (Integer) selectedValue; // The index of the selected item
+            return petStrings[index];            // The string representation of the selected food item
+        } else {
+            return null; // No item selected
+        }
+    }
+
+
 
     /** Returns an ImageIcon, or null if the path was invalid. */
     protected static ImageIcon createImageIcon(String path) {
