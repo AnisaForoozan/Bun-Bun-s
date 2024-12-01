@@ -96,6 +96,7 @@ public class Inventory extends JPanel implements ActionListener {
         this.add(food_label); // Add food label
         this.add(foodList);
         this.add(separator); // Add separator
+
         this.add(gifts_label); // Add gifts label
         this.add(giftList);
         this.add(separator1); // Add separator
