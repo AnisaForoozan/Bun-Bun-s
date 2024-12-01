@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,6 +103,15 @@ public class GameSaveManager {
         Map<String, String> saveData = loadSaveData();
         return Boolean.parseBoolean(saveData.getOrDefault("gameplay_locked", "false"));
     }
+
+    public static void resetTimeLimitForToday() {
+        Map<String, Integer> timeLimits = getTimeLimits();
+        String todayKey = LocalDate.now().getDayOfWeek().toString();
+        timeLimits.put(todayKey, 0); // Reset timer for the current day
+        saveTimeLimits(timeLimits); // Use saveTimeLimits to save the updated map
+    }
+
+
 
 
 }

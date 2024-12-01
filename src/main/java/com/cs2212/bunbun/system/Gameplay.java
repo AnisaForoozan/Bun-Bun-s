@@ -29,6 +29,16 @@ public class Gameplay extends JPanel {
             cardLayout.show(mainPanel, "MainMenu");
         });
 
+        // Panel for the back button
+        JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topLeftPanel.setOpaque(false); // Transparent background
+        topLeftPanel.add(backButton);
+        add(topLeftPanel, BorderLayout.NORTH);
+
+        // Main content panel
+        JPanel centerPanel = new JPanel(null); // Use null layout for custom positioning
+        centerPanel.setOpaque(false);
+
 
         // Progress Bars
         sleepBar = createProgressBar(20, 80, "Sleep", 0);
@@ -94,6 +104,14 @@ public class Gameplay extends JPanel {
 
             // Go back to Main Menu
             cardLayout.show(mainPanel, "MainMenu");
+        }
+    }
+
+    // Reset the timer and elapsed time
+    public void resetTimer() {
+        elapsedTime = 0;
+        if (gameTimer != null) {
+            gameTimer.restart();
         }
     }
 
