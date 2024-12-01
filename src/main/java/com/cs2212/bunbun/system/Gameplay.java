@@ -39,7 +39,7 @@ public class Gameplay extends JPanel {
         this.audioPlayer = audioPlayer;
 
         // Load background image (initial background)
-        backgroundImage = new ImageIcon(getClass().getResource("/images/bedroom.jpg")).getImage();
+        backgroundImage = new ImageIcon(getClass().getResource("/images/main-gameplay-background.png")).getImage();
 
         // Set up the Bunny panel layout
         setLayout(new BorderLayout());  // Use BorderLayout to control layout
@@ -120,10 +120,15 @@ public class Gameplay extends JPanel {
         settingsButton = createButton("Settings", 1700, 50, e -> showMessage("Settings clicked")) ;
         bunnyPanel.add(settingsButton);
 
-        inventoryButton = createButton("Inventory", 1700, 150, e -> showMessage("Inventory clicked"));
+        inventoryButton = createButton("Inventory", 1700, 150, e -> {
+            cardLayout.show(mainPanel, "ItemsMainFrame"); // Switch to ItemsMainFrame
+        });
         bunnyPanel.add(inventoryButton);
 
-        storeButton = createButton("Shop", 1700, 250, e -> showMessage("Shop clicked"));
+
+        storeButton = createButton("Store", 1700, 250, e -> {
+            cardLayout.show(mainPanel, "ItemsMainFrame"); // Switch to ItemsMainFrame
+        });
         bunnyPanel.add(storeButton);
 
 
@@ -206,7 +211,7 @@ public class Gameplay extends JPanel {
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hidePlayTaskButtons();  // Hide play-specific buttons
-            changeBackgroundImage("/images/bedroom.jpg"); // Restore original background
+            changeBackgroundImage("/images/main-gameplay-background.png"); // Restore original background
         });
         bunnyPanel.add(backButton);
         backButton.setVisible(true);
@@ -271,7 +276,7 @@ public class Gameplay extends JPanel {
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hideSleepTaskButtons(); // Hide sleep-specific buttons
-            changeBackgroundImage("/images/bedroom.jpg"); // Restore original background
+            changeBackgroundImage("/images/main-gameplay-background.png"); // Restore original background
         });
         bunnyPanel.add(backButton);
         backButton.setVisible(true);
@@ -347,7 +352,7 @@ public class Gameplay extends JPanel {
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hideVetTaskButtons();  // Hide vet-specific buttons
-            changeBackgroundImage("/images/bedroom.jpg"); // Restore original background
+            changeBackgroundImage("/images/main-gameplay-background.png"); // Restore original background
         });
         bunnyPanel.add(backButton);
         backButton.setVisible(true);
@@ -416,7 +421,7 @@ public class Gameplay extends JPanel {
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hideExerciseTaskButtons();  // Hide exercise-specific buttons
-            changeBackgroundImage("/images/bedroom.jpg"); // Restore original background
+            changeBackgroundImage("/images/main-gameplay-background.png"); // Restore original background
         });
         bunnyPanel.add(backButton);
         backButton.setVisible(true);
@@ -483,7 +488,7 @@ public class Gameplay extends JPanel {
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hideGiftTaskButtons();  // Hide gift-specific buttons
-            changeBackgroundImage("/images/bedroom.jpg"); // Restore original background
+            changeBackgroundImage("/images/main-gameplay-background.png"); // Restore original background
         });
         bunnyPanel.add(backButton);
         backButton.setVisible(true);
@@ -550,7 +555,7 @@ public class Gameplay extends JPanel {
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hideFeedTaskButtons();  // Hide feed-specific buttons
-            changeBackgroundImage("/images/bedroom.jpg"); // Restore original background
+            changeBackgroundImage("/images/main-gameplay-background.png"); // Restore original background
         });
         bunnyPanel.add(backButton);
         backButton.setVisible(true);

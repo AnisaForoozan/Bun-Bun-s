@@ -35,9 +35,6 @@ public class MainMenu extends JFrame {
         parentalControlsPanel = new ParentalControls(cardLayout, mainPanel, audioPlayer);
         mainPanel.add(parentalControlsPanel, "ParentalControls");
         mainPanel.add(new Settings(cardLayout, mainPanel, audioPlayer), "Settings");
-        // Add panels to the mainPanel
-        mainPanel.add(new PetSelection(cardLayout, mainPanel, audioPlayer), "PetSelection");
-        mainPanel.add(new Gameplay(cardLayout, mainPanel, audioPlayer, "Default Name", "Default Type"), "Gameplay");
 
         // Add the main panel to the frame
         add(mainPanel);
@@ -303,8 +300,7 @@ public class MainMenu extends JFrame {
 
     private JButton createMenuButton(String text, String targetPanel) {
         JButton button = new JButton(text);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
+        button.setFocusPainted(false);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
         button.setForeground(Color.WHITE);
         button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
