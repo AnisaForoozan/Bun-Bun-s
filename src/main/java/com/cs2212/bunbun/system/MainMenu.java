@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.Duration;
 
 public class MainMenu extends JFrame {
     private CardLayout cardLayout;
@@ -13,8 +15,11 @@ public class MainMenu extends JFrame {
     private ImageIcon backgroundImage; // Class-level field for background image
     private JDialog infoDialog; // For the custom dialog
     private ParentalControls parentalControlsPanel;
+    private LocalDateTime sessionStartTime;
+    private Timer playtimeTimer;
 
     public MainMenu() {
+        sessionStartTime = LocalDateTime.now(); // Record the start time
         audioPlayer = new AudioPlayer();
         audioPlayer.playMusic("audio/music/menu_music.wav", true); // Background music
 
@@ -41,6 +46,8 @@ public class MainMenu extends JFrame {
 
         // Show the Main Menu initially
         cardLayout.show(mainPanel, "MainMenu");
+
+        startPlaytimeTracking();
     }
 
 
@@ -309,6 +316,7 @@ public class MainMenu extends JFrame {
         button.addActionListener(e -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav");
             if ("EXIT".equals(text)) {
+                GameSaveManager.saveSessionDuration();
                 System.exit(0); // Exit the application
             } else if ("ParentalControls".equals(targetPanel)) {
                 parentalControlsPanel.resetToLayout1(); // Reset to Layout1 before showing loading screen
@@ -407,9 +415,36 @@ public class MainMenu extends JFrame {
         loadingTimer.start();
     }
 
-    public void showTimeLimitReached() {
-        JOptionPane.showMessageDialog(this, "Your time limit is reached.", "Time Limit", JOptionPane.WARNING_MESSAGE);
-        // Disable Gameplay button or functionality
+    private void saveSessionDuration() {
+        LocalDateTime sessionEndTime = LocalDateTime.now(); // Record the end time
+        Duration sessionDuration = Duration.between(sessionStartTime, sessionEndTime); // Calculate the duration
+
+        int sessionMinutes = (int) sessionDuration.toMinutes(); // Convert duration to minutes
+        GameSaveManager.addPlaytime(sessionMinutes); // Add session playtime to total playtime
+
+        System.out.println("Session Duration: " + sessionMinutes + " minutes");
+    }
+
+    private void startPlaytimeTracking() {
+        playtimeTimer = new Timer(60 * 1000, e -> {
+            GameSaveManager.addPlaytime(1); // Add 1 minute to playtime
+
+            // Check if the ParentalControls panel is currently displayed and refresh it
+            if (mainPanel.isAncestorOf(parentalControlsPanel)) {
+                parentalControlsPanel.refreshStatistics();
+            }
+        });
+        playtimeTimer.start();
+    }
+
+
+    @Override
+    public void dispose() {
+        if (playtimeTimer != null) {
+            playtimeTimer.stop(); // Stop the timer when exiting
+        }
+        saveSessionDuration(); // Save the session duration before exiting
+        super.dispose();
     }
 
     public static void main(String[] args) {

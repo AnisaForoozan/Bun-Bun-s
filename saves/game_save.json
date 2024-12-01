@@ -1,6 +1,6 @@
 {
   "parental_password" : "bob",
-  "gameplay_locked" : "false",
   "Slot 1" : "Snow:White Bunny",
-  "time_limits" : "{\"SATURDAY\":0}"
+  "total_play_time" : "5",
+  "session_count" : "1"
 }

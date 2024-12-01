@@ -82,7 +82,7 @@ public class Gameplay extends JPanel {
         new Thread(() -> autoAnimateStat(hungerBar)).start();
 
         // Start the game timer
-        gameTimer = new Timer(60000, e -> { // Fires every 60 seconds
+        gameTimer = new Timer(1200000, e -> { // Fires every 60 seconds
             elapsedTime++;
             enforceTimeLimit(cardLayout, mainPanel);
         });

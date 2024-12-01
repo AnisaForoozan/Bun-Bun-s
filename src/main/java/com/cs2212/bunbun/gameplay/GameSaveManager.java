@@ -11,8 +11,19 @@ import java.util.Map;
 
 public class GameSaveManager {
 
+    private static int totalPlayTime = 0; // Total playtime in minutes
+    private static int sessionCount = 0;
+    private static long sessionStartTime = System.currentTimeMillis();
     private static final String SAVE_FILE = "saves/game_save.json";
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    static {
+        // Load playtime and session count at startup
+        Map<String, String> saveData = loadSaveData();
+        totalPlayTime = Integer.parseInt(saveData.getOrDefault("total_play_time", "0"));
+        sessionCount = Integer.parseInt(saveData.getOrDefault("session_count", "0"));
+        sessionStartTime = System.currentTimeMillis();
+    }
 
     // Load save data from the JSON file
     public static Map<String, String> loadSaveData() {
@@ -110,6 +121,71 @@ public class GameSaveManager {
         timeLimits.put(todayKey, 0); // Reset timer for the current day
         saveTimeLimits(timeLimits); // Use saveTimeLimits to save the updated map
     }
+
+    // Save playtime and session count
+    public static void savePlaytimeData() {
+        Map<String, String> saveData = loadSaveData();
+        saveData.put("total_play_time", String.valueOf(totalPlayTime));
+        saveData.put("session_count", String.valueOf(sessionCount));
+        saveUpdatedData(saveData);
+        System.out.println("Saving playtime data: " + totalPlayTime + " minutes, " + sessionCount + " sessions");
+
+    }
+
+    // Add playtime (in minutes)
+    public static void addPlaytime(int minutes) {
+        totalPlayTime += minutes;
+        sessionCount++;
+        System.out.println("Adding playtime: " + minutes + " minutes, Total: " + totalPlayTime + " minutes, Sessions: " + sessionCount);
+        savePlaytimeData();
+    }
+
+    // Reset total playtime
+    public static void resetTotalPlayTime() {
+        totalPlayTime = 0;
+        savePlaytimeData(); // Save updated values
+    }
+
+    // Reset session count
+    public static void resetAveragePlayTime() {
+        sessionCount = 0;
+        savePlaytimeData(); // Save updated values
+    }
+
+    // Get total playtime in hours and minutes
+    public static String getTotalPlayTime() {
+        int hours = totalPlayTime / 60;
+        int minutes = totalPlayTime % 60;
+        return hours + " hrs " + minutes + " min";
+    }
+
+    // Get average playtime in hours and minutes
+    public static String getAveragePlayTime() {
+        if (sessionCount == 0) return "0 hrs 0 min";
+        int avgMinutes = totalPlayTime / sessionCount;
+        int hours = avgMinutes / 60;
+        int minutes = avgMinutes % 60;
+        return hours + " hrs " + minutes + " min";
+    }
+
+
+    public static int getTotalPlayTimeInMinutes() {
+        return totalPlayTime;
+    }
+
+    public static int getSessionCount() {
+        return sessionCount;
+    }
+
+    public static void saveSessionDuration() {
+        System.out.println("saveSessionDuration called...");
+        long sessionEndTime = System.currentTimeMillis();
+        int sessionMinutes = (int) ((sessionEndTime - sessionStartTime) / (1000 * 60)); // Convert milliseconds to minutes
+        addPlaytime(sessionMinutes);
+        System.out.println("Session duration saved: " + sessionMinutes + " minutes");
+    }
+
+
 
 
 

@@ -16,6 +16,8 @@ public class ParentalControls extends JPanel {
     private JComboBox<String>[] units;
     private JSpinner[] spinners;
     private JPanel mainPanel;
+    private JLabel totalPlayTimeLabel;
+    private JLabel avgPlayTimeLabel;
 
     public ParentalControls(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
@@ -37,6 +39,8 @@ public class ParentalControls extends JPanel {
         topLeftPanel.setOpaque(false);
 
         JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "MainMenu"));
+        backButton.setFocusPainted(false);
+        backButton.setContentAreaFilled(false);
         topLeftPanel.add(backButton);
         add(topLeftPanel, BorderLayout.NORTH);
 
@@ -50,6 +54,8 @@ public class ParentalControls extends JPanel {
         contentPanel.add(createPasswordSetupPanel(), "Layout2");
         contentPanel.add(createProtectedContentPanel(), "Layout3");
         contentPanel.add(createTimeLimitsPanel(), "Layout4");
+        contentPanel.add(createStatisticsPanel(), "Layout5");
+
 
         // Start with Layout 1
         layout.show(contentPanel, "Layout1");
@@ -162,26 +168,33 @@ public class ParentalControls extends JPanel {
     }
 
     private JPanel createProtectedContentPanel() {
-        JPanel panel = createIconButtonPanel(
-                List.of("Time Limits", "Statistics", "Revive Pet"),
-                List.of("/images/hourglass.png", "/images/chart.png", "/images/bunny.png")
-        );
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
 
-        // Add Back button to return to Layout1
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
         gbc.insets = new Insets(10, 0, 10, 0);
 
+        // Add Time Limits button
+        JButton timeLimitsButton = createCustomButton("Time Limits", e -> layout.show(contentPanel, "Layout4"));
+        panel.add(timeLimitsButton, gbc);
+
+        // Add Statistics button
+        JButton statisticsButton = createCustomButton("Statistics", e -> layout.show(contentPanel, "Layout5"));
+        panel.add(statisticsButton, gbc);
+
+        // Add Revive Pet button
+        JButton revivePetButton = createCustomButton("Revive Pet", e -> JOptionPane.showMessageDialog(this, "Feature coming soon!"));
+        panel.add(revivePetButton, gbc);
+
+        // Add Back button
         JButton backButton = createCustomButton("Back", e -> layout.show(contentPanel, "Layout1"));
         panel.add(backButton, gbc);
 
-        // Add Time Limits button functionality
-        JButton timeLimitsButton = (JButton) ((JPanel) panel.getComponent(0)).getComponent(1); // Assumes "Time Limits" is the first button
-        timeLimitsButton.addActionListener(e -> layout.show(contentPanel, "Layout4")); // Switch to Layout4
-
         return panel;
     }
+
 
     private JPanel createTimeLimitsPanel() {
         String[] days = {"Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"};
@@ -377,6 +390,88 @@ public class ParentalControls extends JPanel {
 
         return panel;
     }
+
+
+    private JPanel createStatisticsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false); // Transparent background
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.insets = new Insets(20, 0, 20, 0);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // Title
+        JLabel titleLabel = new JLabel("Player Statistics");
+        titleLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 36));
+        titleLabel.setForeground(Color.WHITE);
+        panel.add(titleLabel, gbc);
+
+        // Total Play Time
+        totalPlayTimeLabel = new JLabel("Total Play Time: 0 hrs 0 min"); // Placeholder
+        totalPlayTimeLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+        totalPlayTimeLabel.setForeground(Color.WHITE);
+        panel.add(totalPlayTimeLabel, gbc);
+
+        // Reset Total Play Time Button
+        JButton resetTotalButton = createCustomButton("Reset", e -> {
+            GameSaveManager.resetTotalPlayTime();
+            updateStatisticsLabels(); // Refresh labels
+        });
+        panel.add(resetTotalButton, gbc);
+
+        // Average Play Time
+        avgPlayTimeLabel = new JLabel("Average Play Time: 0 hrs 0 min"); // Placeholder
+        avgPlayTimeLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+        avgPlayTimeLabel.setForeground(Color.WHITE);
+        panel.add(avgPlayTimeLabel, gbc);
+
+        // Reset Average Play Time Button
+        JButton resetAverageButton = createCustomButton("Reset", e -> {
+            GameSaveManager.resetAveragePlayTime();
+            updateStatisticsLabels(); // Refresh labels
+        });
+        panel.add(resetAverageButton, gbc);
+
+        // Back Button
+        JButton backButton = createCustomButton("Back", e -> layout.show(contentPanel, "Layout3"));
+        panel.add(backButton, gbc);
+
+        // Initialize the statistics labels with current data
+        updateStatisticsLabels();
+
+        return panel;
+    }
+
+    // Helper to update statistics dynamically
+    private void updateStatisticsLabels() {
+        int totalPlayTimeMinutes = GameSaveManager.getTotalPlayTimeInMinutes();
+        int sessions = GameSaveManager.getSessionCount();
+
+        int totalHours = totalPlayTimeMinutes / 60;
+        int totalMinutes = totalPlayTimeMinutes % 60;
+        totalPlayTimeLabel.setText(String.format("Total Play Time: %d hrs %d min", totalHours, totalMinutes));
+
+        if (sessions > 0) {
+            int avgPlayTimeMinutes = totalPlayTimeMinutes / sessions;
+            int avgHours = avgPlayTimeMinutes / 60;
+            int avgMinutes = avgPlayTimeMinutes % 60;
+            avgPlayTimeLabel.setText(String.format("Average Play Time: %d hrs %d min", avgHours, avgMinutes));
+        } else {
+            avgPlayTimeLabel.setText("Average Play Time: 0 hrs 0 min");
+        }
+    }
+
+    // Call this method from MainMenu to refresh ParentalControls statistics periodically
+    public void refreshStatistics() {
+        updateStatisticsLabels();
+    }
+
+
+
+
 
 
 
