@@ -105,6 +105,46 @@ public class Inventory extends JPanel implements ActionListener {
         this.add(confirmButton); // Add confirm button
         this.add(exit_button); // Add exit button
 
+        foodList.addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastSelectedIndex = -1; // Track the last selected index
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int index = foodList.locationToIndex(evt.getPoint()); // Get the clicked index
+
+                if (index != -1) { // Ensure the click is on a valid item
+                    if (index == lastSelectedIndex) {
+                        // If clicking the same item again, deselect it
+                        foodList.clearSelection();
+                        lastSelectedIndex = -1; // Reset tracking
+                    } else {
+                        // Otherwise, update the last selected index
+                        lastSelectedIndex = index;
+                    }
+                }
+            }
+        });
+
+        giftList.addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastSelectedIndex = -1; // Track the last selected index
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int index = giftList.locationToIndex(evt.getPoint()); // Get the clicked index
+
+                if (index != -1) { // Ensure the click is on a valid item
+                    if (index == lastSelectedIndex) {
+                        // If clicking the same item again, deselect it
+                        giftList.clearSelection();
+                        lastSelectedIndex = -1; // Reset tracking
+                    } else {
+                        // Otherwise, update the last selected index
+                        lastSelectedIndex = index;
+                    }
+                }
+            }
+        });
+
     }
 
     class InventoryItemRenderer extends JPanel implements ListCellRenderer<Item> {

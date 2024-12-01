@@ -80,6 +80,26 @@ public class CustomGiftList extends JPanel {
         setBounds(20, 100, 750, 70);
         add(scrollPane, BorderLayout.PAGE_START);
 
+        petList.addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastSelectedIndex = -1; // Track the last selected index
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int index = petList.locationToIndex(evt.getPoint()); // Get the clicked index
+
+                if (index != -1) { // Ensure the click is on a valid item
+                    if (index == lastSelectedIndex) {
+                        // If clicking the same item again, deselect it
+                        petList.clearSelection();
+                        lastSelectedIndex = -1; // Reset tracking
+                    } else {
+                        // Otherwise, update the last selected index
+                        lastSelectedIndex = index;
+                    }
+                }
+            }
+        });
+
         //Lay out the demo.
         renderer.setPreferredSize(new Dimension(70, 70));  // Set a fixed size for each list cell
         add(petList, BorderLayout.PAGE_START);
@@ -89,9 +109,6 @@ public class CustomGiftList extends JPanel {
 
     public String isSelected() {
         Object selectedValue = petList.getSelectedValue();
-        System.out.println("Selected Value: " + petList.getSelectedValue());
-        System.out.println("Selected Index: " + petList.getSelectedIndex());
-
         if (selectedValue != null) {
             int index = (Integer) selectedValue; // The index of the selected item
             return petStrings[index];            // The string representation of the selected food item
@@ -99,7 +116,6 @@ public class CustomGiftList extends JPanel {
             return null; // No item selected
         }
     }
-
 
 
     /** Returns an ImageIcon, or null if the path was invalid. */
