@@ -12,12 +12,14 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
     private JButton inventory_button;
     private JButton shop_button;
     private CustomListDemo customListDemo;
+    private CustomGiftList customGiftList;
 
     // Constructor for MainFrame
     public ItemsMainFrame() {
 
         // Initialize the custom list demo panel
         customListDemo = new CustomListDemo();
+        customGiftList = new CustomGiftList();
 
         // Set up the frame
         setTitle("Inventory and Shop");
@@ -27,7 +29,7 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
         // Create the inventory and shop panels
         inventoryPanel = new Inventory();
-        shopPanel = new Shop(customListDemo, inventoryPanel); // Assuming Shop class exists with your shop panel
+        shopPanel = new Shop(customListDemo, customGiftList, inventoryPanel); // Assuming Shop class exists with your shop panel
 
         // Create CardLayout container
         cardPanel = new JPanel(new CardLayout());

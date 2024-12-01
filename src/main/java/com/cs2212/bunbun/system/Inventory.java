@@ -65,14 +65,20 @@ public class Inventory extends JPanel implements ActionListener {
         separator1.setBounds(0, 266, 800, 10);
 
         // Initialize the gift list
+//        giftListModel = new DefaultListModel<>();
+//        giftList = new JList<>(giftListModel);
+//        giftList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//
+//        // Set the layout to FlowLayout to display items horizontally
+//        giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+//        giftList.setVisibleRowCount(1); // Only show one row at a time horizontally
+//        giftList.setBounds(20, 280, 750, 50);
         giftListModel = new DefaultListModel<>();
         giftList = new JList<>(giftListModel);
-        giftList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Set the layout to FlowLayout to display items horizontally
+        giftList.setCellRenderer(new InventoryItemRenderer()); // Set custom renderer
         giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        giftList.setVisibleRowCount(1); // Only show one row at a time horizontally
-        giftList.setBounds(20, 280, 750, 50);
+        giftList.setVisibleRowCount(1);
+        giftList.setBounds(20, 280, 750, 70);
 
         // Create confirm button
         confirmButton = new JButton("Confirm");
@@ -268,7 +274,7 @@ public class Inventory extends JPanel implements ActionListener {
         Item apple = new Item("Apple", 25, null);
         // Add some test items
         inventoryPanel.addFoodItem(apple);
-        inventoryPanel.addFoodItem(apple); // Add duplicate to test quantity
+        inventoryPanel.addGiftItem(apple); // Add duplicate to test quantity
 
         frame.setVisible(true);
     }

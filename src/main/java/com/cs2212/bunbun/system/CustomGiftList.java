@@ -89,6 +89,9 @@ public class CustomGiftList extends JPanel {
 
     public String isSelected() {
         Object selectedValue = petList.getSelectedValue();
+        System.out.println("Selected Value: " + petList.getSelectedValue());
+        System.out.println("Selected Index: " + petList.getSelectedIndex());
+
         if (selectedValue != null) {
             int index = (Integer) selectedValue; // The index of the selected item
             return petStrings[index];            // The string representation of the selected food item
