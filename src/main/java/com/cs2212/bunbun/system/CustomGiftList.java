@@ -37,8 +37,9 @@ import static javax.swing.SwingConstants.CENTER;
 
 public class CustomGiftList extends JPanel {
     ImageIcon[] images;
-    String[] petStrings = {"applepie", "burger", "cookies", "frenchfries", "garlicbread", "macncheese", "pancakes", "salmon", "steak", "strawberrycake"};
+    String[] petStrings = {"bluegift", "greengift", "redgift", "redyellowgift", "whitegift", "yellowgift"};
     JList petList;
+    private JList foodList;
     //    public static Object selectedValue;
     /*
      * Despite its use of EmptyBorder, this panel makes a fine content
@@ -48,6 +49,10 @@ public class CustomGiftList extends JPanel {
      * opaque (which it is by default); adding a border doesn't change
      * that.
      */
+    public void setFoodList(JList foodList) {
+        this.foodList = foodList;
+    }
+
     public CustomGiftList() {
         super(new BorderLayout());
 
@@ -56,7 +61,7 @@ public class CustomGiftList extends JPanel {
         Integer[] intArray = new Integer[petStrings.length];
         for (int i = 0; i < petStrings.length; i++) {
             intArray[i] = new Integer(i);
-            images[i] = createImageIcon("/images/fooditems/" + petStrings[i] + ".png");
+            images[i] = createImageIcon("/images/giftitems/" + petStrings[i] + ".png");
             if (images[i] != null) {
                 images[i].setDescription(petStrings[i]);
             }
@@ -105,6 +110,13 @@ public class CustomGiftList extends JPanel {
         add(petList, BorderLayout.PAGE_START);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         setBounds(20, 100, 750, 70);
+
+        // Add ListSelectionListener to clear the food list selection
+        petList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && petList.getSelectedIndex() != -1 && foodList != null) {
+                foodList.clearSelection();
+            }
+        });
     }
 
     public String isSelected() {

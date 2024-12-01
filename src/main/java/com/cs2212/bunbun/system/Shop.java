@@ -28,6 +28,10 @@ public class Shop extends JPanel implements ActionListener {
         this.customGiftList = customGiftList;
         this.inventoryPanel = inventoryPanel;
 
+        // Set the references between food and gift lists
+        this.customListDemo.setGiftList(this.customGiftList.petList);
+        this.customGiftList.setFoodList(this.customListDemo.petList);
+
         // Create "Food" label
         JLabel food_label = new JLabel("Food");
         food_label.setHorizontalAlignment(JLabel.LEFT);
@@ -93,48 +97,6 @@ public class Shop extends JPanel implements ActionListener {
         this.add(exit_button); // Add exit button
 
     }
-
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//        if (e.getSource() == purchaseButton) {
-//            if (customListDemo != null) {
-//                String selectedFood = customListDemo.isSelected();  // Corrected method name
-//                System.out.println("Selected Food: " + selectedFood);  // Debugging line
-//
-//                if (selectedFood != null) {
-//                    Item foodItem = new Item(selectedFood, 25, null);  // Adjust points value as needed
-//                    if (!inventoryPanel.addFoodItem(foodItem)) {
-//                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
-//                    } else {
-//                        JOptionPane.showMessageDialog(this, "You purchased: " + selectedFood, "Purchase Success", JOptionPane.INFORMATION_MESSAGE);
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(this, "CustomListDemo is not initialized!", "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//
-////            } else if (selectedGift != null) {
-////                // Add gift item to inventory
-////                Item giftItem = new Item(selectedGift, 10, null);  // Replace `10` with the appropriate points value
-////                if (!inventoryPanel.addGiftItem(giftItem)) {
-////                    // If the item already exists, it will increase the quantity automatically
-////                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
-////                } else {
-////                    JOptionPane.showMessageDialog(this, "You purchased: " + selectedGift, "Item Purchased", JOptionPane.INFORMATION_MESSAGE);
-////                }
-////            } else {
-////                // No item selected
-////                JOptionPane.showMessageDialog(this, "No item selected!", "Error", JOptionPane.ERROR_MESSAGE);
-////            }
-//        }
-//        else if (e.getSource() == exit_button) {
-//            // Exit action
-//            JOptionPane.showMessageDialog(this, "Exiting Inventory...");
-//            System.exit(0); // Close the application
-//        }
-//    }
 
     @Override
     public void actionPerformed(ActionEvent e) {

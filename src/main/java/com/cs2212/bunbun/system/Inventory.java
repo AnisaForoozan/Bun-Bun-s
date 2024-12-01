@@ -51,6 +51,13 @@ public class Inventory extends JPanel implements ActionListener {
         foodList.setVisibleRowCount(1);
         foodList.setBounds(20, 100, 750, 70);
 
+        // Add a listener to foodList to clear selection in giftList
+        foodList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && foodList.getSelectedIndex() != -1) {
+                giftList.clearSelection(); // Clear selection in gift list
+            }
+        });
+
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setBounds(0, 90, 800, 10);
@@ -80,6 +87,13 @@ public class Inventory extends JPanel implements ActionListener {
         giftList.setVisibleRowCount(1);
         giftList.setBounds(20, 280, 750, 70);
 
+        // Add a listener to giftList to clear selection in foodList
+        giftList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && giftList.getSelectedIndex() != -1) {
+                foodList.clearSelection(); // Clear selection in food list
+            }
+        });
+
         // Create confirm button
         confirmButton = new JButton("Confirm");
         confirmButton.setBounds(420, 370, 105, 40);
@@ -105,45 +119,45 @@ public class Inventory extends JPanel implements ActionListener {
         this.add(confirmButton); // Add confirm button
         this.add(exit_button); // Add exit button
 
-        foodList.addMouseListener(new java.awt.event.MouseAdapter() {
-            private int lastSelectedIndex = -1; // Track the last selected index
-
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int index = foodList.locationToIndex(evt.getPoint()); // Get the clicked index
-
-                if (index != -1) { // Ensure the click is on a valid item
-                    if (index == lastSelectedIndex) {
-                        // If clicking the same item again, deselect it
-                        foodList.clearSelection();
-                        lastSelectedIndex = -1; // Reset tracking
-                    } else {
-                        // Otherwise, update the last selected index
-                        lastSelectedIndex = index;
-                    }
-                }
-            }
-        });
-
-        giftList.addMouseListener(new java.awt.event.MouseAdapter() {
-            private int lastSelectedIndex = -1; // Track the last selected index
-
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int index = giftList.locationToIndex(evt.getPoint()); // Get the clicked index
-
-                if (index != -1) { // Ensure the click is on a valid item
-                    if (index == lastSelectedIndex) {
-                        // If clicking the same item again, deselect it
-                        giftList.clearSelection();
-                        lastSelectedIndex = -1; // Reset tracking
-                    } else {
-                        // Otherwise, update the last selected index
-                        lastSelectedIndex = index;
-                    }
-                }
-            }
-        });
+//        foodList.addMouseListener(new java.awt.event.MouseAdapter() {
+//            private int lastSelectedIndex = -1; // Track the last selected index
+//
+//            @Override
+//            public void mouseClicked(java.awt.event.MouseEvent evt) {
+//                int index = foodList.locationToIndex(evt.getPoint()); // Get the clicked index
+//
+//                if (index != -1) { // Ensure the click is on a valid item
+//                    if (index == lastSelectedIndex) {
+//                        // If clicking the same item again, deselect it
+//                        foodList.clearSelection();
+//                        lastSelectedIndex = -1; // Reset tracking
+//                    } else {
+//                        // Otherwise, update the last selected index
+//                        lastSelectedIndex = index;
+//                    }
+//                }
+//            }
+//        });
+//
+//        giftList.addMouseListener(new java.awt.event.MouseAdapter() {
+//            private int lastSelectedIndex = -1; // Track the last selected index
+//
+//            @Override
+//            public void mouseClicked(java.awt.event.MouseEvent evt) {
+//                int index = giftList.locationToIndex(evt.getPoint()); // Get the clicked index
+//
+//                if (index != -1) { // Ensure the click is on a valid item
+//                    if (index == lastSelectedIndex) {
+//                        // If clicking the same item again, deselect it
+//                        giftList.clearSelection();
+//                        lastSelectedIndex = -1; // Reset tracking
+//                    } else {
+//                        // Otherwise, update the last selected index
+//                        lastSelectedIndex = index;
+//                    }
+//                }
+//            }
+//        });
 
     }
 

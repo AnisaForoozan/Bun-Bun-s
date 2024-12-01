@@ -48,6 +48,12 @@ public class CustomListDemo extends JPanel {
      * opaque (which it is by default); adding a border doesn't change
      * that.
      */
+    private JList giftList; // Reference to the gift list
+
+    public void setGiftList(JList giftList) {
+        this.giftList = giftList;
+    }
+
     public CustomListDemo() {
         super(new BorderLayout());
 
@@ -80,32 +86,17 @@ public class CustomListDemo extends JPanel {
         setBounds(20, 100, 750, 70);
         add(scrollPane, BorderLayout.PAGE_START);
 
-        petList.addMouseListener(new java.awt.event.MouseAdapter() {
-            private int lastSelectedIndex = -1; // Track the last selected index
-
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int index = petList.locationToIndex(evt.getPoint()); // Get the clicked index
-
-                if (index != -1) { // Ensure the click is on a valid item
-                    if (index == lastSelectedIndex) {
-                        // If clicking the same item again, deselect it
-                        petList.clearSelection();
-                        lastSelectedIndex = -1; // Reset tracking
-                    } else {
-                        // Otherwise, update the last selected index
-                        lastSelectedIndex = index;
-                    }
-                }
-            }
-        });
-
-
         //Lay out the demo.
         renderer.setPreferredSize(new Dimension(70, 70));  // Set a fixed size for each list cell
         add(petList, BorderLayout.PAGE_START);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
         setBounds(20, 100, 750, 70);
+
+        petList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && petList.getSelectedIndex() != -1 && giftList != null) {
+                giftList.clearSelection();
+            }
+        });
     }
 
     public String isSelected() {
@@ -220,4 +211,5 @@ public class CustomListDemo extends JPanel {
             label.setText(uhOhText);
         }
     }
+
 }
