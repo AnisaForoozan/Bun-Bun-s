@@ -16,6 +16,7 @@ public class GameSaveManager {
     private static long sessionStartTime = System.currentTimeMillis();
     private static final String SAVE_FILE = "saves/game_save.json";
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final int MAX_HEALTH = 20;
 
     static {
         // Load playtime and session count at startup
@@ -80,23 +81,43 @@ public class GameSaveManager {
         return null; // Return null if not found or invalid format
     }
 
-    // Add the time limit saving and loading methods here
     public static void saveTimeLimits(Map<String, Integer> timeLimits) {
         try {
+            // Normalize keys to title case
+            Map<String, Integer> normalizedTimeLimits = new HashMap<>();
+            for (Map.Entry<String, Integer> entry : timeLimits.entrySet()) {
+                String normalizedKey = entry.getKey().substring(0, 1).toUpperCase() + entry.getKey().substring(1).toLowerCase();
+                normalizedTimeLimits.put(normalizedKey, entry.getValue());
+            }
+
             Map<String, String> saveData = loadSaveData();
-            saveData.put("time_limits", objectMapper.writeValueAsString(timeLimits)); // Save as a JSON string
+            saveData.put("time_limits", objectMapper.writeValueAsString(normalizedTimeLimits)); // Save normalized keys
             saveUpdatedData(saveData);
+
+            System.out.println("Time Limits Saved to File: " + normalizedTimeLimits);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     public static Map<String, Integer> getTimeLimits() {
         Map<String, String> saveData = loadSaveData();
         String data = saveData.get("time_limits");
         if (data != null) {
             try {
-                return new ObjectMapper().readValue(data, new TypeReference<Map<String, Integer>>() {});
+                Map<String, Integer> timeLimits = new ObjectMapper().readValue(data, new TypeReference<Map<String, Integer>>() {});
+
+                // Normalize keys to title case
+                Map<String, Integer> normalizedTimeLimits = new HashMap<>();
+                for (Map.Entry<String, Integer> entry : timeLimits.entrySet()) {
+                    String normalizedKey = entry.getKey().substring(0, 1).toUpperCase() + entry.getKey().substring(1).toLowerCase();
+                    normalizedTimeLimits.put(normalizedKey, entry.getValue());
+                }
+
+                return normalizedTimeLimits;
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -152,21 +173,18 @@ public class GameSaveManager {
         savePlaytimeData(); // Save updated values
     }
 
-    // Get total playtime in hours and minutes
-    public static String getTotalPlayTime() {
-        int hours = totalPlayTime / 60;
-        int minutes = totalPlayTime % 60;
-        return hours + " hrs " + minutes + " min";
+
+    public static void setTimeRestrictionEnabled(boolean enabled) {
+        Map<String, String> saveData = loadSaveData();
+        saveData.put("time_restriction_enabled", String.valueOf(enabled));
+        saveUpdatedData(saveData);
     }
 
-    // Get average playtime in hours and minutes
-    public static String getAveragePlayTime() {
-        if (sessionCount == 0) return "0 hrs 0 min";
-        int avgMinutes = totalPlayTime / sessionCount;
-        int hours = avgMinutes / 60;
-        int minutes = avgMinutes % 60;
-        return hours + " hrs " + minutes + " min";
+    public static boolean isTimeRestrictionEnabled() {
+        Map<String, String> saveData = loadSaveData();
+        return Boolean.parseBoolean(saveData.getOrDefault("time_restriction_enabled", "false"));
     }
+
 
 
     public static int getTotalPlayTimeInMinutes() {
@@ -184,6 +202,43 @@ public class GameSaveManager {
         addPlaytime(sessionMinutes);
         System.out.println("Session duration saved: " + sessionMinutes + " minutes");
     }
+
+    public static void saveVolumeSetting(String key, float value) {
+        Map<String, String> saveData = loadSaveData();
+        saveData.put(key, String.valueOf(value));
+        saveUpdatedData(saveData);
+    }
+
+    public static float loadVolumeSetting(String key) {
+        Map<String, String> saveData = loadSaveData();
+        return Float.parseFloat(saveData.getOrDefault(key, "0")); // Default to muted if not found
+    }
+
+    public static int getMaxHealth() {
+        return MAX_HEALTH;
+    }
+
+    // Add this in GameSaveManager
+    public static int getPetHealth(String slotKey) {
+        Map<String, String> saveData = loadSaveData();
+        try {
+            return Integer.parseInt(saveData.getOrDefault(slotKey + "_health", "20")); // Default health is 20
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 20; // Default to 20 if invalid
+        }
+    }
+
+
+    public static void savePetHealth(String slotKey, int health) {
+        Map<String, String> saveData = loadSaveData();
+        saveData.put(slotKey + "_health", String.valueOf(health));
+        saveUpdatedData(saveData);
+    }
+
+
+
+
 
 
 

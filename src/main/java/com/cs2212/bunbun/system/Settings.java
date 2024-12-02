@@ -1,5 +1,7 @@
 package com.cs2212.bunbun.system;
 
+import com.cs2212.bunbun.gameplay.GameSaveManager;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -36,27 +38,35 @@ public class Settings extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         centerPanel.add(titleLabel, gbc);
 
+        // Load saved slider values
+        int masterVolumeValue = convertDecibelsToSliderValue(GameSaveManager.loadVolumeSetting("master_volume"));
+        int musicVolumeValue = convertDecibelsToSliderValue(GameSaveManager.loadVolumeSetting("music_volume"));
+        int sfxVolumeValue = convertDecibelsToSliderValue(GameSaveManager.loadVolumeSetting("sfx_volume"));
+
         // Sliders
         gbc.gridy = 1;
         JPanel slidersPanel = new JPanel();
         slidersPanel.setLayout(new BoxLayout(slidersPanel, BoxLayout.Y_AXIS));
         slidersPanel.setOpaque(false);
 
-        slidersPanel.add(createVolumeControl("Master Volume", 50, value -> {
+        slidersPanel.add(createVolumeControl("Master Volume", masterVolumeValue, value -> {
             float volume = convertSliderValueToDecibels(value);
             audioPlayer.setMasterVolume(volume);
+            GameSaveManager.saveVolumeSetting("master_volume", volume); // Save setting
         }));
         slidersPanel.add(Box.createVerticalStrut(20));
 
-        slidersPanel.add(createVolumeControl("Music Volume", 50, value -> {
+        slidersPanel.add(createVolumeControl("Music Volume", musicVolumeValue, value -> {
             float volume = convertSliderValueToDecibels(value);
             audioPlayer.setMusicVolume(volume);
+            GameSaveManager.saveVolumeSetting("music_volume", volume); // Save setting
         }));
         slidersPanel.add(Box.createVerticalStrut(20));
 
-        slidersPanel.add(createVolumeControl("SFX Volume", 50, value -> {
+        slidersPanel.add(createVolumeControl("SFX Volume", sfxVolumeValue, value -> {
             float volume = convertSliderValueToDecibels(value);
             audioPlayer.setSFXVolume(volume);
+            GameSaveManager.saveVolumeSetting("sfx_volume", volume); // Save setting
         }));
 
         centerPanel.add(slidersPanel, gbc);
@@ -84,7 +94,7 @@ public class Settings extends JPanel {
 
         // Add click sound
         button.addActionListener(e -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav");
+            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Click sound respects SFX and Master volume
             onClick.actionPerformed(e);
         });
 
@@ -96,7 +106,7 @@ public class Settings extends JPanel {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setForeground(hoverColor);
-                audioPlayer.playSFX("audio/sfx/hover_sound.wav");
+                audioPlayer.playSFX("audio/sfx/hov_sound.wav"); // Hover sound respects SFX and Master volume
             }
 
             @Override
@@ -131,5 +141,10 @@ public class Settings extends JPanel {
     private float convertSliderValueToDecibels(int value) {
         if (value == 0) return -80.0f; // Minimum decibel value for muting
         return (float) (Math.log10(value / 100.0) * 20); // Convert percentage to decibels
+    }
+
+    private int convertDecibelsToSliderValue(float decibels) {
+        if (decibels <= -80.0f) return 0; // Handle muted value
+        return (int) (Math.pow(10, decibels / 20) * 100); // Convert decibels to slider percentage
     }
 }

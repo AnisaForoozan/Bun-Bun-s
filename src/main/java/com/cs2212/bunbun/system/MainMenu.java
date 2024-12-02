@@ -21,6 +21,15 @@ public class MainMenu extends JFrame {
     public MainMenu() {
         sessionStartTime = LocalDateTime.now(); // Record the start time
         audioPlayer = new AudioPlayer();
+
+        // Load saved volume settings and apply them
+        float savedMasterVolume = GameSaveManager.loadVolumeSetting("master_volume");
+        float savedMusicVolume = GameSaveManager.loadVolumeSetting("music_volume");
+        float savedSFXVolume = GameSaveManager.loadVolumeSetting("sfx_volume");
+
+        audioPlayer.setMasterVolume(savedMasterVolume);
+        audioPlayer.setMusicVolume(savedMusicVolume);
+        audioPlayer.setSFXVolume(savedSFXVolume);
         audioPlayer.playMusic("audio/music/menu_music.wav", true); // Background music
 
         // Set up the frame
