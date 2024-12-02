@@ -16,9 +16,10 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
     // Constructor for MainFrame
     public ItemsMainFrame() {
-
+        getContentPane().setBackground(new Color(193, 154, 107)); // Set the frame background color
         // Initialize the custom list demo panel
         customListDemo = new CustomListDemo();
+//        customListDemo.setBackground(new Color(193, 154, 107));
         customGiftList = new CustomGiftList();
 
         // Set up the frame
@@ -29,10 +30,12 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
         // Create the inventory and shop panels
         inventoryPanel = new Inventory();
+//        inventoryPanel.setBackground(new Color(193, 154, 107));
         shopPanel = new Shop(customListDemo, customGiftList, inventoryPanel); // Assuming Shop class exists with your shop panel
 
         // Create CardLayout container
         cardPanel = new JPanel(new CardLayout());
+//        cardPanel.setForeground(new Color(193, 154, 107));
 
         // Add panels to the CardLayout container
         cardPanel.add(inventoryPanel, "Inventory");
@@ -40,6 +43,7 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
         // Create "Inventory" button
         inventory_button = new JButton("Inventory");
+        inventory_button.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         inventory_button.setHorizontalAlignment(JLabel.CENTER);
         inventory_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
         inventory_button.setBounds(290, 10, 100, 30);
@@ -47,6 +51,7 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
         // Create "Shop" button
         shop_button = new JButton("Shop");
+        shop_button.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         shop_button.setHorizontalAlignment(JLabel.CENTER);
         shop_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
         shop_button.setBounds(430, 10, 100, 30);

@@ -75,6 +75,7 @@ public class CustomListDemo extends JPanel {
         renderer.setPreferredSize(new Dimension(30, 30));
         //petList.setRenderer(renderer);
         petList.setCellRenderer(renderer);
+        petList.setBackground(new Color(193, 154, 107));
         petList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         petList.setLayoutOrientation(JList.HORIZONTAL_WRAP); // Set horizontal layout
         petList.setVisibleRowCount(1); // Show all items in a single row
@@ -83,6 +84,7 @@ public class CustomListDemo extends JPanel {
         petList.setPreferredSize(new Dimension(550, 70)); // adjust based on desired height
 
         JScrollPane scrollPane = new JScrollPane(petList);
+        scrollPane.setForeground(new Color(193, 154, 107));
         setBounds(20, 100, 750, 70);
         add(scrollPane, BorderLayout.PAGE_START);
 
@@ -90,7 +92,7 @@ public class CustomListDemo extends JPanel {
         renderer.setPreferredSize(new Dimension(70, 70));  // Set a fixed size for each list cell
         add(petList, BorderLayout.PAGE_START);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        setBounds(20, 100, 750, 70);
+        setBounds(20, 100, 750, 30);
 
         petList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && petList.getSelectedIndex() != -1 && giftList != null) {

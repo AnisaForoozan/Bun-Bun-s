@@ -74,6 +74,7 @@ public class CustomGiftList extends JPanel {
         renderer.setPreferredSize(new Dimension(30, 30));
         //petList.setRenderer(renderer);
         petList.setCellRenderer(renderer);
+        petList.setBackground(new Color(193, 154, 107));
         petList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         petList.setLayoutOrientation(JList.HORIZONTAL_WRAP); // Set horizontal layout
         petList.setVisibleRowCount(1); // Show all items in a single row

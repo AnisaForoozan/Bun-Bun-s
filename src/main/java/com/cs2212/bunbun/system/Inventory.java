@@ -15,7 +15,7 @@ public class Inventory extends JPanel implements ActionListener {
     private JLabel capacityLabel; // Label to show inventory capacity
 
     public static int totalItems; // Track total items in inventory
-    public static final int MAX_CAPACITY = 5; // Maximum inventory capacity
+    public static final int MAX_CAPACITY = 50; // Maximum inventory capacity
 
     //Button declarations
     private JButton confirmButton;
@@ -28,27 +28,23 @@ public class Inventory extends JPanel implements ActionListener {
         totalItems = 0; // Initialize total items
 
         capacityLabel = new JLabel("<html>Number of items: <b>" + totalItems + "</b>/" + MAX_CAPACITY + "</html>");
-        capacityLabel.setBounds(10, 10, 100, 30);
+        capacityLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        capacityLabel.setBounds(10, 10, 100, 35);
 
         // Create "Food" label
         JLabel food_label = new JLabel("Food");
+        food_label.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         food_label.setHorizontalAlignment(JLabel.LEFT);
+        food_label.setForeground(new Color(0, 0, 0));
         food_label.setBounds(20, 30, 100, 100);
 
         // Initialize the food list
-//        foodListModel = new DefaultListModel<>();
-//        foodList = new JList<>(foodListModel);
-//        foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//
-//        // Set the layout to FlowLayout to display items horizontally
-//        foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-//        foodList.setVisibleRowCount(1); // Only show one row at a time horizontally
-//        foodList.setBounds(20, 100, 750, 50);
         foodListModel = new DefaultListModel<>();
         foodList = new JList<>(foodListModel);
         foodList.setCellRenderer(new InventoryItemRenderer()); // Set custom renderer
         foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         foodList.setVisibleRowCount(1);
+        foodList.setBackground(new Color(193, 154, 107));
         foodList.setBounds(20, 100, 750, 70);
 
         // Add a listener to foodList to clear selection in giftList
@@ -60,32 +56,28 @@ public class Inventory extends JPanel implements ActionListener {
 
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setForeground(new Color(0, 0, 0));
         separator.setBounds(0, 90, 800, 10);
 
         // Create "Gifts" label
         JLabel gifts_label = new JLabel("Gifts");
         gifts_label.setHorizontalAlignment(JLabel.LEFT);
-        gifts_label.setBounds(20, 205, 100, 100);
+        gifts_label.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        gifts_label.setBounds(20, 185, 100, 100);
 
         // Create new separator
         JSeparator separator1 = new JSeparator(SwingConstants.HORIZONTAL);
-        separator1.setBounds(0, 266, 800, 10);
+        separator1.setForeground(new Color(0, 0, 0));
+        separator1.setBounds(0, 246, 800, 10);
 
         // Initialize the gift list
-//        giftListModel = new DefaultListModel<>();
-//        giftList = new JList<>(giftListModel);
-//        giftList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//
-//        // Set the layout to FlowLayout to display items horizontally
-//        giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-//        giftList.setVisibleRowCount(1); // Only show one row at a time horizontally
-//        giftList.setBounds(20, 280, 750, 50);
         giftListModel = new DefaultListModel<>();
         giftList = new JList<>(giftListModel);
         giftList.setCellRenderer(new InventoryItemRenderer()); // Set custom renderer
         giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         giftList.setVisibleRowCount(1);
-        giftList.setBounds(20, 280, 750, 70);
+        giftList.setBackground(new Color(193, 154, 107));
+        giftList.setBounds(20, 260, 750, 70);
 
         // Add a listener to giftList to clear selection in foodList
         giftList.addListSelectionListener(e -> {
@@ -96,19 +88,24 @@ public class Inventory extends JPanel implements ActionListener {
 
         // Create confirm button
         confirmButton = new JButton("Confirm");
-        confirmButton.setBounds(420, 370, 105, 40);
+        confirmButton.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        confirmButton.setHorizontalAlignment(JLabel.CENTER);
+        confirmButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
+        confirmButton.setBounds(430, 370, 105, 40);
         confirmButton.addActionListener(this); // Add action listener for the button
 
         // Create exit button
         exit_button = new JButton("Exit");
-        exit_button.setBounds(300, 370, 105, 40);
+        exit_button.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        exit_button.setHorizontalAlignment(JLabel.CENTER);
+        exit_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
+        exit_button.setBounds(290, 370, 105, 40);
         exit_button.addActionListener(this); // add action listener for the button
 
         // Add components to the panel
         this.setLayout(null);
         this.setPreferredSize(new Dimension(700, 400)); //FIXME: make the panel a bit smaller?
-        //this.add(inventory_button); // Add inventory button
-        //this.add(shop_button); // Add shop button
+        this.setBackground(new Color(193, 154, 107));
         this.add(capacityLabel);
         this.add(food_label); // Add food label
         this.add(foodList);
@@ -118,46 +115,6 @@ public class Inventory extends JPanel implements ActionListener {
         this.add(separator1); // Add separator
         this.add(confirmButton); // Add confirm button
         this.add(exit_button); // Add exit button
-
-//        foodList.addMouseListener(new java.awt.event.MouseAdapter() {
-//            private int lastSelectedIndex = -1; // Track the last selected index
-//
-//            @Override
-//            public void mouseClicked(java.awt.event.MouseEvent evt) {
-//                int index = foodList.locationToIndex(evt.getPoint()); // Get the clicked index
-//
-//                if (index != -1) { // Ensure the click is on a valid item
-//                    if (index == lastSelectedIndex) {
-//                        // If clicking the same item again, deselect it
-//                        foodList.clearSelection();
-//                        lastSelectedIndex = -1; // Reset tracking
-//                    } else {
-//                        // Otherwise, update the last selected index
-//                        lastSelectedIndex = index;
-//                    }
-//                }
-//            }
-//        });
-//
-//        giftList.addMouseListener(new java.awt.event.MouseAdapter() {
-//            private int lastSelectedIndex = -1; // Track the last selected index
-//
-//            @Override
-//            public void mouseClicked(java.awt.event.MouseEvent evt) {
-//                int index = giftList.locationToIndex(evt.getPoint()); // Get the clicked index
-//
-//                if (index != -1) { // Ensure the click is on a valid item
-//                    if (index == lastSelectedIndex) {
-//                        // If clicking the same item again, deselect it
-//                        giftList.clearSelection();
-//                        lastSelectedIndex = -1; // Reset tracking
-//                    } else {
-//                        // Otherwise, update the last selected index
-//                        lastSelectedIndex = index;
-//                    }
-//                }
-//            }
-//        });
 
     }
 
@@ -180,7 +137,6 @@ public class Inventory extends JPanel implements ActionListener {
             if (item != null) {
                 ImageIcon image = item.getImage();
                 if (image != null) {
-                    // Resize image to fit within the cell bounds
                     Image scaledImage = image.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
                     iconLabel.setIcon(new ImageIcon(scaledImage));
                 }
@@ -195,10 +151,12 @@ public class Inventory extends JPanel implements ActionListener {
                 setBackground(list.getBackground());
                 setForeground(list.getForeground());
             }
+
+            // Set a fixed cell size
+            this.setPreferredSize(new Dimension(90, 80)); // Width: 120, Height: 80
             return this;
         }
     }
-
 
     // Method to add a food item
     public boolean addFoodItem(Item item) {
@@ -252,25 +210,6 @@ public class Inventory extends JPanel implements ActionListener {
         return true;
     }
 
-
-//    // Helper method to add an item to a list
-//    private void addItem(DefaultListModel<Item> listModel, String name, int points, ImageIcon image) {
-//        // Check if the item already exists
-//        for (int i = 0; i < listModel.size(); i++) {
-//            Item item = listModel.getElementAt(i);
-//            if (item.getName().equals(name)) {
-//                item.incrementQuantity();
-//                listModel.set(i, item); // Refresh the item in the list
-//                updateCapacity();
-//                return;
-//            }
-//        }
-//
-//        // Add new item if it doesn't exist
-//        listModel.addElement(new Item(name, points, image));
-//        totalItems++;
-//        updateCapacity();
-//    }
 
     // Update inventory capacity label
     private void updateCapacity() {

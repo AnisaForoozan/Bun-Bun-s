@@ -32,67 +32,69 @@ public class Shop extends JPanel implements ActionListener {
         this.customListDemo.setGiftList(this.customGiftList.petList);
         this.customGiftList.setFoodList(this.customListDemo.petList);
 
+//        // Create a JLayeredPane
+//        JLayeredPane layeredPane = new JLayeredPane();
+//        layeredPane.setLayout(null);
+
         // Create "Food" label
         JLabel food_label = new JLabel("Food");
+        food_label.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         food_label.setHorizontalAlignment(JLabel.LEFT);
-        food_label.setBounds(20, 30, 100, 100);
-
-        // Create list of food items
-//        String[] foodItems = {"Apple", "Bread", "Cake", "Apple", "Bread", "Cake", "Apple", "Bread", "Cake"}; // Example food items
-//        foodList = new JList<>(foodItems); //FIXME: update with actual items we'll use
-//        foodList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        foodList.setLayoutOrientation(JList.HORIZONTAL_WRAP); // Set horizontal layout
-//        foodList.setVisibleRowCount(1); // Show all items in a single row
-//
-//        JScrollPane foodScrollPane = new JScrollPane(foodList); // Wrap in a JScrollPane for better layout
-//        foodScrollPane.setBounds(20, 100, 750, 50); // Adjust bounds to fit the content
-
-        CustomListDemo foodList = customListDemo; // Use the existing CustomListDemo instance
-        foodList.setBounds(20, 80, 750, 100);
+        food_label.setBounds(20, 10, 100, 100);
 
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setBounds(0, 90, 800, 10);
+//        layeredPane.add(separator, Integer.valueOf(2));
+
+        // Create list of food items
+        CustomListDemo foodList = customListDemo; // Use the existing CustomListDemo instance
+        foodList.setBackground(new Color(193, 154, 107));
+        foodList.setBounds(20, 60, 750, 90);
+//        layeredPane.add(foodList, Integer.valueOf(1));
 
         // Create "Gifts" label
         JLabel gifts_label = new JLabel("Gifts");
+        gifts_label.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gifts_label.setHorizontalAlignment(JLabel.LEFT);
-        gifts_label.setBounds(20, 205, 100, 100);
-
-        // Create list of gift items (horizontal)
-//        String[] giftItems = {"Teddy Bear", "Flowers", "Chocolate"}; // Example gift items
-//        giftList = new JList<>(giftItems); // Create JList for gift items
-//        giftList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        giftList.setLayoutOrientation(JList.HORIZONTAL_WRAP); // Set horizontal layout
-//        giftList.setVisibleRowCount(1); // Show all items in a single row
-//
-//        JScrollPane giftScrollPane = new JScrollPane(giftList); // Wrap in a JScrollPane for better layout
-//        giftScrollPane.setBounds(20, 280, 750, 50); // Adjust bounds to fit the content
-        CustomGiftList giftList = customGiftList; // Use the existing CustomListDemo instance
-        giftList.setBounds(20, 260, 750, 100);
+        gifts_label.setBounds(20, 165, 100, 100);
 
         // Create new separator
         JSeparator separator1 = new JSeparator(SwingConstants.HORIZONTAL);
         separator1.setBounds(0, 266, 800, 10);
 
+        // Create list of gift items (horizontal)
+        CustomGiftList giftList = customGiftList; // Use the existing CustomListDemo instance
+        giftList.setBackground(new Color(193, 154, 107));
+        giftList.setBounds(20, 220, 750, 100);
+
         purchaseButton = new JButton("Purchase");
-        purchaseButton.setBounds(420, 370, 105, 40);
+        purchaseButton.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        purchaseButton.setHorizontalAlignment(JLabel.CENTER);
+        purchaseButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
+        purchaseButton.setBounds(430, 370, 105, 40);
         purchaseButton.addActionListener(this); // Add action listener for the button
+
 
         // Create "Exit" button
         exit_button = new JButton("Exit");
-        exit_button.setBounds(300, 370, 105, 40);
+        exit_button.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        exit_button.setHorizontalAlignment(JLabel.CENTER);
+        exit_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // border for the button
+        exit_button.setBounds(290, 370, 105, 40);
         exit_button.addActionListener(this); // add action listener for the button
 
         // Add components to the panel
         this.setLayout(null);
         this.setPreferredSize(new Dimension(700, 400)); //FIXME: make the panel a bit smaller?
+        this.setBackground(new Color(193, 154, 107));
+//        this.add(layeredPane);
         this.add(food_label); // Add food label
         this.add(foodList); // Add food scroll pane
-        this.add(separator); // Add separator
+//        this.add(separator); // Add separator
         this.add(gifts_label); // Add gifts label
         this.add(giftList); // Add gift list
-        this.add(separator1); // Add separator
+//        this.add(separator1); // Add separator
         this.add(purchaseButton); // Add purchase button
         this.add(exit_button); // Add exit button
 
