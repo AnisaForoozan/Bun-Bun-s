@@ -1,4 +1,19 @@
 {
-  "total_play_time" : "112",
-  "session_count" : "188"
+  "total_play_time" : "14",
+  "session_count" : "6",
+  "Slot 3" : "bobby:Brown Bunny",
+  "Slot 3_health" : "20",
+  "Slot 2_health" : "20",
+  "Slot 2" : "Snow:Black Bunny",
+  "Slot 4_health" : "20",
+  "master_volume" : "0.0",
+  "music_volume" : "0.0",
+  "sfx_volume" : "0.0",
+  "Slot 1" : "bun:Brown Bunny",
+  "Slot 1_health" : "20",
+  "parental_password" : "poo",
+  "time_restriction_enabled" : "false",
+  "gameplay_locked" : "false",
+  "time_limits" : "{\"Monday\":60,\"Thursday\":60,\"Friday\":60,\"Sunday\":1,\"Wednesday\":60,\"Tuesday\":60,\"Saturday\":60}",
+  "Slot 4" : "bob:Brown Bunny"
 }
