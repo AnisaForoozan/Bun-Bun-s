@@ -304,7 +304,7 @@ private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainP
             dotTimer.stop(); // Stop the dot animation
 
             if ("Bunny".equals(targetPanel)) {
-                Gameplay bunnyPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, petName, selectedPet);
+                Gameplay bunnyPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, petName, selectedPet, selectedSlot);
                 mainPanel.add(bunnyPanel, "Bunny");
                 cardLayout.show(mainPanel, "Bunny");
             } else {

@@ -128,9 +128,14 @@ public class LoadGame extends JPanel {
         }
 
         if (saveData.containsKey(slotKey)) {
+            int petHealth = GameSaveManager.getPetHealth(slotKey); // Get the pet's health
+
+            if (petHealth == 0) { // Check if the pet is dead
+                JOptionPane.showMessageDialog(this, "This pet has died. You can rename or delete the slot.", "Pet Died", JOptionPane.ERROR_MESSAGE);
+            }
+
             dialog.setSize(450, 200); // Set the dialog size
 
-            // Back button (as an "X")
             // Back button (as an "X")
             JButton backButton = new JButton("X");
             styleDialogButton(backButton, new Color(232, 202, 232), dialog::dispose);
@@ -143,13 +148,16 @@ public class LoadGame extends JPanel {
             backButton.setBounds(10, 10, 50, 30); // Adjust bounds to give enough space
             contentPanel.add(backButton);
 
-
             // Slot is taken - add "Play," "Rename," and "Delete" buttons centered
-            JButton playButton = new JButton("Play");
+            JButton playButton = new JButton(petHealth == 0 ? "Pet is Dead" : "Play");
             styleDialogButton(playButton, new Color(232, 202, 232), () -> {
-                dialog.dispose();
-                navigateToGameplay(slotKey);
-                showLoadingScreenAndSwitchPanel("Gameplay");
+                if (petHealth > 0) {
+                    dialog.dispose();
+                    navigateToGameplay(slotKey);
+                    showLoadingScreenAndSwitchPanel("Gameplay");
+                } else {
+                    JOptionPane.showMessageDialog(this, "This pet has died and cannot be played.", "Pet Died", JOptionPane.ERROR_MESSAGE);
+                }
             });
 
             JButton renameButton = new JButton("Rename");
@@ -242,6 +250,7 @@ public class LoadGame extends JPanel {
 
 
 
+
     private void renameSlot(String slotKey, String newName) {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
         String petData = saveData.get(slotKey); // Get the existing "name:type" format
@@ -276,10 +285,11 @@ public class LoadGame extends JPanel {
         }
 
         // Initialize Gameplay with the saved data
-        Gameplay gameplayPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, bunnyName, petType);
+        Gameplay gameplayPanel = new Gameplay(cardLayout, mainPanel, audioPlayer, bunnyName, petType, slotKey);
         mainPanel.add(gameplayPanel, "Gameplay");
         cardLayout.show(mainPanel, "Gameplay");
     }
+
 
 
 
@@ -365,7 +375,9 @@ public class LoadGame extends JPanel {
             if (saveData.containsKey(slotKey)) {
                 String petData = saveData.get(slotKey); // Get the raw data (name:type)
                 String petName = petData.split(":")[0]; // Extract only the name (before the ":")
-                slotButtons[i].setText("Slot " + (i + 1) + ": " + petName); // Show "Slot X: Pet Name"
+                int petHealth = GameSaveManager.getPetHealth(slotKey); // Get the pet's health
+                String healthStatus = (petHealth > 0) ? "" : " (Dead)";
+                slotButtons[i].setText("Slot " + (i + 1) + ": " + petName + healthStatus);
             } else {
                 slotButtons[i].setText("Choose your slot"); // Show "Choose your slot" for empty slots
             }
@@ -374,6 +386,15 @@ public class LoadGame extends JPanel {
         revalidate(); // Refresh the UI
         repaint();
     }
+
+
+    public void refreshLoadGameUI() {
+        updateSlots(); // Use the same logic as updateSlots
+    }
+
+
+
+
 
 
 
