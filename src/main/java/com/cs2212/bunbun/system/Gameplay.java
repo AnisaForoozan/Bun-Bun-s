@@ -7,6 +7,7 @@
     import java.awt.event.ActionListener;
     import java.awt.event.KeyAdapter;
     import java.awt.event.KeyEvent;
+    import java.awt.image.BufferedImage;
     import java.time.DayOfWeek;
     import java.time.LocalDate;
     import java.util.Map;
@@ -102,12 +103,15 @@
             Image scaledImage = petIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
-            // Set up flipping animation timer
+
             flipTimer = new Timer(5000, e -> {
                 isFlipped = !isFlipped;
-                repaint();
+                if (currentState == BunnyState.NORMAL || currentState == BunnyState.ANGRY || currentState == BunnyState.HUNGRY) {
+                    setBunnyState(currentState); // Refresh the current state with the flipped image
+                }
             });
             flipTimer.start();
+
 
             petPlaceholder = new JLabel(petName, SwingConstants.CENTER);
             petPlaceholder.setIcon(scaledIcon);
@@ -264,17 +268,30 @@
                 setBunnyState(BunnyState.DEAD);
             } else if (isSleepCooldownActive) {
                 setBunnyState(BunnyState.SLEEPING);
-            } else if (happinessBar.getValue() == 20) {
+            } else if (happinessBar.getValue() <= 60) {
                 setBunnyState(BunnyState.ANGRY);
-            } else if (hungerBar.getValue() == 20) {
+            } else if (hungerBar.getValue() <= 40) {
                 setBunnyState(BunnyState.HUNGRY);
             } else {
                 setBunnyState(BunnyState.NORMAL);
             }
         }
 
+        private ImageIcon flipImageHorizontally(ImageIcon icon) {
+            Image originalImage = icon.getImage();
+            int width = originalImage.getWidth(null);
+            int height = originalImage.getHeight(null);
+
+            BufferedImage flippedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = flippedImage.createGraphics();
+            g2d.drawImage(originalImage, width, 0, -width, height, null);
+            g2d.dispose();
+
+            return new ImageIcon(flippedImage);
+        }
+
         private void setBunnyState(BunnyState newState) {
-            if (currentState == newState) return; // No change, skip updates
+            if (currentState == newState && newState != BunnyState.NORMAL) return; // No change for non-NORMAL states, skip updates
             currentState = newState;
 
             // Determine the base image path for the current pet type
@@ -295,7 +312,7 @@
             }
 
             // Determine the specific image for the current state
-            String imagePath = ""; // Initialize the image path based on state
+            String imagePath = "";
             switch (currentState) {
                 case SLEEPING:
                     imagePath = petImageBasePath + "sleep.png";
@@ -314,16 +331,19 @@
                     break;
             }
 
-            // Load and display the selected image
-            ImageIcon petIcon = new ImageIcon(getClass().getResource(imagePath));
-            Image scaledImage = petIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-            petPlaceholder.setIcon(new ImageIcon(scaledImage));
-            petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
-            petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
-            petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM);
-            petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
-            petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
-            petPlaceholder.setBounds(893, 400, 300, 400);
+            // Load the selected image
+            try {
+                ImageIcon petIcon = new ImageIcon(getClass().getResource(imagePath));
+                if (currentState == BunnyState.NORMAL && isFlipped) {
+                    petIcon = flipImageHorizontally(petIcon); // Flip the image horizontally for NORMAL state
+                }
+
+                // Scale and set the icon
+                Image scaledImage = petIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                petPlaceholder.setIcon(new ImageIcon(scaledImage));
+            } catch (Exception e) {
+                System.err.println("Error loading image for state " + currentState + ": " + e.getMessage());
+            }
 
             // Handle specific actions for the DEAD state
             if (currentState == BunnyState.DEAD) {
@@ -334,6 +354,7 @@
                 }
             }
         }
+
 
 
 
@@ -754,31 +775,30 @@
         private void performSleepTask() {
             new Thread(() -> {
                 try {
-                    // Set state to SLEEPING and deduct health
+                    // Set state to SLEEPING and enforce restrictions
                     SwingUtilities.invokeLater(() -> {
-                        setBunnyState(BunnyState.SLEEPING);
-                        modifyProgressBar(healthBar, -5); // Deduct 5 health
-                        disableAllButtons(); // Disable other actions during sleep
+                        setBunnyState(BunnyState.SLEEPING); // Set the SLEEPING state
+                        disableAllButtons();               // Disable all interactions
+                        hideOriginalButtons();            // Hide all buttons
                     });
 
                     isAnimationPaused = true; // Pause animations
 
-                    // Sleep animation for 10 seconds (1000ms * 10)
-                    Thread.sleep(10000);
+                    // Sleep animation for 10 seconds
+                    Thread.sleep(10000); // Sleep for 10 seconds
 
-                    // Refill sleep bar and reset to NORMAL state
+                    // After 10 seconds, refill the sleep bar and reset to NORMAL state
                     SwingUtilities.invokeLater(() -> {
-                        modifyProgressBar(sleepBar, sleepBar.getMaximum() - sleepBar.getValue()); // Refill Sleep to max
+                        modifyProgressBar(sleepBar, sleepBar.getMaximum() - sleepBar.getValue()); // Refill sleep bar
                         setBunnyState(BunnyState.NORMAL);
-                        showOriginalButtons(); // Enable buttons
+                        isAnimationPaused = false;        // Resume animations
                     });
-
-                    isAnimationPaused = false; // Resume animations
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }).start();
         }
+
 
 
         private void startSleepCooldown() {
@@ -932,23 +952,23 @@
         }
 
 
-        private void handleSleepZero() {
-            setBunnyState(BunnyState.SLEEPING); // Set to sleeping state
-            modifyProgressBar(healthBar, -5); // Deduct 5 health
 
-            // Lock actions and animate sleep
-            disableAllButtons();
+        private void handleSleepZero() {
+            SwingUtilities.invokeLater(() -> {
+                setBunnyState(BunnyState.SLEEPING);
+                modifyProgressBar(healthBar, -5); // Deduct health only when sleep bar hits 0
+                disableAllButtons();
+            });
+
             isAnimationPaused = true;
 
-            new Timer(10000, e -> { // Sleep for 10 seconds
-                SwingUtilities.invokeLater(() -> {
-                    isAnimationPaused = false;
-                    modifyProgressBar(sleepBar, sleepBar.getMaximum()); // Refill Sleep
-                    setBunnyState(BunnyState.NORMAL);
-                    showOriginalButtons();
-                });
-            }).start();
-            performSleepTask();
+            // Sleep animation for 10 seconds
+            new Timer(10000, e -> SwingUtilities.invokeLater(() -> {
+                isAnimationPaused = false;
+                modifyProgressBar(sleepBar, sleepBar.getMaximum()); // Refill Sleep
+                setBunnyState(BunnyState.NORMAL);
+                showOriginalButtons();
+            })).start();
         }
 
 
