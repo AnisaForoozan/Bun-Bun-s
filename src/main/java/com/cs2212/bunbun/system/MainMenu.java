@@ -13,6 +13,21 @@ public class MainMenu extends JFrame {
     private ImageIcon backgroundImage; // Class-level field for background image
     private JDialog infoDialog; // For the custom dialog
     private ParentalControls parentalControlsPanel;
+    private int currentPage = 0;
+    private String[] imagePaths = {
+            "/images/bunny.png", "/images/hungry.png", "/images/hungry.png", "/images/sleeping.png"
+    };
+
+    private String[] titles = {
+            "Inventory", "Item Shop", "Progress", "Go To Bed"
+    };
+
+    private String[] descriptions = {
+            "View the food and gift items you currently own.",
+            " Purchase food and gift items using points.",
+            "<html>Sleep: Restedness of your bunny.<br><br><html>" + "Happiness: Emotional state of your bunny.<br><br><html>" + "Hunger: How hungry your bunny is.<br><br><html>" + "Health: Overall health of your bunny.<br><br><html>" + "Points: Earned points to spend in the shop.<br><br><html>",
+            "<html>Makes the bunny sleep.<br><br>" + "Effect: Sleep levels ↑, Hunger levels ↓, <b>+2 Points.<br><br></html>",
+    };
 
     public MainMenu() {
         audioPlayer = new AudioPlayer();
@@ -289,138 +304,9 @@ public class MainMenu extends JFrame {
             infoDialog.setVisible(true); // Show the dialog
         });
 
-        JButton infoButton2 = new JButton("i") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g.create();
-
-                // Enable anti-aliasing for smooth edges
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Draw semi-transparent background
-                g2d.setColor(new Color(135, 135, 135, 50)); // Semi-transparent gray
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25); // Rounded rectangle
-
-                // Draw brown border
-                g2d.setColor(new Color(117, 101, 81)); // Brown color
-                g2d.setStroke(new BasicStroke(3)); // Border thickness
-                g2d.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 25, 25); // Rounded border
-
-                g2d.dispose();
-                super.paintComponent(g); // Draw the button's text and other components
-            }
-        };
-
-        infoButton2.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
-        infoButton2.setForeground(Color.WHITE); // Default text color
-        infoButton2.setFocusPainted(false);
-        infoButton2.setContentAreaFilled(false); // Disable default background
-        infoButton2.setBorderPainted(false); // Disable default border
-        infoButton2.setOpaque(false); // Ensure transparency
-
-        // Add hover effects
-        infoButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            private final Color hoverColor = new Color(0x756551); // Hover text color
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                infoButton2.setForeground(hoverColor); // Change text color on hover
-                audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                infoButton2.setForeground(Color.WHITE); // Reset to default text color
-            }
-        });
-
-        infoButton2.addActionListener(e -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
-
-            // Create a custom dialog for infoButton2
-            JDialog infoDialog2 = new JDialog((Window) SwingUtilities.getWindowAncestor(this), Dialog.ModalityType.APPLICATION_MODAL);
-            infoDialog2.setUndecorated(true); // Remove title bar and buttons
-            infoDialog2.setSize(400, 300); // Set dialog size
-            infoDialog2.setLocationRelativeTo(this); // Center on the parent frame
-            infoDialog2.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
-
-            // Custom panel with rounded corners
-            JPanel messagePanel2 = new JPanel() {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(117, 101, 81)); // Background color
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Rounded rectangle
-                    g2d.dispose();
-                }
-            };
-            messagePanel2.setLayout(new BorderLayout());
-            messagePanel2.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding
-            messagePanel2.setOpaque(false); // Transparent panel
-
-            // Create the "X" close button
-            JButton closeButton2 = new JButton("X");
-            closeButton2.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-            closeButton2.setForeground(Color.WHITE);
-            closeButton2.setFocusPainted(false);
-            closeButton2.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            closeButton2.setContentAreaFilled(false);
-            closeButton2.setOpaque(false);
-
-            closeButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-                private final Color hoverColor = new Color(232, 202, 232); // Hover color for the button
-
-                @Override
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    closeButton2.setForeground(hoverColor);
-                    audioPlayer.playSFX("audio/sfx/hover_sound.wav"); // Play hover sound
-                }
-
-                @Override
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    closeButton2.setForeground(Color.WHITE);
-                }
-            });
-            // Add action listener with click sound
-            closeButton2.addActionListener(closeEvent -> {
-                audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
-                infoDialog2.dispose(); // Close dialog on click
-            });
-
-            closeButton2.addActionListener(closeEvent -> infoDialog2.dispose()); // Close dialog on click
-
-            // Top panel for the close button
-            JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            topPanel.setOpaque(false);
-            topPanel.add(closeButton2);
-
-
-            // Add message to infoDialog2
-            JLabel infoLabel2 = new JLabel("<html><div style='text-align: center;'>"
-                    + "Info Button 2 Popup Content:<br>"
-                    + "Customize this content as needed."
-                    + "</div></html>");
-            infoLabel2.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-            infoLabel2.setForeground(Color.WHITE);
-            infoLabel2.setHorizontalAlignment(SwingConstants.CENTER);
-
-
-
-            // Add components to the main message panel
-            messagePanel2.add(topPanel, BorderLayout.NORTH); // Add "X" at the top-left
-            messagePanel2.add(infoLabel2, BorderLayout.CENTER); // Add content in the center
-
-            // Add messagePanel2 to infoDialog2
-            infoDialog2.add(messagePanel2);
-            infoDialog2.setVisible(true);
-        });
-
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomRightPanel.setOpaque(false); // Transparent background
         bottomRightPanel.add(infoButton);
-        bottomRightPanel.add(infoButton2);
         // Add the bottom-right panel to the menuPanel
         menuPanel.add(bottomRightPanel, BorderLayout.SOUTH);
 

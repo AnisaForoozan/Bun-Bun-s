@@ -10,8 +10,9 @@ public class Tutorial extends JPanel {
     private int currentPage = 0;
     private JPanel contentPanel;
 
+
     private String[] imagePaths = {
-            "/images/bunny.png", "/images/hungry.png", "/images/hungry.png", "/images/sleeping.png", "/images/bunny.png", "/images/bunny.png","/images/bunny.png", "/images/bunny.png", "/images/bunny.png","/images/white-bunny-dead.png", "/images/white-bunny-sleep.png", "/images/white-bunny-angry.png", "/images/white-bunny-hungry.png", "/images/white-bunny-normal.png"
+            "/images/Inventory.png", "/images/ItemShop.png", "/images/Progress.png", "/images/Go To Bed.png", "/images/Give Gift.png", "/images/Feed.png","/images/Play.png", "/images/Take To Vet.png", "/images/Exercise.png","/images/white-bunny-dead.png", "/images/white-bunny-sleep.png", "/images/white-bunny-angry.png", "/images/white-bunny-hungry.png", "/images/white-bunny-normal.png"
     };
 
     private String[] titles = {
@@ -23,15 +24,15 @@ public class Tutorial extends JPanel {
             " Purchase food and gift items using points.",
             "<html>Sleep: Restedness of your bunny.<br><br><html>" + "Happiness: Emotional state of your bunny.<br><br><html>" + "Hunger: How hungry your bunny is.<br><br><html>" + "Health: Overall health of your bunny.<br><br><html>" + "Points: Earned points to spend in the shop.<br><br><html>",
             "<html>Makes the bunny sleep.<br><br>" + "Effect: Sleep levels ↑, Hunger levels ↓, <b>+2 Points.<br><br></html>",
-            "<html>Opens inventory to select a gift item for the bunny.<br><br>" + "Effect: Happiness levels ↑ (boost varies by gift), <b>+6 Points.<br><html>",
+            "<html>Opens inventory to select a gift item for the bunny.<br><br>" + "Effect: Happiness levels ↑,<b>+6 Points.<br><html>",
             "<html>Opens inventory to select food for the bunny.<br><br>" + "Effect: Hunger levels ↑, <b>+3 Points.<br><html>",
-            "<html>Bunny plays with a ball.<br><br>" + "Effect: Happiness levels ↑, <b>+5 Points.<br><html>",
+            "<html>Bunny plays.<br><br>" + "Effect: Happiness levels ↑, <b>+5 Points.<br><html>",
             "<html>Bunny visits the vet.<br><br>" + "Effect: Health levels ↑, <b>+3 Points.<br><html>",
             "<html>Bunny goes for a walk.<br><br>" + "Effect: Health levels ↑, Sleep levels ↓, Hunger levels ↓, <b>+5 Points.<br><html>",
             "<html>The bunny has died.<br><br>" + "Effect: You must load a saved game or start a new game. No actions can be taken.<br><html>",
             "<html>The bunny is too tired.<br><br>" + "Effect: Health penalty applied. Only the Go to Bed button is available. <b>-2 Points.<br><html>",
             "<html>The bunny is angry.<br><br>" + "Effect: Only the Give Gift or Play buttons are available. <b>-2 Points.<br><html>",
-            "<html>The bunny is hungry.<br><br>" + "Effect: Happiness and health levels decline. <b>-3 Points.<br><html>",
+            "<html>The bunny is hungry.<br><br>" + "Effect: Only Feed button is available. Happiness and health levels decline. <b>-3 Points.<br><html>",
             "<html>Hop Along and Have Fun!"
 
 };
@@ -192,10 +193,10 @@ public class Tutorial extends JPanel {
             int scaledWidth, scaledHeight;
 
             if (originalWidth > originalHeight) {
-                scaledWidth = rectWidth / 4; // Set a fixed width
+                scaledWidth = rectWidth / 2; // Set a fixed width
                 scaledHeight = (int) (scaledWidth / aspectRatio); // Calculate height based on aspect ratio
             } else {
-                scaledHeight = rectHeight / 5; // Set a fixed height
+                scaledHeight = rectHeight / 2; // Set a fixed height
                 scaledWidth = (int) (scaledHeight * aspectRatio); // Calculate width based on aspect ratio
             }
 

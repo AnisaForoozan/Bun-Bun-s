@@ -1,4 +1,6 @@
 {
   "parental_password" : "poo",
-  "Slot 1" : "poo:Brown Bunny"
+  "Slot 1" : "poo:Brown Bunny",
+  "Slot 2" : "lala:Black Bunny",
+  "gameplay_locked" : "false"
 }
