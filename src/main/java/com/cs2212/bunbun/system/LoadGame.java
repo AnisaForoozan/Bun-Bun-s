@@ -266,7 +266,9 @@ public class LoadGame extends JPanel {
     private void deleteSlot(String slotKey) {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
         if (saveData.containsKey(slotKey)) {
-            saveData.remove(slotKey); // Remove the slot from the map
+            saveData.remove(slotKey); // Remove the slot data
+            saveData.remove(slotKey + "_health"); // Reset health by removing associated key
+            GameSaveManager.savePetHealth(slotKey, 20); // Explicitly reset health to 20
             GameSaveManager.saveUpdatedData(saveData); // Save the updated map
         }
         updateSlots(); // Refresh the UI
