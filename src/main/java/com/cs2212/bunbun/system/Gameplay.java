@@ -72,7 +72,7 @@ public class Gameplay extends JPanel {
         addMainActionButtons();
 
         // inv and store
-        inventoryButton = createButton("Inventory", 1200, 50, null);
+        inventoryButton = createButton("Inventory", 1200, 50, e -> openInventory());
         bunnyPanel.add(inventoryButton);
         storeButton = createButton("Store", 1200, 150, null);
         bunnyPanel.add(storeButton);
@@ -143,6 +143,14 @@ public class Gameplay extends JPanel {
         });
     }
 
+
+    private void openInventory() {
+        // Create an instance of ItemsMainFrame
+        ItemsMainFrame itemsMainFrame = new ItemsMainFrame();
+
+        // Make the ItemsMainFrame visible
+        SwingUtilities.invokeLater(() -> itemsMainFrame.setVisible(true));
+    }
 
 
     private void enforceTimeLimit(CardLayout cardLayout, JPanel mainPanel) {
