@@ -317,6 +317,9 @@ public class MainMenu extends JFrame {
     private JButton createMenuButton(String text, String targetPanel) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);
+        button.setContentAreaFilled(false); // Disable default background
+        button.setBorderPainted(false); // Disable default border
+        button.setOpaque(false); // Ensure transparency
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
         button.setForeground(Color.WHITE);
         button.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 2));
