@@ -70,7 +70,12 @@ public class Gameplay extends JPanel {
 
         // Action buttons
         addMainActionButtons();
-        addSidebarButtons();
+
+        // inv and store
+        inventoryButton = createButton("Inventory", 1200, 50, null);
+        bunnyPanel.add(inventoryButton);
+        storeButton = createButton("Store", 1200, 150, null);
+        bunnyPanel.add(storeButton);
 
         // Pet image and name
         String imagePath = getImagePathForPet(petType);
@@ -816,16 +821,6 @@ public class Gameplay extends JPanel {
         cooldownTimer.start();
     }
 
-    private void addSidebarButtons() {
-        settingsButton = createButton("Settings", 1700, 50, e -> showMessage("Settings clicked"));
-        bunnyPanel.add(settingsButton);
-
-        inventoryButton = createButton("Inventory", 1700, 150, e -> cardLayout.show(mainPanel, "ItemsMainFrame"));
-        bunnyPanel.add(inventoryButton);
-
-        storeButton = createButton("Store", 1700, 250, e -> cardLayout.show(mainPanel, "ItemsMainFrame"));
-        bunnyPanel.add(storeButton);
-    }
 
 
 
