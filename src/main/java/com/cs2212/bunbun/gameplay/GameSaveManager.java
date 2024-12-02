@@ -236,12 +236,24 @@ public class GameSaveManager {
         saveUpdatedData(saveData);
     }
 
+    // Retrieve saved stats
+    public static int getStat(String key, int defaultValue) {
+        Map<String, String> saveData = loadSaveData();
+        try {
+            return Integer.parseInt(saveData.getOrDefault(key, String.valueOf(defaultValue)));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return defaultValue; // Return default if parsing fails
+        }
+    }
 
 
-
-
-
-
+    // Save individual stat
+    public static void saveStat(String key, int value) {
+        Map<String, String> saveData = loadSaveData();
+        saveData.put(key, String.valueOf(value));
+        saveUpdatedData(saveData);
+    }
 
 
 

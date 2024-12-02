@@ -1,9 +1,7 @@
 {
   "total_play_time" : "56",
   "session_count" : "56",
-  "Slot 3" : "bobby:Brown Bunny",
-  "Slot 3_health" : "20",
-  "Slot 2_health" : "20",
+  "Slot 2_health" : "0",
   "Slot 2" : "Snow:Black Bunny",
   "master_volume" : "0.0",
   "music_volume" : "0.0",
@@ -15,5 +13,7 @@
   "time_limits" : "{\"Monday\":60,\"Thursday\":60,\"Friday\":60,\"Sunday\":1,\"Wednesday\":60,\"Tuesday\":60,\"Saturday\":60}",
   "Slot 1" : "Naybor:Black Bunny",
   "Slot 4" : "fdsjl:Black Bunny",
-  "Slot 4_health" : "0"
+  "Slot 4_health" : "0",
+  "Slot 3" : "fe:White Bunny",
+  "Slot 3_health" : "0"
 }

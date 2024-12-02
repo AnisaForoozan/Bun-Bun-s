@@ -12,8 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Gameplay extends JPanel {
     private CardLayout cardLayout;
-    private JPanel mainPanel;
-    private AudioPlayer audioPlayer;
+    private JPanel mainPanel;    private AudioPlayer audioPlayer;
     private Image backgroundImage;
     private PixelArtProgressBar sleepBar, happinessBar, hungerBar, healthBar, pointsBar;
     private JButton takeToVetButton, exerciseButton, feedButton, playButton, giftButton, goToBedButton, backButton;
@@ -29,7 +28,8 @@ public class Gameplay extends JPanel {
     private String slotKey;
     private boolean isDeadStateHandled = false;
 
-    private enum BunnyState { DEAD, SLEEPING, ANGRY, HUNGRY, NORMAL }
+    private enum BunnyState {DEAD, SLEEPING, ANGRY, HUNGRY, NORMAL}
+
     private BunnyState currentState = BunnyState.NORMAL;
 
 
@@ -72,7 +72,7 @@ public class Gameplay extends JPanel {
         addMainActionButtons();
 
         // inv and store
-        inventoryButton = createButton("Inventory", 1200, 50, null);
+        inventoryButton = createButton("Inventory", 1200, 50, e -> openInventory());
         bunnyPanel.add(inventoryButton);
         storeButton = createButton("Store", 1200, 150, null);
         bunnyPanel.add(storeButton);
@@ -144,6 +144,14 @@ public class Gameplay extends JPanel {
     }
 
 
+    private void openInventory() {
+        // Create an instance of ItemsMainFrame
+        ItemsMainFrame itemsMainFrame = new ItemsMainFrame();
+
+        // Make the ItemsMainFrame visible
+        SwingUtilities.invokeLater(() -> itemsMainFrame.setVisible(true));
+    }
+
 
     private void enforceTimeLimit(CardLayout cardLayout, JPanel mainPanel) {
         if (!GameSaveManager.isTimeRestrictionEnabled()) {
@@ -169,7 +177,6 @@ public class Gameplay extends JPanel {
             cardLayout.show(mainPanel, "MainMenu");
         }
     }
-
 
 
     public void startTimer() {
@@ -237,7 +244,6 @@ public class Gameplay extends JPanel {
             case SLEEPING:
 
 
-
                 ImageIcon petIcon2 = new ImageIcon(getClass().getResource("/images/brown-bunny-sleep.png"));
                 Image scaledImage2 = petIcon2.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon2 = new ImageIcon(scaledImage2);
@@ -252,7 +258,7 @@ public class Gameplay extends JPanel {
                 break;
             case ANGRY:
 
-                ImageIcon petIcon3= new ImageIcon(getClass().getResource("/images/brown-bunny-angry.png"));
+                ImageIcon petIcon3 = new ImageIcon(getClass().getResource("/images/brown-bunny-angry.png"));
                 Image scaledImage3 = petIcon3.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon3 = new ImageIcon(scaledImage3);
                 petPlaceholder.setIcon(scaledIcon3);
@@ -267,7 +273,7 @@ public class Gameplay extends JPanel {
             case HUNGRY:
 
 
-                ImageIcon petIcon4= new ImageIcon(getClass().getResource("/images/brown-bunny-hungry.png"));
+                ImageIcon petIcon4 = new ImageIcon(getClass().getResource("/images/brown-bunny-hungry.png"));
                 Image scaledImage4 = petIcon4.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon4 = new ImageIcon(scaledImage4);
                 petPlaceholder.setIcon(scaledIcon4);
@@ -282,7 +288,7 @@ public class Gameplay extends JPanel {
             case NORMAL:
 
                 ImageIcon petIcon5 = new ImageIcon(getClass().getResource("/images/brown-bunny-normal.png"));
-                Image scaledImage5  = petIcon5.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                Image scaledImage5 = petIcon5.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon5 = new ImageIcon(scaledImage5);
                 petPlaceholder.setIcon(scaledIcon5);
                 petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
@@ -301,7 +307,6 @@ public class Gameplay extends JPanel {
         if (healthDecayTimer != null) healthDecayTimer.stop();
         if (flipTimer != null) flipTimer.stop();
     }
-
 
 
     private void disableAllButtons() {
@@ -620,8 +625,6 @@ public class Gameplay extends JPanel {
     }
 
 
-
-
     // PLAY BUTTONS FUNCTIONS
     private void showPlayTaskButtons() {
         bunnyPlayButton = createButton("Bunny Play", 250, 400, e -> {
@@ -799,7 +802,7 @@ public class Gameplay extends JPanel {
                     final int newValue = currentValue + (increment * i);
                     SwingUtilities.invokeLater(() -> sleepBar.setValue(Math.min(newValue, maxValue))); // Update sleep bar
                 }
-                SwingUtilities.invokeLater(() -> modifyProgressBar(sleepBar,5)); // Increase points by +5 after sleep task
+                SwingUtilities.invokeLater(() -> modifyProgressBar(sleepBar, 5)); // Increase points by +5 after sleep task
                 isAnimationPaused = false; // Resume animations
 
                 startSleepCooldown(); // Start cooldown after task is complete
@@ -820,11 +823,6 @@ public class Gameplay extends JPanel {
         cooldownTimer.setRepeats(false); // Run once
         cooldownTimer.start();
     }
-
-
-
-
-
 
 
     private void showMessage(String message) {
