@@ -5,6 +5,8 @@ import com.cs2212.bunbun.gameplay.GameSaveManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Map;
@@ -28,6 +30,8 @@ public class Gameplay extends JPanel {
     private Timer healthDecayTimer; // Added to manage health decay
     private String slotKey;
     private boolean isDeadStateHandled = false;
+    private JLabel scoreLabel; // Label to display the score
+    private int score = 0;
 
     private enum BunnyState { DEAD, SLEEPING, ANGRY, HUNGRY, NORMAL }
     private BunnyState currentState = BunnyState.NORMAL;
@@ -60,13 +64,24 @@ public class Gameplay extends JPanel {
         backToMainMenu.setForeground(Color.WHITE);
         bunnyPanel.add(backToMainMenu);
 
-        // Progress bars
-        sleepBar = createProgressBar(20, 80, "Sleep", 0, 120, bunnyPanel);
-        happinessBar = createProgressBar(150, 80, "Happiness", 0, 200, bunnyPanel);
-        hungerBar = createProgressBar(280, 80, "Fullness", 0, 150, bunnyPanel);
-        int savedHealth = GameSaveManager.getPetHealth(slotKey);
-        healthBar = createProgressBar(410, 80, "Health", GameSaveManager.getPetHealth(slotKey), 20, bunnyPanel);
-        pointsBar = createProgressBar(540, 80, "Points", 0, 50, bunnyPanel);
+        // Load stats from save file or use defaults
+        int savedSleep = GameSaveManager.getStat(slotKey + "_sleep", 120);
+        int savedHappiness = GameSaveManager.getStat(slotKey + "_happiness", 200);
+        int savedFullness = GameSaveManager.getStat(slotKey + "_fullness", 150);
+        int savedHealth = GameSaveManager.getStat(slotKey + "_health", GameSaveManager.getMaxHealth());
+        int savedScore = GameSaveManager.getStat(slotKey + "_score", 0);
+
+        // Initialize progress bars with saved or default values
+        sleepBar = createProgressBar(20, 80, "Sleep", savedSleep, 120, bunnyPanel);
+        happinessBar = createProgressBar(150, 80, "Happiness", savedHappiness, 200, bunnyPanel);
+        hungerBar = createProgressBar(280, 80, "Fullness", savedFullness, 150, bunnyPanel);
+        healthBar = createProgressBar(410, 80, "Health", savedHealth, GameSaveManager.getMaxHealth(), bunnyPanel);
+
+        scoreLabel = new JLabel("Score: 0", SwingConstants.CENTER);
+        scoreLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setBounds(900, 20, 200, 30); // Position at the top center
+        bunnyPanel.add(scoreLabel);
 
         // Action buttons
         addMainActionButtons();
@@ -104,9 +119,9 @@ public class Gameplay extends JPanel {
         bunnyPanel.add(petPlaceholder);
 
         // Animations
-        startAnimation(sleepBar, 2, -1);
-        startAnimation(happinessBar, 3, -2);
-        startAnimation(hungerBar, 4, -3);
+//        startAnimation(sleepBar, 2, -1);
+//        startAnimation(happinessBar, 3, -2);
+//        startAnimation(hungerBar, 4, -3);
         startHealthDecay();
         startStateMonitor();
 
@@ -118,32 +133,76 @@ public class Gameplay extends JPanel {
         startTimer();
 
         add(bunnyPanel, BorderLayout.CENTER);
+
+        startBarDecrement();
+
+        // Add a KeyListener to detect key presses
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_S) { // Check if "S" key is pressed
+                    saveGame();
+                }
+            }
+        });
+        setFocusable(true); // Ensure the panel can capture key events
+        requestFocusInWindow();
     }
+
+    private void saveGame() {
+        // Collect current stats
+        int sleep = sleepBar.getValue();
+        int happiness = happinessBar.getValue();
+        int fullness = hungerBar.getValue();
+        int health = healthBar.getValue();
+        int currentScore = score;
+
+        // Save stats using GameSaveManager
+        GameSaveManager.saveStat(slotKey + "_sleep", sleep);
+        GameSaveManager.saveStat(slotKey + "_happiness", happiness);
+        GameSaveManager.saveStat(slotKey + "_fullness", fullness);
+        GameSaveManager.saveStat(slotKey + "_health", health);
+        GameSaveManager.saveStat(slotKey + "_score", currentScore);
+
+        // Show confirmation message
+        JOptionPane.showMessageDialog(this, "Game successfully saved!", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 
 
     private void handleDeadState() {
         if (isDeadStateHandled) return; // Skip if already handled
 
         isDeadStateHandled = true; // Mark the dead state as handled
+        setBunnyState(BunnyState.DEAD); // Set state to DEAD
         stopAllTimers(); // Stop all running timers
 
-        // Update the LoadGame slots to reflect the pet's death
+        // Automatically save the pet's state upon death
+        GameSaveManager.savePetHealth(slotKey, 0); // Save health as 0
+        saveGame(); // Save all other stats
+
+        // Update UI for death
         SwingUtilities.invokeLater(() -> {
-            // Find LoadGame instance and update its slots
             for (Component comp : mainPanel.getComponents()) {
                 if (comp instanceof LoadGame) {
-                    ((LoadGame) comp).updateSlots();
+                    ((LoadGame) comp).updateSlots(); // Update LoadGame UI
                     break;
                 }
             }
 
             JOptionPane.showMessageDialog(this, "Your bunny has died. Returning to Main Menu.", "Pet Died", JOptionPane.ERROR_MESSAGE);
             cardLayout.show(mainPanel, "MainMenu");
-            GameSaveManager.savePetHealth(slotKey, 0); // Ensure health is saved as 0
         });
     }
 
 
+
+
+    // Method to update the score
+    private void updateScore(int points) {
+        score += points; // Increment the score
+        scoreLabel.setText("Score: " + score); // Update the score label
+    }
 
     private void enforceTimeLimit(CardLayout cardLayout, JPanel mainPanel) {
         if (!GameSaveManager.isTimeRestrictionEnabled()) {
@@ -235,7 +294,6 @@ public class Gameplay extends JPanel {
 //                break;
 
             case SLEEPING:
-
 
 
                 ImageIcon petIcon2 = new ImageIcon(getClass().getResource("/images/brown-bunny-sleep.png"));
@@ -341,7 +399,6 @@ public class Gameplay extends JPanel {
     }
 
 
-    // Modify `modifyProgressBar` to save the health value
     private void modifyProgressBar(JProgressBar progressBar, int value) {
         int currentValue = progressBar.getValue();
         int maxValue = progressBar.getMaximum();
@@ -357,6 +414,7 @@ public class Gameplay extends JPanel {
             }
         }
 
+        progressBar.repaint(); // Ensure the bar visually updates
         updateBunnyState();
     }
 
@@ -425,9 +483,8 @@ public class Gameplay extends JPanel {
         bunnyPanel.add(goToBedButton);
     }
 
-    // EXERCISE BUTTONS
     private void showExerciseTaskButtons() {
-        bunnyWorkoutButton = createButton("Bunny Workout", 250, 400, e -> {
+        bunnyWorkoutButton = createButton("Workout", 250, 400, e -> {
             if (!isWorkoutCooldownActive) {
                 performBunnyWorkoutTask(); // Perform the workout task
             } else {
@@ -457,27 +514,13 @@ public class Gameplay extends JPanel {
     }
 
     private void performBunnyWorkoutTask() {
-        new Thread(() -> {
-            try {
-                isAnimationPaused = true; // Pause animations
-
-                Thread.sleep(10000); // Simulate 10 seconds for the task
-
-                SwingUtilities.invokeLater(() -> {
-                    modifyProgressBar(pointsBar, 20);  // Increase pointsBar by 7
-                    modifyProgressBar(healthBar, 20); // Increase healthBar by 20
-                    modifyProgressBar(sleepBar, -10);  // Decrease sleepBar by 5
-                    modifyProgressBar(hungerBar, -10);
-                });
-
-                isAnimationPaused = false; // Pause animations
-
-                startWorkoutCooldown(); // Start cooldown after task
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        modifyProgressBar(sleepBar, -10); // Decrease Sleep
+        modifyProgressBar(hungerBar, -5); // Decrease Fullness
+        modifyProgressBar(healthBar, 10); // Increase Health
+        updateScore(100);
+        showMessage("Workout complete! Sleep and fullness decreased, health improved.");
     }
+
 
     private void startWorkoutCooldown() {
         isWorkoutCooldownActive = true; // Activate cooldown
@@ -491,9 +534,8 @@ public class Gameplay extends JPanel {
         cooldownTimer.start();
     }
 
-    // GIFT BUTTONS FUNCTIONS
     private void showGiftTaskButtons() {
-        giveBunnyGiftButton = createButton("Give Bunny Gift", 250, 400, e -> {
+        giveBunnyGiftButton = createButton("Give Gift", 250, 400, e -> {
             if (!isGiftCooldownActive) {
                 performGiveBunnyGiftTask(); // Perform the gift task
             } else {
@@ -523,26 +565,11 @@ public class Gameplay extends JPanel {
     }
 
     private void performGiveBunnyGiftTask() {
-        new Thread(() -> {
-            try {
-                isAnimationPaused = true; // Pause animations
-
-                // Simulate 10 seconds for the task
-                Thread.sleep(10000);
-
-                // Apply changes
-                SwingUtilities.invokeLater(() -> {
-                    modifyProgressBar(pointsBar, 5);  // Increase pointsBar by 5
-                    modifyProgressBar(happinessBar, 10); // Increase happinessBar by 10
-                });
-
-                isAnimationPaused = false; // Resume animations
-                startGiftCooldown(); // Start cooldown after task
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        modifyProgressBar(happinessBar, 10); // Increase Happiness
+        updateScore(100);
+        showMessage("Your pet is happy with the gift! Happiness increased.");
     }
+
 
     private void startGiftCooldown() {
         isGiftCooldownActive = true; // Activate cooldown
@@ -556,9 +583,8 @@ public class Gameplay extends JPanel {
         cooldownTimer.start();
     }
 
-    // FEED BUTTONS FUNCTIONS
     private void showFeedTaskButtons() {
-        giveBunnyFoodButton = createButton("Give Bunny Food", 250, 400, e -> {
+        giveBunnyFoodButton = createButton("Give Food", 250, 400, e -> {
             if (!isFeedCooldownActive) {
                 performGiveBunnyFoodTask(); // Perform the feed task
             } else {
@@ -578,6 +604,13 @@ public class Gameplay extends JPanel {
         backButton.setVisible(true);
     }
 
+    private void performGiveBunnyFoodTask() {
+        modifyProgressBar(hungerBar, 20); // Increase Fullness
+        updateScore(100);
+        showMessage("Your pet is well-fed! Fullness increased.");
+    }
+
+
     private void hideFeedTaskButtons() {
         if (giveBunnyFoodButton != null) {
             giveBunnyFoodButton.setVisible(false);
@@ -587,25 +620,7 @@ public class Gameplay extends JPanel {
         }
     }
 
-    private void performGiveBunnyFoodTask() {
-        new Thread(() -> {
-            try {
-                isAnimationPaused = true; // Pause animations
 
-                Thread.sleep(10000); // Simulate 10 seconds for the task
-
-                SwingUtilities.invokeLater(() -> {
-                    modifyProgressBar(pointsBar, 25);  // Increase pointsBar by 5
-                    modifyProgressBar(hungerBar, 20); // Increase fullnessBar by 10
-                });
-
-                isAnimationPaused = false; // Resume animations
-                startFeedCooldown(); // Start cooldown after task
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
 
     private void startFeedCooldown() {
         isFeedCooldownActive = true; // Activate cooldown
@@ -622,7 +637,6 @@ public class Gameplay extends JPanel {
 
 
 
-    // PLAY BUTTONS FUNCTIONS
     private void showPlayTaskButtons() {
         bunnyPlayButton = createButton("Bunny Play", 250, 400, e -> {
             if (!isPlayCooldownActive) {
@@ -654,25 +668,11 @@ public class Gameplay extends JPanel {
     }
 
     private void performBunnyPlayTask() {
-        new Thread(() -> {
-            try {
-                isAnimationPaused = true; // Pause animations
-
-                Thread.sleep(10000); // Simulate 10 seconds for the task
-
-                SwingUtilities.invokeLater(() -> {
-                    modifyProgressBar(pointsBar, 20);  // Increase pointsBar by 20
-                    modifyProgressBar(happinessBar, 50); // Increase happinessBar by 10
-                });
-
-                isAnimationPaused = false; // Resume animations
-
-                startPlayCooldown(); // Start cooldown after task
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        modifyProgressBar(happinessBar, 15); // Increase Happiness
+        updateScore(100);
+        showMessage("Your pet enjoyed playing! Happiness increased.");
     }
+
 
     private void startPlayCooldown() {
         isPlayCooldownActive = true; // Activate cooldown
@@ -686,9 +686,7 @@ public class Gameplay extends JPanel {
         cooldownTimer.start();
     }
 
-    // VET BUTTON FUNCTIONS
     private void showVetTaskButtons() {
-        // Create "Give Meds" button
         giveMedsButton = createButton("Give Meds", 250, 400, e -> {
             if (!isGiveMedsCooldownActive) {
                 performGiveMedsTask(); // Perform the Give Meds task
@@ -700,7 +698,6 @@ public class Gameplay extends JPanel {
         bunnyPanel.add(giveMedsButton);
         giveMedsButton.setVisible(true);
 
-        // Create "Back" button
         backButton = createButton("Back", 480, 400, e -> {
             showOriginalButtons();  // Restore original buttons
             hideVetTaskButtons();  // Hide vet-specific buttons
@@ -720,27 +717,9 @@ public class Gameplay extends JPanel {
     }
 
     private void performGiveMedsTask() {
-        new Thread(() -> {
-            try {
-                isAnimationPaused = true; // Pause animations
-
-                // Simulate 10 seconds for the task
-                Thread.sleep(10000);
-
-                // Increase Points Bar and Health Bar
-                SwingUtilities.invokeLater(() -> {
-                    modifyProgressBar(pointsBar, 10); // Add 10 points to pointsBar
-                    modifyProgressBar(healthBar, 50); // Add 50 to healthBar
-                });
-
-                isAnimationPaused = false; // Resume animations
-
-                // Start cooldown after task is complete
-                startGiveMedsCooldown();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        modifyProgressBar(healthBar, healthBar.getMaximum() - healthBar.getValue()); // Set Health to full
+        updateScore(100);
+        showMessage("Your pet is now fully healthy!");
     }
 
     private void startGiveMedsCooldown() {
@@ -756,7 +735,7 @@ public class Gameplay extends JPanel {
     }
 
     private void showSleepTaskButtons() {
-        petSleepButton = createButton("Pet Goes to Sleep", 250, 400, e -> {
+        petSleepButton = createButton("Go to Sleep", 250, 400, e -> {
             if (!isSleepCooldownActive) {
                 performSleepTask(); // Start the sleep task
             } else {
@@ -886,41 +865,33 @@ public class Gameplay extends JPanel {
     private PixelArtProgressBar createProgressBar(int x, int y, String label, int initialValue, int maxValue, JPanel panel) {
         PixelArtProgressBar bar = new PixelArtProgressBar(0, maxValue);
         bar.setBounds(x, y, 100, 20);
-        bar.setValue(initialValue);
+        bar.setValue(initialValue); // Initialize with the provided initial value
         panel.add(bar);
 
         JLabel barLabel = new JLabel(label, SwingConstants.CENTER);
         barLabel.setBounds(x, y + 25, 100, 20);
         barLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        barLabel.setForeground(Color.WHITE);
         panel.add(barLabel);
 
         return bar;
     }
 
-    private void startAnimation(PixelArtProgressBar bar, int increaseRate, int decreaseRate) {
-        AtomicBoolean increasing = new AtomicBoolean(true); // Use AtomicBoolean to allow modification in lambda
 
+    private void startAnimation(PixelArtProgressBar bar) {
         new Thread(() -> {
             try {
                 while (true) {
                     if (!isAnimationPaused) {
                         SwingUtilities.invokeLater(() -> {
-                            if (increasing.get()) {
-                                if (bar.getValue() < bar.getMaximum()) {
-                                    bar.setValue(bar.getValue() + increaseRate);
-                                } else {
-                                    increasing.set(false); // Update AtomicBoolean
-                                }
-                            } else {
-                                if (bar.getValue() > 0) {
-                                    bar.setValue(bar.getValue() + decreaseRate);
-                                } else {
-                                    increasing.set(true); // Reset to increasing when reaching minimum
-                                }
-                            }
+                            // Example effect: Change bar color temporarily
+                            bar.setBackground(Color.YELLOW);
+                            Timer resetColor = new Timer(500, e -> bar.setBackground(Color.DARK_GRAY)); // Restore color
+                            resetColor.setRepeats(false);
+                            resetColor.start();
                         });
                     }
-                    Thread.sleep(100); // Adjust animation speed as needed
+                    Thread.sleep(1000); // Animation interval
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -929,14 +900,64 @@ public class Gameplay extends JPanel {
     }
 
 
+
+
     private void startHealthDecay() {
         healthDecayTimer = new Timer(1000, e -> {
-            if (!isAnimationPaused) {
-                SwingUtilities.invokeLater(() -> modifyProgressBar(healthBar, -1)); // Decrease health
-            }
+            SwingUtilities.invokeLater(() -> {
+                if (hungerBar.getValue() == 0) { // Continuous health loss
+                    modifyProgressBar(healthBar, -1);
+                }
+            });
         });
         healthDecayTimer.start();
     }
+
+
+    private void startBarDecrement() {
+        Timer barTimer = new Timer(1000, e -> { // Update every second
+            SwingUtilities.invokeLater(() -> {
+                if (!isAnimationPaused) {
+                    // Decrease Fullness, Happiness, and Sleep steadily
+                    modifyProgressBar(hungerBar, -1);
+                    modifyProgressBar(happinessBar, -1);
+                    modifyProgressBar(sleepBar, -1);
+
+                    // Trigger sleep behavior if Sleep reaches 0
+                    if (sleepBar.getValue() == 0 && currentState != BunnyState.SLEEPING) {
+                        handleSleepZero();
+                    }
+
+                    // Trigger health decay if Fullness reaches 0
+                    if (hungerBar.getValue() == 0) {
+                        modifyProgressBar(healthBar, -1);
+                    }
+                }
+            });
+        });
+        barTimer.start();
+    }
+
+
+    private void handleSleepZero() {
+        setBunnyState(BunnyState.SLEEPING); // Set to sleeping state
+        modifyProgressBar(healthBar, -5); // Deduct 5 health
+
+        // Lock actions and animate sleep
+        disableAllButtons();
+        isAnimationPaused = true;
+
+        new Timer(10000, e -> { // Sleep for 10 seconds
+            SwingUtilities.invokeLater(() -> {
+                isAnimationPaused = false;
+                modifyProgressBar(sleepBar, sleepBar.getMaximum()); // Refill Sleep
+                setBunnyState(BunnyState.NORMAL);
+                showOriginalButtons();
+            });
+        }).start();
+    }
+
+
 
 
     private void changeBackgroundImage(String imagePath) {
@@ -956,11 +977,13 @@ public class Gameplay extends JPanel {
     }
 
     private class PixelArtProgressBar extends JProgressBar {
-        private final int segmentSize = 20;
+        private final int animationStep = 2; // Pixels to reduce per frame
+        private Color barColor = Color.GREEN;
 
         public PixelArtProgressBar(int min, int max) {
             super(min, max);
             setBorderPainted(false);
+            setBackground(Color.DARK_GRAY); // Background color
         }
 
         @Override
@@ -969,30 +992,48 @@ public class Gameplay extends JPanel {
             int width = getWidth();
             int height = getHeight();
             int value = getValue();
-            int totalSegments = width / segmentSize;
-            int filledSegments = (int) ((value / (float) getMaximum()) * totalSegments);
+            int maxValue = getMaximum();
 
+            // Calculate filled width
+            int filledWidth = (int) ((value / (double) maxValue) * width);
+
+            // Background
             g2d.setColor(getBackground());
             g2d.fillRect(0, 0, width, height);
 
-            for (int i = 0; i < totalSegments; i++) {
-                int x = i * segmentSize;
-                if (i < filledSegments) {
-                    g2d.setColor(getColorForValue(value));
-                } else {
-                    g2d.setColor(Color.DARK_GRAY);
-                }
-                g2d.fillRect(x, 0, segmentSize - 2, height);
+            // Filled portion
+            g2d.setColor(barColor);
+            g2d.fillRect(0, 0, filledWidth, height);
+
+            // Border
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(0, 0, width - 1, height - 1);
+
+            // Draw Gradient Effect (Optional)
+            GradientPaint gradient = new GradientPaint(0, 0, barColor, width, 0, Color.WHITE);
+            g2d.setPaint(gradient);
+            g2d.fillRect(0, 0, filledWidth, height);
+
+            // Adjust color based on value
+            adjustBarColor(value, maxValue);
+        }
+
+        private void adjustBarColor(int value, int maxValue) {
+            double percentage = (value / (double) maxValue) * 100;
+
+            if (value == 0) {
+                barColor = Color.RED; // Completely red when health is 0
+            } else if (percentage <= 30) {
+                barColor = Color.RED;
+            } else if (percentage <= 60) {
+                barColor = Color.ORANGE;
+            } else if (percentage <= 90) {
+                barColor = Color.YELLOW;
+            } else {
+                barColor = Color.GREEN;
             }
         }
 
-        private Color getColorForValue(int value) {
-            int max = getMaximum();
-            double percentage = (value / (double) max) * 100;
-            if (percentage <= 30) return Color.RED;
-            if (percentage <= 60) return Color.ORANGE;
-            if (percentage <= 90) return Color.YELLOW;
-            return Color.GREEN;
-        }
     }
+
 }

@@ -539,7 +539,6 @@ public class ParentalControls extends JPanel {
             // Create the button dynamically
             JButton slotButton = createCustomButton(buttonText, null);
 
-            // Add ActionListener for the button
             slotButton.addActionListener(e -> {
                 if (health == 0) {
                     int confirm = JOptionPane.showConfirmDialog(
@@ -549,13 +548,20 @@ public class ParentalControls extends JPanel {
                             JOptionPane.YES_NO_OPTION
                     );
                     if (confirm == JOptionPane.YES_OPTION) {
-                        GameSaveManager.savePetHealth(slotKey, GameSaveManager.getMaxHealth()); // Revive to max health
-                        JOptionPane.showMessageDialog(this, "Pet successfully revived!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        // Revive the pet: Set its health to max and reset other stats
+                        GameSaveManager.savePetHealth(slotKey, GameSaveManager.getMaxHealth());
+                        GameSaveManager.saveStat(slotKey + "_sleep", 120); // Maximize sleep
+                        GameSaveManager.saveStat(slotKey + "_happiness", 200); // Maximize happiness
+                        GameSaveManager.saveStat(slotKey + "_fullness", 150); // Maximize fullness
 
-                        // Refresh Reviv    e Pet Panel
+                        // Score remains unchanged; no updates to the score stat
+
+                        JOptionPane.showMessageDialog(this, "Pet successfully revived! All stats are maximized.", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                        // Refresh the Revive Pet Panel
                         refreshRevivePetPanel();
 
-                        // Refresh LoadGame UI
+                        // Refresh the LoadGame UI
                         for (Component comp : mainPanel.getComponents()) {
                             if (comp instanceof LoadGame) {
                                 ((LoadGame) comp).refreshLoadGameUI();
@@ -567,6 +573,9 @@ public class ParentalControls extends JPanel {
                     JOptionPane.showMessageDialog(this, "This pet is already alive!", "Info", JOptionPane.INFORMATION_MESSAGE);
                 }
             });
+
+
+
 
             // Panel for the button with rounded styling
             JPanel slotButtonPanel = new JPanel(null) {
@@ -771,6 +780,16 @@ private JPanel createIconButtonPanel(List<String> labels, List<String> iconPaths
         contentPanel.revalidate();
         contentPanel.repaint();
         layout.show(contentPanel, "Layout6");
+    }
+
+    private void refreshAfterRevive() {
+        refreshRevivePetPanel(); // Refresh the Revive Pet panel
+        for (Component comp : mainPanel.getComponents()) {
+            if (comp instanceof LoadGame) {
+                ((LoadGame) comp).refreshLoadGameUI(); // Refresh LoadGame UI
+                break;
+            }
+        }
     }
 
 

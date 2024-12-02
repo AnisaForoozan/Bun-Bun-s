@@ -249,8 +249,6 @@ public class LoadGame extends JPanel {
     }
 
 
-
-
     private void renameSlot(String slotKey, String newName) {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
         String petData = saveData.get(slotKey); // Get the existing "name:type" format
@@ -263,24 +261,29 @@ public class LoadGame extends JPanel {
     }
 
 
-    private void deleteSlot(String slotKey) {
+    public void deleteSlot(String slotKey) {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
         if (saveData.containsKey(slotKey)) {
-            saveData.remove(slotKey); // Remove the slot from the map
-            GameSaveManager.saveUpdatedData(saveData); // Save the updated map
+            saveData.remove(slotKey); // Remove slot data
+            saveData.remove(slotKey + "_health"); // Remove health data
+            GameSaveManager.saveUpdatedData(saveData);
         }
-        updateSlots(); // Refresh the UI
+        updateSlots();
     }
-
-
 
 
     private void navigateToGameplay(String slotKey) {
         String bunnyName = GameSaveManager.getPetName(slotKey);
         String petType = GameSaveManager.getPetType(slotKey);
+        int petHealth = GameSaveManager.getPetHealth(slotKey); // Ensure health is updated
 
         if (bunnyName == null || petType == null) {
             System.out.println("Invalid data for slot: " + slotKey);
+            return;
+        }
+
+        if (petHealth <= 0) {
+            JOptionPane.showMessageDialog(this, "This pet is dead and cannot be played.", "Pet Died", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -289,6 +292,7 @@ public class LoadGame extends JPanel {
         mainPanel.add(gameplayPanel, "Gameplay");
         cardLayout.show(mainPanel, "Gameplay");
     }
+
 
 
 
@@ -388,16 +392,10 @@ public class LoadGame extends JPanel {
     }
 
 
+
     public void refreshLoadGameUI() {
         updateSlots(); // Use the same logic as updateSlots
     }
-
-
-
-
-
-
-
 
 
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
