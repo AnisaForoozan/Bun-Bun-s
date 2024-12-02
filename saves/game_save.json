@@ -1,7 +1,7 @@
 {
   "parental_password" : "bob",
   "total_play_time" : "105",
-  "session_count" : "181",
+  "session_count" : "182",
   "music_volume" : "-20.0",
   "master_volume" : "-15.391022",
   "sfx_volume" : "-6.0206",
@@ -14,5 +14,5 @@
   "Slot 2_health" : "0",
   "Slot 2" : "Bobby:Black Bunny",
   "Slot 4" : "bobby:Brown Bunny",
-  "Slot 4_health" : "20"
+  "Slot 4_health" : "11"
 }
