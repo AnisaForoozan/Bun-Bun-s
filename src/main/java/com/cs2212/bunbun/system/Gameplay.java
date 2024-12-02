@@ -210,39 +210,84 @@ public class Gameplay extends JPanel {
 
     private void setBunnyState(BunnyState newState) {
         if (currentState == newState) return; // No change, skip updates
-
         currentState = newState;
 
-        String imagePath;
         switch (currentState) {
-            case DEAD:
-                petPlaceholder.setText("Bunny is Dead");
-                imagePath = "/images/bunny-dead.png";
-                break;
+//            case DEAD:
+//
+//                ImageIcon petIcon = new ImageIcon(getClass().getResource("/images/brown-bunny-dead.png"));
+//                Image scaledImage = petIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+//                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+//                petPlaceholder.setIcon(scaledIcon);
+//                petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
+//                petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
+//                petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM);
+//                petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
+//                petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
+//                petPlaceholder.setBounds(893, 400, 300, 400);
+//                JOptionPane.showMessageDialog(this, "Your bunny has died.", "Bunny State", JOptionPane.ERROR_MESSAGE);
+//                disableAllButtons();
+//                break;
+
             case SLEEPING:
-                petPlaceholder.setText("Bunny is Sleeping");
-                imagePath = "/images/bunny-sleeping.png";
+
+
+
+                ImageIcon petIcon2 = new ImageIcon(getClass().getResource("/images/brown-bunny-sleep.png"));
+                Image scaledImage2 = petIcon2.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon2 = new ImageIcon(scaledImage2);
+                petPlaceholder.setIcon(scaledIcon2);
+                petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM);
+                petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
+                petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
+                petPlaceholder.setBounds(893, 400, 300, 400);
+
                 break;
             case ANGRY:
-                petPlaceholder.setText("Bunny is Angry");
-                imagePath = "/images/bunny-angry.png";
-                break;
-            case HUNGRY:
-                petPlaceholder.setText("Bunny is Hungry");
-                imagePath = "/images/bunny-hungry.png";
-                break;
-            case NORMAL:
-                petPlaceholder.setText("Bunny is Happy");
-                imagePath = "/images/black-bunny-normal.png";
-                break;
-            default:
-                return; // No valid state
-        }
 
-        // Load and scale the image to ensure consistent size
-        ImageIcon icon = new ImageIcon(getClass().getResource(imagePath));
-        Image scaledImage = icon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-        petPlaceholder.setIcon(new ImageIcon(scaledImage));
+                ImageIcon petIcon3= new ImageIcon(getClass().getResource("/images/brown-bunny-angry.png"));
+                Image scaledImage3 = petIcon3.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon3 = new ImageIcon(scaledImage3);
+                petPlaceholder.setIcon(scaledIcon3);
+                petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM);
+                petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
+                petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
+                petPlaceholder.setBounds(893, 400, 300, 400);
+                break;
+
+            case HUNGRY:
+
+
+                ImageIcon petIcon4= new ImageIcon(getClass().getResource("/images/brown-bunny-hungry.png"));
+                Image scaledImage4 = petIcon4.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon4 = new ImageIcon(scaledImage4);
+                petPlaceholder.setIcon(scaledIcon4);
+                petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM);
+                petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
+                petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
+                petPlaceholder.setBounds(893, 400, 300, 400);
+                break;
+
+            case NORMAL:
+
+                ImageIcon petIcon5 = new ImageIcon(getClass().getResource("/images/brown-bunny-normal.png"));
+                Image scaledImage5  = petIcon5.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon5 = new ImageIcon(scaledImage5);
+                petPlaceholder.setIcon(scaledIcon5);
+                petPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalAlignment(SwingConstants.CENTER);
+                petPlaceholder.setVerticalTextPosition(SwingConstants.BOTTOM);
+                petPlaceholder.setHorizontalTextPosition(SwingConstants.CENTER);
+                petPlaceholder.setFont(new Font("Comic Sans MS", Font.BOLD, 48));
+                petPlaceholder.setBounds(893, 400, 300, 400);
+                break;
+        }
     }
 
 
