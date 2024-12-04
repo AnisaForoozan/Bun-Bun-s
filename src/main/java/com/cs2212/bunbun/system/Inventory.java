@@ -5,8 +5,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Represents the inventory GUI and the functionalities to dislay items.
+ * The inventory contains separate lists for food and gift items, with features to add,
+ * remove, and use items while maintaining a capacity limit.
+ *
+ * This class is a JPanel that implements {@link ActionListener} for handling button actions.
+ * It includes a custom renderer for item display and manages the interaction between food
+ * and gift lists.
+ *
+ * @author      Anne Liu <aliu432@uwo.ca>
+ * @version     1.0
+ * @since       1.0
+ */
 public class Inventory extends JPanel implements ActionListener {
-    // Instance variables
 
     private DefaultListModel<Item> foodListModel; // Model for food items
     private DefaultListModel<Item> giftListModel; // Model for gift items
@@ -17,13 +29,14 @@ public class Inventory extends JPanel implements ActionListener {
     public static int totalItems; // Track total items in inventory
     public static final int MAX_CAPACITY = 50; // Maximum inventory capacity
 
-    //Button declarations
     private JButton confirmButton;
     JButton exit_button;
-    //JButton inventory_button;
-    //JButton shop_button;
 
-    // Constructor
+    /**
+     * Constructs the Inventory panel, initializing components, layout, and default values.
+     * The panel includes a capacity label, food and gift lists with separators,
+     * and buttons for confirm and exit actions.
+     */
     public Inventory() {
         totalItems = 0; // Initialize total items
 
@@ -118,10 +131,18 @@ public class Inventory extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * Custom cell renderer for displaying items in the inventory lists.
+     * Each item is displayed with its name, quantity, and a scaled image.
+     */
     class InventoryItemRenderer extends JPanel implements ListCellRenderer<Item> {
         private JLabel iconLabel;
         private JLabel nameLabel;
 
+        /**
+         * Constructs a custom renderer for inventory items.
+         * Initializes layout and subcomponents for displaying item details.
+         */
         public InventoryItemRenderer() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             iconLabel = new JLabel();
@@ -132,6 +153,17 @@ public class Inventory extends JPanel implements ActionListener {
             setOpaque(true);
         }
 
+        /**
+         * Configures the renderer for a specific item in the list.
+         * Displays the item's name, quantity, and icon with styling adjustments.
+         *
+         * @param list        The list containing the items.
+         * @param item        The item to render.
+         * @param index       The index of the item in the list.
+         * @param isSelected  Whether the item is selected.
+         * @param cellHasFocus Whether the item has focus.
+         * @return A component for rendering the item.
+         */
         @Override
         public Component getListCellRendererComponent(JList<? extends Item> list, Item item, int index, boolean isSelected, boolean cellHasFocus) {
             if (item != null) {
@@ -158,10 +190,16 @@ public class Inventory extends JPanel implements ActionListener {
         }
     }
 
-    // Method to add a food item
+    /**
+     * Adds a food item to the inventory.
+     * If the item already exists in the food list, its quantity is incremented.
+     * Ensures the total inventory capacity is not exceeded.
+     *
+     * @param item The food item to be added.
+     * @return {@code true} if the item is added successfully; {@code false} if the item already exists or capacity is exceeded.
+     */
     public boolean addFoodItem(Item item) {
         if (totalItems >= MAX_CAPACITY) {
-//            JOptionPane.showMessageDialog(this, "Inventory is full!");
             return false;
         }
 
@@ -184,10 +222,16 @@ public class Inventory extends JPanel implements ActionListener {
         return true;
     }
 
-    // Method to add a gift item
+    /**
+     * Adds a gift item to the inventory.
+     * If the item already exists in the gift list, the quantity is incremented.
+     * Ensures the total inventory capacity is not exceeded.
+     *
+     * @param item The gift item to be added.
+     * @return {@code true} if the item is added successfully; {@code false} if the item already exists or capacity is exceeded.
+     */
     public boolean addGiftItem(Item item) {
         if (totalItems >= MAX_CAPACITY) {
-//            JOptionPane.showMessageDialog(this, "Inventory is full!");
             return false;
         }
 
@@ -210,13 +254,20 @@ public class Inventory extends JPanel implements ActionListener {
         return true;
     }
 
-
-    // Update inventory capacity label
+    /**
+     * Updates the capacity display label to reflect the current number of items in the inventory.
+     */
     private void updateCapacity() {
         capacityLabel.setText("<html>Number of items: <b>" + totalItems + "</b>/" + MAX_CAPACITY + "</html>");
     }
 
-    //actions for buttons
+    /**
+     * Handles actions for confirm and exit buttons.
+     * Confirm Button: Uses the selected item from the food or gift list.
+     * Exit Button: Closes the inventory.
+     *
+     * @param e The event triggered by button actions.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         //exit button
@@ -241,7 +292,13 @@ public class Inventory extends JPanel implements ActionListener {
         }
     }
 
-    // Use an item: decrement quantity or remove from list
+    /**
+     * Uses an item from the inventory.
+     * Decrements the item's quantity or removes it entirely if the quantity reaches zero.
+     *
+     * @param item The item to be used.
+     * @param listModel The list model from which the item is removed or updated.
+     */
     private void useItem(Item item, DefaultListModel<Item> listModel) {
         if (item.getQuantity() > 1) {
             item.decrementQuantity();
@@ -255,7 +312,12 @@ public class Inventory extends JPanel implements ActionListener {
         updateCapacity();
     }
 
-    // Test the Inventory class
+    /**
+     * Main method for testing the Inventory class.
+     * Creates a sample inventory and displays it in a JFrame.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         JFrame frame = new JFrame("Inventory Panel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
