@@ -5,10 +5,28 @@ import com.cs2212.bunbun.gameplay.GameSaveManager;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The Settings panel for adjusting audio settings in the game.
+ * This panel allows the user to control the master, music, and SFX volume settings.
+ * It includes sliders for each audio setting, and applies changes immediately.
+ * The panel also features a back button to navigate to the main menu.
+ * The background image is displayed behind the settings UI elements.
+ *
+ * @author      Janreve Salubre
+ * @version     1.0
+ * @since       1.0
+ */
 public class Settings extends JPanel {
     private AudioPlayer audioPlayer;
     private Image backgroundImage;
 
+    /**
+     * Constructs a new Settings panel with audio controls.
+     *
+     * @param cardLayout The CardLayout used to switch between panels.
+     * @param mainPanel The main panel containing all game panels.
+     * @param audioPlayer The AudioPlayer used to control audio settings.
+     */
     public Settings(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
 
@@ -73,6 +91,12 @@ public class Settings extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Paints the background image on the panel.
+     * This method is invoked automatically when the panel is rendered.
+     *
+     * @param g The Graphics object used to paint the component.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -84,6 +108,15 @@ public class Settings extends JPanel {
         g2d.dispose();
     }
 
+
+    /**
+     * Creates a custom button with the given text and action listener.
+     * The button includes click and hover sound effects, and color change on hover.
+     *
+     * @param text The text to display on the button.
+     * @param onClick The action listener to be triggered when the button is clicked.
+     * @return A JButton configured with the specified properties.
+     */
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
@@ -118,6 +151,15 @@ public class Settings extends JPanel {
         return button;
     }
 
+    /**
+     * Creates a volume control panel consisting of a label and a slider.
+     * The slider is initialized with the given value and listens for changes to update the audio settings.
+     *
+     * @param labelText The label text to display next to the slider.
+     * @param initialValue The initial value of the slider.
+     * @param onChange A callback function that is triggered when the slider value changes.
+     * @return A JPanel containing the label and slider.
+     */
     private JPanel createVolumeControl(String labelText, int initialValue, java.util.function.Consumer<Integer> onChange) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
@@ -138,11 +180,23 @@ public class Settings extends JPanel {
         return panel;
     }
 
+    /**
+     * Converts a slider value (0-100) to decibels for the audio system.
+     *
+     * @param value The slider value.
+     * @return The corresponding decibel value.
+     */
     private float convertSliderValueToDecibels(int value) {
         if (value == 0) return -80.0f; // Minimum decibel value for muting
         return (float) (Math.log10(value / 100.0) * 20); // Convert percentage to decibels
     }
 
+    /**
+     * Converts a decibel value to a slider value (0-100) for the audio system.
+     *
+     * @param decibels The decibel value.
+     * @return The corresponding slider value.
+     */
     private int convertDecibelsToSliderValue(float decibels) {
         if (decibels <= -80.0f) return 0; // Handle muted value
         return (int) (Math.pow(10, decibels / 20) * 100); // Convert decibels to slider percentage
