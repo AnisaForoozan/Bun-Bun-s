@@ -5,6 +5,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Represents the main frame and provides users the option to switch between the shop and the inventory panels.
+ * The frame uses a CardLayout to switch between views and includes buttons
+ * for interacting with the panels.
+ *
+ * The frame initializes and displays inventory and shop functionalities
+ * using separate panels, managed by a CardLayout for seamless transitions.
+ *
+ * @author      Anne Liu <aliu432@uwo.ca>
+ * @version     1.0
+ * @since       1.0
+ */
 public class ItemsMainFrame extends JFrame implements ActionListener {
     private Inventory inventoryPanel; // The inventory panel
     private Shop shopPanel; // The shop panel
@@ -14,12 +26,16 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
     private CustomListDemo customListDemo;
     private CustomGiftList customGiftList;
 
-    // Constructor for MainFrame
+    /**
+     * Constructs the ItemsMainFrame, setting up the layout and panels.
+     * Initializes the inventory and shop panels and sets up the CardLayout
+     * container to switch between these views. The constructor also adds buttons
+     * to toggle between the Inventory and Shop views.
+     */
     public ItemsMainFrame() {
         getContentPane().setBackground(new Color(193, 154, 107)); // Set the frame background color
-        // Initialize the custom list demo panel
+
         customListDemo = new CustomListDemo();
-//        customListDemo.setBackground(new Color(193, 154, 107));
         customGiftList = new CustomGiftList();
 
         // Set up the frame
@@ -30,12 +46,10 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
 
         // Create the inventory and shop panels
         inventoryPanel = new Inventory();
-//        inventoryPanel.setBackground(new Color(193, 154, 107));
         shopPanel = new Shop(customListDemo, customGiftList, inventoryPanel); // Assuming Shop class exists with your shop panel
 
         // Create CardLayout container
         cardPanel = new JPanel(new CardLayout());
-//        cardPanel.setForeground(new Color(193, 154, 107));
 
         // Add panels to the CardLayout container
         cardPanel.add(inventoryPanel, "Inventory");
@@ -68,8 +82,12 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
     }
 
 
-
-    // Action listener for the buttons
+    /**
+     * Handles button actions. When either the "Inventory" or "Shop" button
+     * is clicked, the CardLayout switches to the corresponding panel.
+     *
+     * @param e The event triggered by a button click.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         CardLayout cardLayout = (CardLayout) cardPanel.getLayout();
@@ -82,7 +100,12 @@ public class ItemsMainFrame extends JFrame implements ActionListener {
         }
     }
 
-    // Main method to run the application
+    /**
+     * Main method to launch the ItemsMainFrame application.
+     * Initializes and displays the frame.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             ItemsMainFrame mainFrame = new ItemsMainFrame();
