@@ -8,6 +8,20 @@ import java.awt.event.ActionListener;
 import static com.cs2212.bunbun.system.Inventory.MAX_CAPACITY;
 import static com.cs2212.bunbun.system.Inventory.totalItems;
 
+/**
+ * Represents the shop panel where users can view and purchase food or gift items.
+ * This class allows users to interact with lists of available food and gift items,
+ * and make purchases by adding items to their inventory.
+ * The panel includes buttons for purchasing items and exiting the shop.
+ *
+ * It utilizes CustomListDemo and CustomGiftList instances for displaying food and gift items
+ * and allows users to interact with these lists to select and purchase items.
+ * The purchase button ensures the inventory capacity is checked before allowing an item to be purchased.
+ *
+ * @author      Anne Liu <aliu432@uwo.ca>
+ * @version     1.0
+ * @since       1.0
+ */
 public class Shop extends JPanel implements ActionListener {
     private CustomListDemo customListDemo;
     private CustomGiftList customGiftList;
@@ -18,12 +32,20 @@ public class Shop extends JPanel implements ActionListener {
     private JList<String> giftList; // List for gift items
     private JButton purchaseButton; // Button to purchase item
 
-    //Button declarations
-    JButton exit_button;
+    JButton exit_button; //Button declarations
 
-    // Constructor
+    /**
+     * Constructs the Shop panel, initializing and setting up components
+     * such as food and gift lists, labels, separators, and buttons.
+     * This constructor configures the layout, adds components to the panel,
+     * and establishes interactions between the shop, inventory, and item lists.
+     *
+     * @param customListDemo The list of food items.
+     * @param customGiftList The list of gift items.
+     * @param inventoryPanel The inventory panel to add purchased items to.
+     */
     public Shop(CustomListDemo customListDemo, CustomGiftList customGiftList, Inventory inventoryPanel) {
-        // Ensure this is initialized somewhere in your Shop class constructor or method
+
         this.customListDemo = customListDemo;
         this.customGiftList = customGiftList;
         this.inventoryPanel = inventoryPanel;
@@ -31,10 +53,6 @@ public class Shop extends JPanel implements ActionListener {
         // Set the references between food and gift lists
         this.customListDemo.setGiftList(this.customGiftList.petList);
         this.customGiftList.setFoodList(this.customListDemo.petList);
-
-//        // Create a JLayeredPane
-//        JLayeredPane layeredPane = new JLayeredPane();
-//        layeredPane.setLayout(null);
 
         // Create "Food" label
         JLabel food_label = new JLabel("Food");
@@ -45,13 +63,11 @@ public class Shop extends JPanel implements ActionListener {
         // Create new separator
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
         separator.setBounds(0, 90, 800, 10);
-//        layeredPane.add(separator, Integer.valueOf(2));
 
         // Create list of food items
         CustomListDemo foodList = customListDemo; // Use the existing CustomListDemo instance
         foodList.setBackground(new Color(193, 154, 107));
         foodList.setBounds(20, 60, 750, 90);
-//        layeredPane.add(foodList, Integer.valueOf(1));
 
         // Create "Gifts" label
         JLabel gifts_label = new JLabel("Gifts");
@@ -75,7 +91,6 @@ public class Shop extends JPanel implements ActionListener {
         purchaseButton.setBounds(430, 370, 105, 40);
         purchaseButton.addActionListener(this); // Add action listener for the button
 
-
         // Create "Exit" button
         exit_button = new JButton("Exit");
         exit_button.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
@@ -88,18 +103,23 @@ public class Shop extends JPanel implements ActionListener {
         this.setLayout(null);
         this.setPreferredSize(new Dimension(700, 400)); //FIXME: make the panel a bit smaller?
         this.setBackground(new Color(193, 154, 107));
-//        this.add(layeredPane);
         this.add(food_label); // Add food label
         this.add(foodList); // Add food scroll pane
-//        this.add(separator); // Add separator
         this.add(gifts_label); // Add gifts label
         this.add(giftList); // Add gift list
-//        this.add(separator1); // Add separator
         this.add(purchaseButton); // Add purchase button
         this.add(exit_button); // Add exit button
-
     }
 
+    /**
+     * Handles actions for the "Purchase" and "Exit" buttons.
+     * When the purchase button is clicked, it checks if an item is selected,
+     * verifies the inventory capacity, and then adds the selected item
+     * (food or gift) to the inventory.
+     * The exit button closes the application when clicked.
+     *
+     * @param e The event triggered by a button click.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == purchaseButton) {
@@ -144,25 +164,10 @@ public class Shop extends JPanel implements ActionListener {
 
         } else if (e.getSource() == exit_button) {
             // Exit action
-            JOptionPane.showMessageDialog(this, "Exiting Inventory...");
-            System.exit(0); // Close the application
+            Window parentWindow = SwingUtilities.getWindowAncestor(this);
+            if (parentWindow instanceof ItemsMainFrame) {
+                ((ItemsMainFrame) parentWindow).dispose(); // Dispose of ItemsMainFrame
+            }
         }
     }
-
-
-//    // Test the panel in a JFrame
-//    public static void main(String[] args) {
-//        // Create and display the JFrame
-//        JFrame frame = new JFrame("Shop Panel");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(800, 500);
-//
-//        // Create an instance of Shop and add it to the frame
-//        Shop ShopPanel = new Shop(new Inventory());
-//        frame.add(ShopPanel); // Add Shop panel to the frame
-//
-//        // Make the frame visible
-//        frame.setVisible(true); // Make the frame visible
-//    }
 }
-

@@ -6,7 +6,13 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Map;
 
-
+/**
+ * A JPanel that allows users to select a pet, name it, and proceed to the gameplay.
+ * @author Janreve Salubre
+ * @author Anisa Faroozan
+ * @version 1.0
+ * @since 1.0
+ */
 public class PetSelection extends JPanel {
     private AudioPlayer audioPlayer;
     private String selectedPet;
@@ -14,6 +20,13 @@ public class PetSelection extends JPanel {
     private String selectedSlot;
     private Image backgroundImage;
 
+    /**
+     * Constructs the PetSelection panel with the given parameters.
+     *
+     * @param cardLayout  The CardLayout used to switch between panels.
+     * @param mainPanel   The main JPanel containing all the cards.
+     * @param audioPlayer The AudioPlayer for playing sounds.
+     */
     public PetSelection(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
 
@@ -27,7 +40,7 @@ public class PetSelection extends JPanel {
         setLayout(new BorderLayout());
 
         // Back Button
-        JButton backButton = createButton("⬅", e -> showBackDialog(cardLayout, mainPanel));
+        JButton backButton = createButton("<<", e -> showBackDialog(cardLayout, mainPanel));
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topLeftPanel.setOpaque(false);
         topLeftPanel.add(backButton);
@@ -69,7 +82,6 @@ public class PetSelection extends JPanel {
                                 "<br>- Health decreases 25% faster<br>- Happiness value boost by 15%</div></html>"}
         };
 
-
         for (String[] bunny : bunnies) {
             String bunnyName = bunny[0];
             String imagePath = bunny[1];
@@ -90,7 +102,6 @@ public class PetSelection extends JPanel {
         hoverTextLabel.setHorizontalAlignment(SwingConstants.CENTER);
         hoverTextLabel.setVerticalAlignment(SwingConstants.TOP); // Align text at the top
         hoverTextLabel.setPreferredSize(new Dimension(400, 200)); // Fixed width and height
-
 
         gbc.gridy = 2; // Position below the pet buttons
         titlePanel.add(hoverTextLabel, gbc);
@@ -128,7 +139,6 @@ public class PetSelection extends JPanel {
                 GameSaveManager.saveData(selectedSlot, petName, selectedPet);
                 System.out.println("After saving: " + GameSaveManager.loadSaveData());
 
-
                 // Update slots in the LoadGame screen
                 for (Component comp : mainPanel.getComponents()) {
                     if (comp instanceof LoadGame) {
@@ -141,7 +151,6 @@ public class PetSelection extends JPanel {
 
                 // Navigate to Bunny panel with loading screen
                 showLoadingScreenAndSwitchPanel(cardLayout, mainPanel, "Bunny", petName, selectedPet);
-
             }
         });
 
@@ -152,6 +161,11 @@ public class PetSelection extends JPanel {
         add(namePanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Overrides the paintComponent method to draw the background image.
+     *
+     * @param g The Graphics object used to draw.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -164,13 +178,23 @@ public class PetSelection extends JPanel {
         }
     }
 
-
-
+    /**
+     * Sets the selected game slot.
+     *
+     * @param selectedSlot The selected slot identifier.
+     */
     public void setSelectedSlot(String selectedSlot) {
         this.selectedSlot = selectedSlot;
     }
 
-
+    /**
+     * Creates a JButton representing a bunny with the given parameters.
+     *
+     * @param bunnyName        The name of the bunny.
+     * @param imagePath        The image path of the bunny icon.
+     * @param bunnyDescription The description of the bunny.
+     * @return A JButton configured as a bunny selection button.
+     */
     private JButton createBunnyButton(String bunnyName, String imagePath, String bunnyDescription) {
         JButton bunnyButton = new JButton();
         bunnyButton.setPreferredSize(new Dimension(180, 180)); // Set initial size
@@ -228,8 +252,6 @@ public class PetSelection extends JPanel {
                 bunnyButton.repaint(); // Repaint only the bunny button
             }
 
-
-
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 boolean isCurrentlyClicked = (boolean) bunnyButton.getClientProperty("isClicked");
@@ -265,7 +287,16 @@ public class PetSelection extends JPanel {
         return bunnyButton;
     }
 
-private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String selectedPet) {
+    /**
+     * Displays a loading screen and switches to the specified panel after a delay.
+     *
+     * @param cardLayout  The CardLayout used to switch between panels.
+     * @param mainPanel   The main JPanel containing all the cards.
+     * @param targetPanel The name of the target panel to switch to.
+     * @param petName     The name of the selected pet.
+     * @param selectedPet The type of the selected pet.
+     */
+    private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainPanel, String targetPanel, String petName, String selectedPet) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
             @Override
@@ -318,6 +349,12 @@ private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainP
         loadingTimer.start();
     }
 
+    /**
+     * Shows a dialog when the back button is pressed, allowing the user to navigate to the main menu or slots.
+     *
+     * @param cardLayout The CardLayout used to switch between panels.
+     * @param mainPanel  The main JPanel containing all the cards.
+     */
     private void showBackDialog(CardLayout cardLayout, JPanel mainPanel) {
         JFrame parentFrame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
 
@@ -375,6 +412,13 @@ private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainP
         dialog.setVisible(true);
     }
 
+    /**
+     * Creates a JButton with the specified text and action listener.
+     *
+     * @param text    The text to display on the button.
+     * @param onClick The action to perform when the button is clicked.
+     * @return A styled JButton.
+     */
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
@@ -407,6 +451,13 @@ private void showLoadingScreenAndSwitchPanel(CardLayout cardLayout, JPanel mainP
         return button;
     }
 
+    /**
+     * Styles a dialog button with hover effects and click actions.
+     *
+     * @param button     The JButton to style.
+     * @param hoverColor The color to use when the button is hovered over.
+     * @param onClick    The action to perform when the button is clicked.
+     */
     private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
         button.setForeground(Color.WHITE);

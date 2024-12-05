@@ -9,13 +9,32 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The {@code GameSaveManager} class handles saving and loading game data,
+ * such as playtime, session counts, pet information, time limits, and volume settings.
+ * It provides static methods to interact with the save data stored in a JSON file.
+ * @author Janreve Salubre
+ * @version 1.0
+ * @since 1.0
+ */
 public class GameSaveManager {
 
+    /** Total playtime in minutes. */
     private static int totalPlayTime = 0; // Total playtime in minutes
+
+    /** Number of sessions played. */
     private static int sessionCount = 0;
+
+    /** Start time of the current session in milliseconds. */
     private static long sessionStartTime = System.currentTimeMillis();
+
+    /** File path to the save file. */
     private static final String SAVE_FILE = "saves/game_save.json";
+
+    /** ObjectMapper instance for JSON serialization/deserialization. */
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    /** Maximum health value for the pet. */
     private static final int MAX_HEALTH = 20;
 
     static {
@@ -26,7 +45,11 @@ public class GameSaveManager {
         sessionStartTime = System.currentTimeMillis();
     }
 
-    // Load save data from the JSON file
+    /**
+     * Loads save data from the JSON file.
+     *
+     * @return A map containing the save data.
+     */
     public static Map<String, String> loadSaveData() {
         File file = new File(SAVE_FILE);
         if (!file.exists()) {
@@ -41,7 +64,13 @@ public class GameSaveManager {
         }
     }
 
-    // Save data to the JSON file
+    /**
+     * Saves pet data to the JSON file.
+     *
+     * @param slot        The save slot identifier.
+     * @param bunnyName   The name of the bunny.
+     * @param selectedPet The type of the selected pet.
+     */
     public static void saveData(String slot, String bunnyName, String selectedPet) {
         Map<String, String> saveData = loadSaveData();
         saveData.put(slot, bunnyName + ":" + selectedPet); // Save in the "name:type" format
@@ -49,7 +78,11 @@ public class GameSaveManager {
         saveUpdatedData(saveData); // Delegate saving logic to saveUpdatedData
     }
 
-    // Save the updated save data map to the JSON file
+    /**
+     * Saves the updated save data map to the JSON file.
+     *
+     * @param saveData The map containing save data to be written.
+     */
     public static void saveUpdatedData(Map<String, String> saveData) {
         File saveFile = new File(SAVE_FILE);
         saveFile.getParentFile().mkdirs(); // Ensure directories exist
@@ -61,7 +94,12 @@ public class GameSaveManager {
         }
     }
 
-    // Utility method to get pet name
+    /**
+     * Retrieves the pet's name from the save data.
+     *
+     * @param slotKey The key identifying the save slot.
+     * @return The pet's name, or {@code null} if not found.
+     */
     public static String getPetName(String slotKey) {
         Map<String, String> saveData = loadSaveData();
         String petData = saveData.get(slotKey);
@@ -71,7 +109,12 @@ public class GameSaveManager {
         return null; // Return null if not found or invalid format
     }
 
-    // Utility method to get pet type
+    /**
+     * Retrieves the pet's type from the save data.
+     *
+     * @param slotKey The key identifying the save slot.
+     * @return The pet's type, or {@code null} if not found.
+     */
     public static String getPetType(String slotKey) {
         Map<String, String> saveData = loadSaveData();
         String petData = saveData.get(slotKey);
@@ -81,6 +124,11 @@ public class GameSaveManager {
         return null; // Return null if not found or invalid format
     }
 
+    /**
+     * Saves time limits for various days.
+     *
+     * @param timeLimits A map containing time limits with days as keys.
+     */
     public static void saveTimeLimits(Map<String, Integer> timeLimits) {
         try {
             // Normalize keys to title case
@@ -101,7 +149,11 @@ public class GameSaveManager {
         }
     }
 
-
+    /**
+     * Retrieves the time limits from the save data.
+     *
+     * @return A map containing time limits with days as keys.
+     */
     public static Map<String, Integer> getTimeLimits() {
         Map<String, String> saveData = loadSaveData();
         String data = saveData.get("time_limits");
@@ -125,17 +177,30 @@ public class GameSaveManager {
         return new HashMap<>(); // Return empty map if no time limits are set
     }
 
+    /**
+     * Sets whether the gameplay is locked or not.
+     *
+     * @param locked {@code true} to lock the gameplay; {@code false} otherwise.
+     */
     public static void setGameplayLocked(boolean locked) {
         Map<String, String> saveData = loadSaveData();
         saveData.put("gameplay_locked", locked ? "true" : "false");
         saveUpdatedData(saveData);
     }
 
+    /**
+     * Checks if the gameplay is currently locked.
+     *
+     * @return {@code true} if gameplay is locked; {@code false} otherwise.
+     */
     public static boolean isGameplayLocked() {
         Map<String, String> saveData = loadSaveData();
         return Boolean.parseBoolean(saveData.getOrDefault("gameplay_locked", "false"));
     }
 
+    /**
+     * Resets the time limit for the current day.
+     */
     public static void resetTimeLimitForToday() {
         Map<String, Integer> timeLimits = getTimeLimits();
         String todayKey = LocalDate.now().getDayOfWeek().toString();
@@ -143,7 +208,9 @@ public class GameSaveManager {
         saveTimeLimits(timeLimits); // Use saveTimeLimits to save the updated map
     }
 
-    // Save playtime and session count
+    /**
+     * Saves playtime and session count data.
+     */
     public static void savePlaytimeData() {
         Map<String, String> saveData = loadSaveData();
         saveData.put("total_play_time", String.valueOf(totalPlayTime));
@@ -153,7 +220,11 @@ public class GameSaveManager {
 
     }
 
-    // Add playtime (in minutes)
+    /**
+     * Adds playtime in minutes and increments session count.
+     *
+     * @param minutes The number of minutes to add to the total playtime.
+     */
     public static void addPlaytime(int minutes) {
         totalPlayTime += minutes;
         sessionCount++;
@@ -161,40 +232,64 @@ public class GameSaveManager {
         savePlaytimeData();
     }
 
-    // Reset total playtime
+    /**
+     * Resets the total playtime to zero.
+     */
     public static void resetTotalPlayTime() {
         totalPlayTime = 0;
         savePlaytimeData(); // Save updated values
     }
 
-    // Reset session count
+    /**
+     * Resets the session count to zero.
+     */
     public static void resetAveragePlayTime() {
         sessionCount = 0;
         savePlaytimeData(); // Save updated values
     }
 
-
+    /**
+     * Enables or disables time restriction.
+     *
+     * @param enabled {@code true} to enable; {@code false} to disable.
+     */
     public static void setTimeRestrictionEnabled(boolean enabled) {
         Map<String, String> saveData = loadSaveData();
         saveData.put("time_restriction_enabled", String.valueOf(enabled));
         saveUpdatedData(saveData);
     }
 
+    /**
+     * Checks if time restriction is enabled.
+     *
+     * @return {@code true} if enabled; {@code false} otherwise.
+     */
     public static boolean isTimeRestrictionEnabled() {
         Map<String, String> saveData = loadSaveData();
         return Boolean.parseBoolean(saveData.getOrDefault("time_restriction_enabled", "false"));
     }
 
-
-
+    /**
+     * Retrieves the total playtime in minutes.
+     *
+     * @return Total playtime in minutes.
+     */
     public static int getTotalPlayTimeInMinutes() {
         return totalPlayTime;
     }
 
+    /**
+     * Retrieves the number of sessions played.
+     *
+     * @return The session count.
+     */
     public static int getSessionCount() {
         return sessionCount;
     }
 
+    /**
+     * Saves the duration of the current session.
+     */
     public static void saveSessionDuration() {
         System.out.println("saveSessionDuration called...");
         long sessionEndTime = System.currentTimeMillis();
@@ -203,22 +298,44 @@ public class GameSaveManager {
         System.out.println("Session duration saved: " + sessionMinutes + " minutes");
     }
 
+    /**
+     * Saves a volume setting.
+     *
+     * @param key   The key identifying the volume setting.
+     * @param value The volume value to save.
+     */
     public static void saveVolumeSetting(String key, float value) {
         Map<String, String> saveData = loadSaveData();
         saveData.put(key, String.valueOf(value));
         saveUpdatedData(saveData);
     }
 
+    /**
+     * Loads a volume setting.
+     *
+     * @param key The key identifying the volume setting.
+     * @return The volume value.
+     */
     public static float loadVolumeSetting(String key) {
         Map<String, String> saveData = loadSaveData();
         return Float.parseFloat(saveData.getOrDefault(key, "0")); // Default to muted if not found
     }
 
+    /**
+     * Retrieves the maximum health value for the pet.
+     *
+     * @return The maximum health value.
+     */
     public static int getMaxHealth() {
         return MAX_HEALTH;
     }
 
-    // Add this in GameSaveManager
+    /**
+     * Retrieves the pet's health from the save data.
+     *
+     * @param slotKey The key identifying the save slot.
+     * @return The pet's health value.
+     */
     public static int getPetHealth(String slotKey) {
         Map<String, String> saveData = loadSaveData();
         try {
@@ -229,14 +346,25 @@ public class GameSaveManager {
         }
     }
 
-
+    /**
+     * Saves the pet's health to the save data.
+     *
+     * @param slotKey The key identifying the save slot.
+     * @param health  The health value to save.
+     */
     public static void savePetHealth(String slotKey, int health) {
         Map<String, String> saveData = loadSaveData();
         saveData.put(slotKey + "_health", String.valueOf(health));
         saveUpdatedData(saveData);
     }
 
-    // Retrieve saved stats
+    /**
+     * Retrieves a saved stat value.
+     *
+     * @param key          The key identifying the stat.
+     * @param defaultValue The default value to return if the stat is not found.
+     * @return The stat value.
+     */
     public static int getStat(String key, int defaultValue) {
         Map<String, String> saveData = loadSaveData();
         try {
@@ -247,14 +375,16 @@ public class GameSaveManager {
         }
     }
 
-
-    // Save individual stat
+    /**
+     * Saves an individual stat.
+     *
+     * @param key   The key identifying the stat.
+     * @param value The value to save.
+     */
     public static void saveStat(String key, int value) {
         Map<String, String> saveData = loadSaveData();
         saveData.put(key, String.valueOf(value));
         saveUpdatedData(saveData);
     }
-
-
 
 }

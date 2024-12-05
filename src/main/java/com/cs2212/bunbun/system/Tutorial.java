@@ -4,39 +4,69 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 
+/**
+ * The Tutorial class represents the tutorial panel in the application, providing users with
+ * instructions and navigation through different tutorial pages.
+ * @author Anisa Faroozan
+ * @version 1.0
+ * @since 1.0
+ */
 public class Tutorial extends JPanel {
     private AudioPlayer audioPlayer;
     private Image backgroundImage;
     private int currentPage = 0;
     private JPanel contentPanel;
 
-
     private String[] imagePaths = {
-            "/images/Inventory.png", "/images/ItemShop.png", "/images/Progress.png", "/images/Go To Bed.png", "/images/Give Gift.png", "/images/Feed.png","/images/Play.png", "/images/Take To Vet.png", "/images/Exercise.png","/images/white-bunny-dead.png", "/images/white-bunny-sleep.png", "/images/white-bunny-angry.png", "/images/white-bunny-hungry.png", "/images/white-bunny-normal.png"
+            "/images/Inventory.png", "/images/ItemShop.png", "/images/Progress.png", "/images/Go To Bed.png",
+            "/images/Give Gift.png", "/images/Feed.png", "/images/Play.png", "/images/Take To Vet.png",
+            "/images/Exercise.png", "/images/white-bunny-dead.png", "/images/white-bunny-sleep.png",
+            "/images/white-bunny-angry.png", "/images/white-bunny-hungry.png", "/images/white-bunny-normal.png"
     };
 
     private String[] titles = {
-            "Inventory", "Item Shop", "Progress", "Go To Bed", "Give Gift", "Feed", "Play", "Take to Vet", "Exercise", "Health = 0", "Sleep = 0", "Happiness = 0", "Hunger = 0", "Ready to Start Game"
+            "Inventory", "Item Shop", "Progress", "Go To Bed", "Give Gift", "Feed", "Play", "Take to Vet",
+            "Exercise", "Health = 0", "Sleep = 0", "Happiness = 0", "Hunger = 0", "Ready to Start Game"
     };
 
     private String[] descriptions = {
             "View the food and gift items you currently own.",
             " Purchase food and gift items using points.",
-            "<html>Sleep: Restedness of your bunny.<br><br><html>" + "Happiness: Emotional state of your bunny.<br><br><html>" + "Hunger: How hungry your bunny is.<br><br><html>" + "Health: Overall health of your bunny.<br><br><html>" + "Points: Earned points to spend in the shop.<br><br><html>",
-            "<html>Makes the bunny sleep.<br><br>" + "Effect: Sleep levels ↑, Hunger levels ↓, <b>+2 Points.<br><br></html>",
-            "<html>Opens inventory to select a gift item for the bunny.<br><br>" + "Effect: Happiness levels ↑,<b>+6 Points.<br><html>",
-            "<html>Opens inventory to select food for the bunny.<br><br>" + "Effect: Hunger levels ↑, <b>+3 Points.<br><html>",
-            "<html>Bunny plays.<br><br>" + "Effect: Happiness levels ↑, <b>+5 Points.<br><html>",
-            "<html>Bunny visits the vet.<br><br>" + "Effect: Health levels ↑, <b>+3 Points.<br><html>",
-            "<html>Bunny goes for a walk.<br><br>" + "Effect: Health levels ↑, Sleep levels ↓, Hunger levels ↓, <b>+5 Points.<br><html>",
-            "<html>The bunny has died.<br><br>" + "Effect: You must load a saved game or start a new game. No actions can be taken.<br><html>",
-            "<html>The bunny is too tired.<br><br>" + "Effect: Health penalty applied. Only the Go to Bed button is available. <b>-2 Points.<br><html>",
-            "<html>The bunny is angry.<br><br>" + "Effect: Only the Give Gift or Play buttons are available. <b>-2 Points.<br><html>",
-            "<html>The bunny is hungry.<br><br>" + "Effect: Only Feed button is available. Happiness and health levels decline. <b>-3 Points.<br><html>",
+            "<html>Sleep: Restedness of your bunny.<br><br><html>" +
+                    "Happiness: Emotional state of your bunny.<br><br><html>" +
+                    "Hunger: How hungry your bunny is.<br><br><html>" +
+                    "Health: Overall health of your bunny.<br><br><html>" +
+                    "Points: Earned points to spend in the shop.<br><br><html>",
+            "<html>Makes the bunny sleep.<br><br>" +
+                    "Effect: Sleep levels ↑, Hunger levels ↓, <b>+2 Points.<br><br></html>",
+            "<html>Opens inventory to select a gift item for the bunny.<br><br>" +
+                    "Effect: Happiness levels ↑,<b>+6 Points.<br><html>",
+            "<html>Opens inventory to select food for the bunny.<br><br>" +
+                    "Effect: Hunger levels ↑, <b>+3 Points.<br><html>",
+            "<html>Bunny plays.<br><br>" +
+                    "Effect: Happiness levels ↑, <b>+5 Points.<br><html>",
+            "<html>Bunny visits the vet.<br><br>" +
+                    "Effect: Health levels ↑, <b>+3 Points.<br><html>",
+            "<html>Bunny goes for a walk.<br><br>" +
+                    "Effect: Health levels ↑, Sleep levels ↓, Hunger levels ↓, <b>+5 Points.<br><html>",
+            "<html>The bunny has died.<br><br>" +
+                    "Effect: You must load a saved game or start a new game. No actions can be taken.<br><html>",
+            "<html>The bunny is too tired.<br><br>" +
+                    "Effect: Health penalty applied. Only the Go to Bed button is available. <b>-2 Points.<br><html>",
+            "<html>The bunny is angry.<br><br>" +
+                    "Effect: Only the Give Gift or Play buttons are available. <b>-2 Points.<br><html>",
+            "<html>The bunny is hungry.<br><br>" +
+                    "Effect: Only Feed button is available. Happiness and health levels decline. <b>-3 Points.<br><html>",
             "<html>Hop Along and Have Fun!"
-
     };
 
+    /**
+     * Constructs a new Tutorial panel.
+     *
+     * @param cardLayout The CardLayout used for switching panels.
+     * @param mainPanel  The main JPanel that contains other panels.
+     * @param audioPlayer The AudioPlayer used for playing sounds.
+     */
     public Tutorial(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
 
@@ -53,7 +83,7 @@ public class Tutorial extends JPanel {
         northPanel.setOpaque(false); // Ensure transparency to show the background
 
         // Back Button
-        JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "MainMenu"));
+        JButton backButton = createButton("<<", e -> cardLayout.show(mainPanel, "MainMenu"));
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topLeftPanel.setOpaque(false); // Transparent background
         topLeftPanel.add(backButton);
@@ -78,7 +108,6 @@ public class Tutorial extends JPanel {
         add(northPanel, BorderLayout.NORTH);
 
         // Content Panel (tutorial content area)
-
         JPanel tutorialPanel = new JPanel(new GridBagLayout());
         tutorialPanel.setOpaque(false); // Transparent background
         contentPanel = new JPanel(new GridBagLayout());
@@ -91,13 +120,17 @@ public class Tutorial extends JPanel {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Center the buttons at the bottom
         bottomPanel.setOpaque(false); // Transparent background
         // Left Arrow Button (←)
-        JButton leftButton = createButton("←", e -> navigateLeft());
+        JButton leftButton = createButton("<", e -> navigateLeft());
         // Right Arrow Button (→)
-        JButton rightButton = createButton("→", e -> navigateRight());
+        JButton rightButton = createButton(">", e -> navigateRight());
         bottomPanel.add(leftButton);
         bottomPanel.add(rightButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }
+
+    /**
+     * Navigates to the previous tutorial page if possible.
+     */
     private void navigateLeft() {
         if (currentPage > 0) {
             currentPage--;
@@ -106,14 +139,20 @@ public class Tutorial extends JPanel {
         }
     }
 
+    /**
+     * Navigates to the next tutorial page if possible.
+     */
     private void navigateRight() {
-        if (currentPage < 13) { // Assuming there are 3 tutorial pages (0 to 2)
+        if (currentPage < 13) { // Assuming there are 14 tutorial pages (0 to 13)
             currentPage++;
             updateContent(); // Update the content when navigating right
             repaint();
         }
     }
 
+    /**
+     * Updates the tutorial content based on the current page index.
+     */
     private void updateContent() {
         // Update the content based on the currentPage index
         contentPanel.removeAll(); // Clear the old content
@@ -122,6 +161,11 @@ public class Tutorial extends JPanel {
         contentPanel.repaint();
     }
 
+    /**
+     * Paints the background image and tutorial title onto the panel.
+     *
+     * @param g The Graphics object to protect.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -155,11 +199,14 @@ public class Tutorial extends JPanel {
         int titleY = rectY + metrics.getHeight(); // Position slightly below the top edge of the rectangle
         g2.drawString(title, titleX, titleY);
 
-
         g2.dispose();
-
     }
 
+    /**
+     * Fills the content area with the tutorial image and description for the current page.
+     *
+     * @param tutorialPanel The JPanel to which content will be added.
+     */
     private void fillRectangle(JPanel tutorialPanel) {
         int rectWidth = 1000;
         int rectHeight = 600;
@@ -171,8 +218,6 @@ public class Tutorial extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // Add spacing between components
         gbc.gridx = 0; // Single column layout
-
-
 
         // Image Label
         gbc.gridy = 1; // Second row for the image
@@ -222,10 +267,15 @@ public class Tutorial extends JPanel {
 
         // Add the main panel to the tutorial panel
         tutorialPanel.add(mainPanel, new GridBagConstraints());
-
-
     }
 
+    /**
+     * Creates a customized JButton with specified text and action listener.
+     *
+     * @param text    The text to display on the button.
+     * @param onClick The ActionListener to handle button clicks.
+     * @return The customized JButton.
+     */
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 40));

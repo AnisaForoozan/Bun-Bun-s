@@ -8,16 +8,43 @@ import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.Duration;
 
+/**
+ * The MainMenu class represents the main menu of the Bun bun game application.
+ * It initializes the GUI components, handles user interactions, and manages navigation between different panels.
+ * @author Janreve Salubre
+ * @version 1.0
+ * @since 1.0
+ */
 public class MainMenu extends JFrame {
+
+    /** The CardLayout for switching between panels. */
     private CardLayout cardLayout;
+
+    /** The main JPanel containing all other panels. */
     private JPanel mainPanel;
+
+    /** The AudioPlayer instance for managing audio playback. */
     private AudioPlayer audioPlayer;
+
+    /** The background image for the main menu. */
     private ImageIcon backgroundImage; // Class-level field for background image
+
+    /** The JDialog for displaying information. */
     private JDialog infoDialog; // For the custom dialog
+
+    /** The ParentalControls panel instance. */
     private ParentalControls parentalControlsPanel;
+
+    /** The start time of the session. */
     private LocalDateTime sessionStartTime;
+
+    /** Timer for tracking playtime. */
     private Timer playtimeTimer;
 
+    /**
+     * Constructs a new MainMenu instance, initializes the GUI components,
+     * sets up the audio player with saved settings, and starts playtime tracking.
+     */
     public MainMenu() {
         sessionStartTime = LocalDateTime.now(); // Record the start time
         audioPlayer = new AudioPlayer();
@@ -59,7 +86,9 @@ public class MainMenu extends JFrame {
         startPlaytimeTracking();
     }
 
-
+    /**
+     * Loads the save data from the GameSaveManager and displays it.
+     */
     private void loadAndDisplaySaveData() {
         // Load save data
         Map<String, String> saveData = GameSaveManager.loadSaveData();
@@ -72,6 +101,11 @@ public class MainMenu extends JFrame {
         }
     }
 
+    /**
+     * Creates and returns the main menu panel with custom background, buttons, and event handlers.
+     *
+     * @return The main menu JPanel.
+     */
     private JPanel createMainMenuPanel() {
         // Load the background image
         URL backgroundUrl = getClass().getClassLoader().getResource("images/menubackground.png");
@@ -149,7 +183,6 @@ public class MainMenu extends JFrame {
                 BorderFactory.createEmptyBorder() // No outer border (already drawn in paintComponent)
         ));
 
-
         // Create buttons
         JButton newGameButton = createMenuButton("PLAY", "LoadGame");
         JButton loadGameButton = createDisabledButton("LOAD GAME");
@@ -220,7 +253,6 @@ public class MainMenu extends JFrame {
                 infoButton.setForeground(Color.WHITE); // Reset to default text color
             }
         });
-
 
         infoButton.addActionListener(e -> {
             audioPlayer.playSFX("audio/sfx/click_sound.wav"); // Play click sound
@@ -314,6 +346,13 @@ public class MainMenu extends JFrame {
         return menuPanel;
     }
 
+    /**
+     * Creates a custom JButton for the main menu with specified text and target panel.
+     *
+     * @param text        The text to display on the button.
+     * @param targetPanel The name of the panel to switch to when the button is clicked.
+     * @return The customized JButton.
+     */
     private JButton createMenuButton(String text, String targetPanel) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);
@@ -358,13 +397,19 @@ public class MainMenu extends JFrame {
         return button;
     }
 
+    /**
+     * Creates a disabled JButton with specified text.
+     *
+     * @param text The text to display on the button.
+     * @return The disabled JButton.
+     */
     private JButton createDisabledButton(String text) {
         JButton button = new JButton(text) {
             @Override
             protected void paintComponent(Graphics g) {
 
                 // Ensure the text is painted in black, even if the button is disabled
-                g.setColor(new Color(150, 150, 150,50));
+                g.setColor(new Color(150, 150, 150, 50));
                 FontMetrics fm = g.getFontMetrics(getFont());
                 int textX = (getWidth() - fm.stringWidth(getText())) / 2;
                 int textY = (getHeight() + fm.getAscent()) / 2 - fm.getDescent();
@@ -382,6 +427,11 @@ public class MainMenu extends JFrame {
         return button;
     }
 
+    /**
+     * Shows a loading screen and switches to the specified target panel after a delay.
+     *
+     * @param targetPanel The name of the panel to switch to after loading.
+     */
     private void showLoadingScreenAndSwitchPanel(String targetPanel) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
@@ -427,6 +477,9 @@ public class MainMenu extends JFrame {
         loadingTimer.start();
     }
 
+    /**
+     * Saves the session duration by calculating the time between session start and end.
+     */
     private void saveSessionDuration() {
         LocalDateTime sessionEndTime = LocalDateTime.now(); // Record the end time
         Duration sessionDuration = Duration.between(sessionStartTime, sessionEndTime); // Calculate the duration
@@ -437,6 +490,9 @@ public class MainMenu extends JFrame {
         System.out.println("Session Duration: " + sessionMinutes + " minutes");
     }
 
+    /**
+     * Starts a timer that tracks playtime in minutes and updates the parental controls panel.
+     */
     private void startPlaytimeTracking() {
         playtimeTimer = new Timer(60 * 1000, e -> {
             GameSaveManager.addPlaytime(1); // Add 1 minute to playtime
@@ -449,7 +505,9 @@ public class MainMenu extends JFrame {
         playtimeTimer.start();
     }
 
-
+    /**
+     * Overrides the dispose method to stop the playtime timer and save session duration before exiting.
+     */
     @Override
     public void dispose() {
         if (playtimeTimer != null) {
@@ -459,8 +517,12 @@ public class MainMenu extends JFrame {
         super.dispose();
     }
 
+    /**
+     * The main method to start the application.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(() -> new MainMenu().setVisible(true));
     }
 }

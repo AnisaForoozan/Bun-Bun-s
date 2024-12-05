@@ -32,28 +32,31 @@ package com.cs2212.bunbun.system;
 
 import java.awt.*;
 import javax.swing.*;
-
 import static javax.swing.SwingConstants.CENTER;
 
+/**
+ * The {@code CustomGiftList} class is a JPanel that displays a list of gift items,
+ * allows the user to select one gift, and provides a custom renderer for displaying
+ * both images and text in the list.
+ * <p>
+ * This panel includes a horizontal list of gift items represented by images and their
+ * names. The user can select a gift from the list, and the selection will be cleared
+ * if a new item is selected. It also integrates with a food list, clearing its selection
+ * when a gift is selected.
+ */
 public class CustomListDemo extends JPanel {
     ImageIcon[] images;
     String[] petStrings = {"applepie", "burger", "cookies", "frenchfries", "garlicbread", "macncheese", "pancakes", "salmon", "steak", "strawberrycake"};
     JList petList;
-    //    public static Object selectedValue;
-    /*
-     * Despite its use of EmptyBorder, this panel makes a fine content
-     * pane because the empty border just increases the panel's size
-     * and is "painted" on top of the panel's normal background.  In
-     * other words, the JPanel fills its entire background if it's
-     * opaque (which it is by default); adding a border doesn't change
-     * that.
-     */
+
     private JList giftList; // Reference to the gift list
 
-    public void setGiftList(JList giftList) {
-        this.giftList = giftList;
-    }
-
+    /**
+     * Constructs a {@code CustomGiftList} panel, initializes the list of gift items,
+     * sets up the JList with custom renderer, and loads the corresponding images.
+     * This constructor also configures the layout and initializes the mouse listener
+     * for item selection behavior.
+     */
     public CustomListDemo() {
         super(new BorderLayout());
 
@@ -101,6 +104,20 @@ public class CustomListDemo extends JPanel {
         });
     }
 
+    /**
+     * Sets the gift list. This list's selection will be cleared when a gift is selected.
+     *
+     * @param giftList the JList representing the food items
+     */
+    public void setGiftList(JList giftList) {
+        this.giftList = giftList;
+    }
+
+    /**
+     * Returns the selected gift as a string. If no item is selected, returns {@code null}.
+     *
+     * @return the string representation of the selected gift, or {@code null} if no gift is selected
+     */
     public String isSelected() {
         Object selectedValue = petList.getSelectedValue();
         if (selectedValue != null) {
@@ -112,7 +129,12 @@ public class CustomListDemo extends JPanel {
     }
 
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
+    /**
+     * Creates an {@code ImageIcon} from the specified path. If the image is not found, logs an error.
+     *
+     * @param path the path to the image file
+     * @return the created {@code ImageIcon}, or {@code null} if the image could not be loaded
+     */
     protected static ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = CustomListDemo.class.getResource(path);
 
@@ -127,9 +149,8 @@ public class CustomListDemo extends JPanel {
     }
 
     /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
+     * This method creates and shows the GUI for the {@code CustomGiftList}. It should be invoked from
+     * the event-dispatching thread for thread safety.
      */
     private static void createAndShowGUI() {
         //Create and set up the window.
@@ -147,6 +168,11 @@ public class CustomListDemo extends JPanel {
         frame.setVisible(true);
     }
 
+    /**
+     * Main method to run the GUI.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -157,6 +183,11 @@ public class CustomListDemo extends JPanel {
         });
     }
 
+
+    /**
+     * Custom cell renderer for the pet list. This renderer displays both an image and text
+     * for each item in the list.
+     */
     class ComboBoxRenderer extends JPanel implements ListCellRenderer {
         private Font uhOhFont;
         private JLabel label;
@@ -173,6 +204,16 @@ public class CustomListDemo extends JPanel {
             setOpaque(true);
         }
 
+        /**
+         * Renders a list cell with an image and text.
+         *
+         * @param list         the {@code JList} being rendered
+         * @param value        the value of the list item
+         * @param index        the index of the item
+         * @param isSelected   whether the item is selected
+         * @param cellHasFocus whether the item has focus
+         * @return the component to render
+         */
         public Component getListCellRendererComponent(
                 JList list,
                 Object value,
@@ -204,14 +245,6 @@ public class CustomListDemo extends JPanel {
             return this;
         }
 
-        // Set the font and text when no image was found.
-        protected void setUhOhText(String uhOhText, Font normalFont) {
-            if (uhOhFont == null) { // lazily create this font
-                uhOhFont = normalFont.deriveFont(Font.ITALIC);
-            }
-            label.setFont(uhOhFont);
-            label.setText(uhOhText);
-        }
     }
 
 }

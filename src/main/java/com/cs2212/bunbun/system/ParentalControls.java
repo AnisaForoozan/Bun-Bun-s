@@ -2,27 +2,59 @@ package com.cs2212.bunbun.system;
 
 import com.cs2212.bunbun.gameplay.GameSaveManager;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The ParentalControls class represents the parental controls panel within the application.
+ * It provides functionality for setting time limits, viewing statistics, reviving pets, and more.
+ * Extends JPanel to be used within a Swing application.
+ * @author Janreve Salubre
+ * @version 1.0
+ * @since 1.0
+ */
 public class ParentalControls extends JPanel {
+    /** The AudioPlayer used for playing sound effects. */
     private AudioPlayer audioPlayer;
+
+    /** The background image for the panel. */
     private Image backgroundImage;
+
+    /** The CardLayout for switching between different layouts in the content panel. */
     private CardLayout layout;
+
+    /** The main content panel that holds different layouts. */
     private JPanel contentPanel;
+
+    /** An array of JComboBoxes representing units (Hours or Minutes) for each day. */
     private JComboBox<String>[] units;
+
+    /** An array of JSpinners for setting time values for each day. */
     private JSpinner[] spinners;
+
+    /** The main JPanel container. */
     private JPanel mainPanel;
+
+    /** JLabel displaying total playtime. */
     private JLabel totalPlayTimeLabel;
+
+    /** JLabel displaying average playtime. */
     private JLabel avgPlayTimeLabel;
 
+    /**
+     * Constructs a new ParentalControls panel.
+     *
+     * @param cardLayout  the CardLayout used for switching between panels.
+     * @param mainPanel   the main JPanel container.
+     * @param audioPlayer the AudioPlayer for playing audio effects.
+     */
     public ParentalControls(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
         this.mainPanel = mainPanel;
-
 
         // Load the background image
         URL resource = getClass().getResource("/images/dimbackground.png");
@@ -38,7 +70,7 @@ public class ParentalControls extends JPanel {
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topLeftPanel.setOpaque(false);
 
-        JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "MainMenu"));
+        JButton backButton = createButton("<<", e -> cardLayout.show(mainPanel, "MainMenu"));
         backButton.setFocusPainted(false);
         backButton.setContentAreaFilled(false);
         topLeftPanel.add(backButton);
@@ -57,14 +89,17 @@ public class ParentalControls extends JPanel {
         contentPanel.add(createStatisticsPanel(), "Layout5");
         contentPanel.add(createRevivePetPanel(), "Layout6");
 
-
-
         // Start with Layout 1
         layout.show(contentPanel, "Layout1");
 
         add(contentPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Overrides the paintComponent method to draw the background image.
+     *
+     * @param g the Graphics object used for drawing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -73,6 +108,11 @@ public class ParentalControls extends JPanel {
         }
     }
 
+    /**
+     * Creates the panel for entering the parental control password.
+     *
+     * @return the JPanel for entering password.
+     */
     private JPanel createEnterPasswordPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
@@ -114,6 +154,11 @@ public class ParentalControls extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates the panel for setting up a new parental control password.
+     *
+     * @return the JPanel for password setup.
+     */
     private JPanel createPasswordSetupPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
@@ -169,6 +214,11 @@ public class ParentalControls extends JPanel {
         return panel;
     }
 
+    /**
+     * Creates the protected content panel after successful password entry.
+     *
+     * @return the JPanel for protected content.
+     */
     private JPanel createProtectedContentPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
@@ -197,7 +247,11 @@ public class ParentalControls extends JPanel {
         return panel;
     }
 
-
+    /**
+     * Creates the panel for setting time limits on gameplay.
+     *
+     * @return the JPanel for time limits.
+     */
     private JPanel createTimeLimitsPanel() {
         String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
         units = new JComboBox[days.length];
@@ -224,7 +278,7 @@ public class ParentalControls extends JPanel {
         rowConstraints.gridx = 0;
         rowConstraints.gridy = GridBagConstraints.RELATIVE;
         rowConstraints.insets = new Insets(10, 0, 10, 0);
-        rowConstraints.fill = GridBagConstraints.HORIZONTAL; // Ensure rows fill the width
+        rowConstraints.fill = GridBagConstraints.HORIZONTAL;
         rowConstraints.weightx = 1.0;
 
         for (int i = 0; i < days.length; i++) {
@@ -238,11 +292,11 @@ public class ParentalControls extends JPanel {
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                     // Draw semi-transparent gray background
-                    g2d.setColor(new Color(135, 135, 135, 50)); // Semi-transparent gray
+                    g2d.setColor(new Color(135, 135, 135, 50));
                     g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
 
                     // Draw border
-                    g2d.setColor(new Color(117, 101, 81)); // Border color
+                    g2d.setColor(new Color(117, 101, 81));
                     g2d.setStroke(new BasicStroke(2));
                     g2d.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20);
 
@@ -250,15 +304,15 @@ public class ParentalControls extends JPanel {
                 }
             };
             row.setOpaque(false);
-            row.setPreferredSize(new Dimension(500, 50)); // Set uniform width for rows
+            row.setPreferredSize(new Dimension(500, 50));
 
             // Add constraints for the day label
             GridBagConstraints labelConstraints = new GridBagConstraints();
             labelConstraints.gridx = 0;
-            labelConstraints.weightx = 0.2; // Space allocated for the day label
+            labelConstraints.weightx = 0.2;
             labelConstraints.fill = GridBagConstraints.BOTH;
             labelConstraints.anchor = GridBagConstraints.WEST;
-            labelConstraints.insets = new Insets(0, 30, 0, 10); // Padding: 30px from left edge, 10px right of label
+            labelConstraints.insets = new Insets(0, 30, 0, 10);
 
             // Add day label
             JLabel dayLabel = new JLabel(days[i]);
@@ -269,10 +323,10 @@ public class ParentalControls extends JPanel {
             // Add constraints for the control panel
             GridBagConstraints controlConstraints = new GridBagConstraints();
             controlConstraints.gridx = 1;
-            controlConstraints.weightx = 0.8; // Space allocated for the control panel
+            controlConstraints.weightx = 0.8;
             controlConstraints.fill = GridBagConstraints.BOTH;
             controlConstraints.anchor = GridBagConstraints.EAST;
-            controlConstraints.insets = new Insets(0, 10, 0, 30); // Padding: 10px from spinner/combobox, 30px from right edge
+            controlConstraints.insets = new Insets(0, 10, 0, 30);
 
             // Create a panel for spinner and combo box
             JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -288,10 +342,10 @@ public class ParentalControls extends JPanel {
             if (editor instanceof JSpinner.DefaultEditor) {
                 JSpinner.DefaultEditor defaultEditor = (JSpinner.DefaultEditor) editor;
                 JTextField textField = defaultEditor.getTextField();
-                textField.setBackground(new Color(0, 0, 0, 0)); // Transparent background
+                textField.setBackground(new Color(0, 0, 0, 0));
                 textField.setOpaque(false);
-                textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 7)); // Add left padding for separation
-                textField.setForeground(Color.WHITE); // Set text color to white
+                textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 7));
+                textField.setForeground(Color.WHITE);
             }
             controlPanel.add(spinners[i]);
 
@@ -302,12 +356,14 @@ public class ParentalControls extends JPanel {
             // Ensure the renderer has consistent styling
             units[i].setRenderer(new DefaultListCellRenderer() {
                 @Override
-                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                    label.setBackground(new Color(0, 0, 0, 0)); // Transparent background for dropdown items
-                    label.setOpaque(false); // Ensure transparency
-                    label.setForeground(Color.BLACK); // Black text for readability
-                    label.setFont(new Font("Comic Sans MS", Font.PLAIN, 18)); // Consistent font
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                              boolean isSelected, boolean cellHasFocus) {
+                    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+                            cellHasFocus);
+                    label.setBackground(new Color(0, 0, 0, 0));
+                    label.setOpaque(false);
+                    label.setForeground(Color.BLACK);
+                    label.setFont(new Font("Comic Sans MS", Font.PLAIN, 18));
                     return label;
                 }
             });
@@ -324,10 +380,10 @@ public class ParentalControls extends JPanel {
                     JTextField textField = defaultEditor.getTextField();
 
                     // Customize text field properties
-                    textField.setBackground(new Color(0, 0, 0, 0)); // Transparent background
+                    textField.setBackground(new Color(0, 0, 0, 0));
                     textField.setOpaque(false);
-                    textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 7)); // Add spacing
-                    textField.setForeground(Color.WHITE); // Set text color to white
+                    textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 7));
+                    textField.setForeground(Color.WHITE);
                 }
             });
 
@@ -359,12 +415,10 @@ public class ParentalControls extends JPanel {
             // Save updated time limits to GameSaveManager
             GameSaveManager.saveTimeLimits(timeLimits);
 
-            JOptionPane.showMessageDialog(this, "Time limits updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Time limits updated successfully!", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
         });
         panel.add(saveButton, gbc);
-
-        // Add rowsPanel to the main time limits panel
-        panel.add(rowsPanel, gbc);
 
         // Add toggle switch for enabling/disabling restrictions
         JPanel toggleRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -388,13 +442,13 @@ public class ParentalControls extends JPanel {
             if (isEnabled) {
                 // Enable time restrictions
                 GameSaveManager.setTimeRestrictionEnabled(true);
-                GameSaveManager.setGameplayLocked(false); // Ensure gameplay is unlocked when enabling restrictions
-                GameSaveManager.resetTimeLimitForToday(); // Reset today's timer
+                GameSaveManager.setGameplayLocked(false);
+                GameSaveManager.resetTimeLimitForToday();
             } else {
                 // Disable time restrictions
                 GameSaveManager.setTimeRestrictionEnabled(false);
-                GameSaveManager.setGameplayLocked(false); // Unlock gameplay when restrictions are disabled
-                GameSaveManager.resetTimeLimitForToday(); // Reset the timer even when disabling
+                GameSaveManager.setGameplayLocked(false);
+                GameSaveManager.resetTimeLimitForToday();
             }
 
             // Notify Gameplay to reset its timer if active
@@ -416,10 +470,14 @@ public class ParentalControls extends JPanel {
         return panel;
     }
 
-
+    /**
+     * Creates the panel displaying player statistics.
+     *
+     * @return the JPanel for statistics.
+     */
     private JPanel createStatisticsPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setOpaque(false); // Transparent background
+        panel.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -436,7 +494,7 @@ public class ParentalControls extends JPanel {
         panel.add(titleLabel, gbc);
 
         // Total Play Time
-        totalPlayTimeLabel = new JLabel("Total Play Time: 0 hrs 0 min"); // Placeholder
+        totalPlayTimeLabel = new JLabel("Total Play Time: 0 hrs 0 min");
         totalPlayTimeLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
         totalPlayTimeLabel.setForeground(Color.WHITE);
         totalPlayTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -445,12 +503,12 @@ public class ParentalControls extends JPanel {
         // Reset Total Play Time Button
         JButton resetTotalButton = createCustomButton("Reset", e -> {
             GameSaveManager.resetTotalPlayTime();
-            updateStatisticsLabels(); // Refresh labels
+            updateStatisticsLabels();
         });
         panel.add(resetTotalButton, gbc);
 
         // Average Play Time
-        avgPlayTimeLabel = new JLabel("Average Play Time: 0 hrs 0 min"); // Placeholder
+        avgPlayTimeLabel = new JLabel("Average Play Time: 0 hrs 0 min");
         avgPlayTimeLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
         avgPlayTimeLabel.setForeground(Color.WHITE);
         avgPlayTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -459,7 +517,7 @@ public class ParentalControls extends JPanel {
         // Reset Average Play Time Button
         JButton resetAverageButton = createCustomButton("Reset", e -> {
             GameSaveManager.resetAveragePlayTime();
-            updateStatisticsLabels(); // Refresh labels
+            updateStatisticsLabels();
         });
         panel.add(resetAverageButton, gbc);
 
@@ -473,7 +531,9 @@ public class ParentalControls extends JPanel {
         return panel;
     }
 
-    // Helper to update statistics dynamically
+    /**
+     * Updates the statistics labels dynamically.
+     */
     private void updateStatisticsLabels() {
         int totalPlayTimeMinutes = GameSaveManager.getTotalPlayTimeInMinutes();
         int sessions = GameSaveManager.getSessionCount();
@@ -492,12 +552,18 @@ public class ParentalControls extends JPanel {
         }
     }
 
-    // Call this method from MainMenu to refresh ParentalControls statistics periodically
+    /**
+     * Refreshes the statistics, can be called periodically.
+     */
     public void refreshStatistics() {
         updateStatisticsLabels();
     }
 
-
+    /**
+     * Creates the panel for reviving pets.
+     *
+     * @return the JPanel for reviving pets.
+     */
     private JPanel createRevivePetPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
@@ -529,11 +595,11 @@ public class ParentalControls extends JPanel {
             String slotKey = "Slot " + (i + 1);
 
             if (!saveData.containsKey(slotKey)) {
-                continue; // Skip empty slots
+                continue;
             }
 
-            int health = GameSaveManager.getPetHealth(slotKey); // Retrieve pet health
-            String state = (health == 0) ? "Dead" : "Normal State"; // Determine pet state
+            int health = GameSaveManager.getPetHealth(slotKey);
+            String state = (health == 0) ? "Dead" : "Normal State";
             String buttonText = slotKey + ": " + (health == 0 ? "Dead" : "Alive");
 
             // Create the button dynamically
@@ -548,13 +614,11 @@ public class ParentalControls extends JPanel {
                             JOptionPane.YES_NO_OPTION
                     );
                     if (confirm == JOptionPane.YES_OPTION) {
-                        // Revive the pet: Set its health to max and reset other stats
+                        // Revive the pet
                         GameSaveManager.savePetHealth(slotKey, GameSaveManager.getMaxHealth());
-                        GameSaveManager.saveStat(slotKey + "_sleep", 120); // Maximize sleep
-                        GameSaveManager.saveStat(slotKey + "_happiness", 200); // Maximize happiness
-                        GameSaveManager.saveStat(slotKey + "_fullness", 150); // Maximize fullness
-
-                        // Score remains unchanged; no updates to the score stat
+                        GameSaveManager.saveStat(slotKey + "_sleep", 120);
+                        GameSaveManager.saveStat(slotKey + "_happiness", 200);
+                        GameSaveManager.saveStat(slotKey + "_fullness", 150);
 
                         JOptionPane.showMessageDialog(this, "Pet successfully revived! All stats are maximized.", "Success", JOptionPane.INFORMATION_MESSAGE);
 
@@ -573,9 +637,6 @@ public class ParentalControls extends JPanel {
                     JOptionPane.showMessageDialog(this, "This pet is already alive!", "Info", JOptionPane.INFORMATION_MESSAGE);
                 }
             });
-
-
-
 
             // Panel for the button with rounded styling
             JPanel slotButtonPanel = new JPanel(null) {
@@ -614,16 +675,18 @@ public class ParentalControls extends JPanel {
         return panel;
     }
 
-
-
-
+    /**
+     * Shows a popup dialog when reviving a pet.
+     *
+     * @param state the state of the pet (e.g., "Dead" or "Normal State").
+     */
     private void showRevivePopup(String state) {
         JFrame parentFrame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
 
         JDialog dialog = new JDialog(parentFrame, true);
-        dialog.setUndecorated(true); // Remove default borders
-        dialog.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
-        dialog.getRootPane().setOpaque(false); // Ensure no opaque background
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0, 0));
+        dialog.getRootPane().setOpaque(false);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         JPanel contentPanel = new JPanel(null) {
@@ -634,8 +697,8 @@ public class ParentalControls extends JPanel {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 // Draw the rounded rectangle background
-                g2d.setColor(new Color(117, 101, 81)); // Background color
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50); // Rounded edges
+                g2d.setColor(new Color(117, 101, 81));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
 
                 g2d.dispose();
             }
@@ -663,13 +726,16 @@ public class ParentalControls extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Updates the revive pet slots after a pet is revived.
+     */
     private void updateReviveSlots() {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
 
         for (Component comp : contentPanel.getComponents()) {
             if (comp instanceof JPanel && "Layout6".equals(layout.toString())) {
                 JPanel revivePanel = (JPanel) comp;
-                revivePanel.removeAll(); // Clear current buttons and labels
+                revivePanel.removeAll();
 
                 // Recreate updated revive pet panel
                 JPanel updatedPanel = createRevivePetPanel();
@@ -683,9 +749,13 @@ public class ParentalControls extends JPanel {
         revalidate();
     }
 
-
-
-
+    /**
+     * Creates a custom styled button with specified text and action listener.
+     *
+     * @param text    the text to display on the button.
+     * @param onClick the action to perform when the button is clicked.
+     * @return the customized JButton.
+     */
     private JButton createCustomButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text) {
             @Override
@@ -713,11 +783,12 @@ public class ParentalControls extends JPanel {
         button.setForeground(Color.WHITE);
         button.setHorizontalAlignment(SwingConstants.CENTER);
 
-
-        button.addActionListener(e -> {
-            audioPlayer.playSFX("audio/sfx/click_sound.wav");
-            onClick.actionPerformed(e);
-        });
+        if (onClick != null) {
+            button.addActionListener(e -> {
+                audioPlayer.playSFX("audio/sfx/click_sound.wav");
+                onClick.actionPerformed(e);
+            });
+        }
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -735,42 +806,15 @@ public class ParentalControls extends JPanel {
         return button;
     }
 
-    private JPanel createIconButtonPanel(List<String> labels, List<String> iconPaths) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setOpaque(false);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.insets = new Insets(10, 0, 10, 0);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        for (int i = 0; i < labels.size(); i++) {
-            String label = labels.get(i);
-            String iconPath = iconPaths.get(i);
-
-            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            row.setOpaque(false);
-
-            JLabel iconLabel = new JLabel(new ImageIcon(iconPath)); // Replace with actual icons
-            JButton button = createCustomButton(label, e -> {
-                // Add functionality for each button
-            });
-
-            row.add(iconLabel);
-            row.add(button);
-            panel.add(row, gbc);
-        }
-
-        return panel;
-    }
-
+    /**
+     * Refreshes the revive pet panel after a pet has been revived.
+     */
     private void refreshRevivePetPanel() {
         // Retrieve the latest data
         Map<String, String> saveData = GameSaveManager.loadSaveData();
 
         // Remove the existing Revive Pet panel (Layout6)
-        contentPanel.remove(contentPanel.getComponent(5)); // Assuming Layout6 is at index 5
+        contentPanel.remove(contentPanel.getComponent(5));
 
         // Create a new Revive Pet panel with the latest data
         JPanel newRevivePetPanel = createRevivePetPanel();
@@ -782,18 +826,26 @@ public class ParentalControls extends JPanel {
         layout.show(contentPanel, "Layout6");
     }
 
+    /**
+     * Refreshes the UI after a pet has been revived.
+     */
     private void refreshAfterRevive() {
-        refreshRevivePetPanel(); // Refresh the Revive Pet panel
+        refreshRevivePetPanel();
         for (Component comp : mainPanel.getComponents()) {
             if (comp instanceof LoadGame) {
-                ((LoadGame) comp).refreshLoadGameUI(); // Refresh LoadGame UI
+                ((LoadGame) comp).refreshLoadGameUI();
                 break;
             }
         }
     }
 
-
-
+    /**
+     * Creates a styled button with a specified text and action listener.
+     *
+     * @param text    the text to display on the button.
+     * @param onClick the action to perform when the button is clicked.
+     * @return the customized JButton.
+     */
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
@@ -828,9 +880,10 @@ public class ParentalControls extends JPanel {
         return button;
     }
 
-    // Method to reset the panel to Layout1
+    /**
+     * Resets the panel to the initial layout (Layout1).
+     */
     public void resetToLayout1() {
         layout.show(contentPanel, "Layout1");
     }
-
 }

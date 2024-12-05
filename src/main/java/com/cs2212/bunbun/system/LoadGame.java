@@ -3,18 +3,35 @@ package com.cs2212.bunbun.system;
 import com.cs2212.bunbun.gameplay.GameSaveManager;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.Map;
-import java.io.File;
-import java.io.IOException;
 
+/**
+ * The LoadGame class represents the screen where the user can load a saved game slot.
+ * It displays available slots, allows the user to select a slot, and handles slot interactions
+ * such as playing, renaming, or deleting a saved game.
+ * @author Janreve Salubre
+ * @version 1.0
+ * @since 1.0
+ */
 public class LoadGame extends JPanel {
+    /** The AudioPlayer instance for playing audio effects. */
     private AudioPlayer audioPlayer;
+    /** The background image displayed on the panel. */
     private Image backgroundImage;
+    /** The CardLayout managing the different panels in the application. */
     private CardLayout cardLayout;
+    /** The main panel containing all the sub-panels. */
     private JPanel mainPanel;
+    /** An array of SlotButton representing the game slots. */
     private SlotButton[] slotButtons;
 
+    /**
+     * Constructs a new LoadGame panel.
+     *
+     * @param cardLayout  The CardLayout managing the panels.
+     * @param mainPanel   The main JPanel containing all panels.
+     * @param audioPlayer The AudioPlayer instance for playing audio effects.
+     */
     public LoadGame(CardLayout cardLayout, JPanel mainPanel, AudioPlayer audioPlayer) {
         this.cardLayout = cardLayout; // Store the CardLayout instance
         this.mainPanel = mainPanel; // Store the mainPanel instance
@@ -29,7 +46,7 @@ public class LoadGame extends JPanel {
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topLeftPanel.setOpaque(false);
 
-        JButton backButton = createButton("⬅", e -> cardLayout.show(mainPanel, "MainMenu"));
+        JButton backButton = createButton("<<", e -> cardLayout.show(mainPanel, "MainMenu"));
 
         topLeftPanel.add(backButton);
         add(topLeftPanel, BorderLayout.NORTH); // Add back button panel to the top
@@ -58,6 +75,11 @@ public class LoadGame extends JPanel {
         add(slotsPanel, BorderLayout.CENTER); // Add the slots panel to the center
     }
 
+    /**
+     * Overrides the paintComponent to draw the background image.
+     *
+     * @param g The Graphics object used for painting.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -70,7 +92,13 @@ public class LoadGame extends JPanel {
         }
     }
 
-
+    /**
+     * Creates a custom SlotButton with hover effects and click actions.
+     *
+     * @param text      The text to display on the button.
+     * @param slotIndex The index of the slot associated with this button.
+     * @return The created SlotButton.
+     */
     private SlotButton createSlotButton(String text, int slotIndex) {
         SlotButton slotButton = new SlotButton(text);
 
@@ -97,6 +125,11 @@ public class LoadGame extends JPanel {
         return slotButton;
     }
 
+    /**
+     * Handles the action when a slot button is clicked.
+     *
+     * @param slotIndex The index of the slot that was clicked.
+     */
     private void handleSlotClick(int slotIndex) {
         String slotKey = "Slot " + (slotIndex + 1); // Determine the slot key based on index
         Map<String, String> saveData = GameSaveManager.loadSaveData();
@@ -248,9 +281,12 @@ public class LoadGame extends JPanel {
         dialog.setVisible(true);
     }
 
-
-
-
+    /**
+     * Renames the slot with the given slot key to a new name.
+     *
+     * @param slotKey The key of the slot to rename.
+     * @param newName The new name for the slot.
+     */
     private void renameSlot(String slotKey, String newName) {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
         String petData = saveData.get(slotKey); // Get the existing "name:type" format
@@ -262,27 +298,38 @@ public class LoadGame extends JPanel {
         updateSlots(); // Refresh the UI
     }
 
-
-    private void deleteSlot(String slotKey) {
+    /**
+     * Deletes the saved data for the given slot key.
+     *
+     * @param slotKey The key of the slot to delete.
+     */
+    public void deleteSlot(String slotKey) {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
         if (saveData.containsKey(slotKey)) {
-            saveData.remove(slotKey); // Remove the slot data
-            saveData.remove(slotKey + "_health"); // Reset health by removing associated key
-            GameSaveManager.savePetHealth(slotKey, 20); // Explicitly reset health to 20
-            GameSaveManager.saveUpdatedData(saveData); // Save the updated map
+            saveData.remove(slotKey); // Remove slot data
+            saveData.remove(slotKey + "_health"); // Remove health data
+            GameSaveManager.saveUpdatedData(saveData);
         }
-        updateSlots(); // Refresh the UI
+        updateSlots();
     }
 
-
-
-
+    /**
+     * Navigates to the Gameplay panel with the data from the specified slot.
+     *
+     * @param slotKey The key of the slot to load.
+     */
     private void navigateToGameplay(String slotKey) {
         String bunnyName = GameSaveManager.getPetName(slotKey);
         String petType = GameSaveManager.getPetType(slotKey);
+        int petHealth = GameSaveManager.getPetHealth(slotKey); // Ensure health is updated
 
         if (bunnyName == null || petType == null) {
             System.out.println("Invalid data for slot: " + slotKey);
+            return;
+        }
+
+        if (petHealth <= 0) {
+            JOptionPane.showMessageDialog(this, "This pet is dead and cannot be played.", "Pet Died", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -292,9 +339,13 @@ public class LoadGame extends JPanel {
         cardLayout.show(mainPanel, "Gameplay");
     }
 
-
-
-
+    /**
+     * Styles a dialog button with custom font, colors, and hover effects.
+     *
+     * @param button     The JButton to style.
+     * @param hoverColor The color to use when the button is hovered.
+     * @param onClick    The action to perform when the button is clicked.
+     */
     private void styleDialogButton(JButton button, Color hoverColor, Runnable onClick) {
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
         button.setForeground(Color.WHITE);
@@ -323,7 +374,11 @@ public class LoadGame extends JPanel {
         });
     }
 
-
+    /**
+     * Shows a loading screen with animation and then switches to the target panel.
+     *
+     * @param targetPanel The name of the panel to switch to after loading.
+     */
     private void showLoadingScreenAndSwitchPanel(String targetPanel) {
         // Create a loading screen panel
         JPanel loadingScreen = new JPanel(new BorderLayout()) {
@@ -369,6 +424,9 @@ public class LoadGame extends JPanel {
         loadingTimer.start();
     }
 
+    /**
+     * Updates the slot buttons with the latest save data.
+     */
     public void updateSlots() {
         Map<String, String> saveData = GameSaveManager.loadSaveData();
 
@@ -389,19 +447,20 @@ public class LoadGame extends JPanel {
         repaint();
     }
 
-
+    /**
+     * Refreshes the LoadGame UI by updating the slots.
+     */
     public void refreshLoadGameUI() {
         updateSlots(); // Use the same logic as updateSlots
     }
 
-
-
-
-
-
-
-
-
+    /**
+     * Creates a JButton with custom styling and action.
+     *
+     * @param text    The text to display on the button.
+     * @param onClick The action to perform when the button is clicked.
+     * @return The styled JButton.
+     */
     private JButton createButton(String text, java.awt.event.ActionListener onClick) {
         JButton button = new JButton(text);
         button.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
@@ -436,9 +495,18 @@ public class LoadGame extends JPanel {
         return button;
     }
 
+    /**
+     * Custom JButton class for slot buttons with custom rendering and hover effects.
+     */
     private static class SlotButton extends JButton {
+        /** Indicates whether the button is currently hovered. */
         private boolean isHovered = false;
 
+        /**
+         * Constructs a SlotButton with the specified text.
+         *
+         * @param text The text to display on the button.
+         */
         public SlotButton(String text) {
             super(text);
             setFont(new Font("Comic Sans MS", Font.BOLD, 20));
@@ -449,13 +517,21 @@ public class LoadGame extends JPanel {
             setBorder(BorderFactory.createEmptyBorder()); // Remove default border
         }
 
+        /**
+         * Sets the hover state of the button.
+         *
+         * @param hovered True if the button is hovered, false otherwise.
+         */
         public void setHovered(boolean hovered) {
             this.isHovered = hovered;
             repaint(); // Trigger repaint to update hover effect
         }
 
-
-
+        /**
+         * Overrides the paintComponent to draw custom button with hover effects.
+         *
+         * @param g The Graphics object used for painting.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g.create();
